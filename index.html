@@ -273,7 +273,7 @@
     <div class="btnrow">
       <button class="rbtn" id="rShare">📤 शेयर</button>
       <button class="rbtn blue" id="rWa">💬 WhatsApp</button>
-      <button class="rbtn gray" id="rMark">✏️ Mark</button>
+      <button class="rbtn blue" id="rMark">✏️ Mark</button>
       <button class="rbtn gray" id="rDownload">⬇️ डाउनलोड</button>
       <button class="rbtn gray" id="rDel">🗑️</button>
       <button class="rbtn gray" id="rNew">📷 नया</button>
@@ -1019,7 +1019,10 @@ async function saveRecce(R){
   await renderRec(rec);
   if(rec.mapCv){ try{ rec.mapUrl=rec.mapCv.toDataURL('image/png'); }catch(e){} }
   idbSave(rec); rebuildThumbs(); showResult(S.photos.length-1);
-  toast('🎯 Recce card save हो गई');
+  /* Recce card banate hi marking tool auto-open — card par point/circle/arrow karne ke liye */
+  curIdx=S.photos.length-1;
+  openAnn();
+  toast('🎯 Recce card taiyaar — marking करें या ✖ से बंद करें');
 }
 
 /* ================= PHOTO MARKING (annotation) ================= */
@@ -1119,7 +1122,11 @@ _annCv.addEventListener('pointerup',()=>{
 });
 $('annUndo').onclick=()=>{ annStrokes.pop(); annDraw(); };
 $('annClear').onclick=()=>{ annStrokes=[]; annCur=null; annDraw(); };
-$('annClose').onclick=()=>{ $('annModal').style.display='none'; $('result').style.display='flex'; };
+$('annClose').onclick=()=>{
+  $('annModal').style.display='none';
+  if(annIdx!=null){ $('result').style.display='flex'; }
+  else $('result').style.display='none';
+};
 $('annSave').onclick=async()=>{
   if(annIdx==null) return;
   const p=S.photos[annIdx];
