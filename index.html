@@ -104,6 +104,55 @@
   .spin { width:44px; height:44px; border:4px solid #333; border-top-color:#22c55e; border-radius:50%; animation:s 1s linear infinite; }
   @keyframes s { to { transform:rotate(360deg); } }
 
+  /* ---- device-adaptive UI (tablet / laptop) ---- */
+  @media (min-width: 700px) {
+    #vastuCard, .toolPanel { left:50%; right:auto; transform:translateX(-50%); width:min(560px, 92vw); }
+    .chip { font-size:13px; }
+    #degBubble { font-size:22px; padding:6px 20px; }
+    #vastuCard { font-size:15px; }
+    #cross .dot { width:120px; height:120px; }
+    #cross .ch.v, #cross .ch.vb { height:34px; }
+    #cross .ch.h, #cross .ch.hb { width:34px; }
+    .cbtn { width:52px; height:52px; font-size:21px; }
+    #shutter { width:80px; height:80px; }
+    #zoneTag { font-size:17px; }
+    .tlab { font-size:18px; }
+  }
+
+  /* ---- compass dial ---- */
+  #dial { position:absolute; right:10px; bottom:calc(env(safe-area-inset-bottom,0px) + 190px); z-index:30;
+    background:rgba(0,0,0,.88); border:1px solid #4b5563; border-radius:16px; padding:10px; display:none; width:186px; text-align:center; }
+  #dialHead { font-size:11px; color:#9ca3af; margin-bottom:6px; line-height:1.45; }
+  #dialCv { width:158px; height:158px; touch-action:none; cursor:grab; }
+  #dialBtns { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin-top:6px; }
+  #dialBtns button { background:#1f2937; border:1px solid #4b5563; color:#fbbf24; border-radius:8px; padding:6px 0; font-size:12px; font-weight:800; }
+  #dialClose { position:absolute; top:6px; right:6px; background:#333; color:#fff; border:none; border-radius:50%; width:24px; height:24px; font-size:12px; }
+
+  /* ---- LANDSCAPE (horizontal) layout ---- */
+  @media (orientation: landscape) {
+    #vastuCard, .toolPanel { left:10px; right:auto; top:50%; bottom:auto; transform:translateY(-50%);
+      width:min(340px,42vw); max-height:80vh; overflow-y:auto; }
+    #controls { left:auto; right:10px; top:50%; bottom:auto; transform:translateY(-50%);
+      flex-direction:column; gap:12px; }
+    #thumbs { right:80px; left:0; bottom:4px; }
+    #dial { right:80px; bottom:auto; top:calc(env(safe-area-inset-top, 8px) + 160px); }
+    #toast { bottom:auto; top:56%; }
+    #lvlChip { right:auto; left:50%; transform:translateX(-50%); top:calc(env(safe-area-inset-top, 8px) + 122px); }
+    #accChip { right:auto; left:50%; transform:translateX(90px); }
+  }
+
+  /* ---- marking editor ---- */
+  #annModal { padding:8px; }
+  #annTools, #annSecond { display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin:8px 0; }
+  .ann-tool.on { background:#166534; border-color:#22c55e; color:#fff; }
+  .clr { width:26px; height:26px; border-radius:50%; display:inline-block; border:3px solid rgba(255,255,255,.15); margin:0 2px; }
+  .clr.on { border-color:#fff; transform:scale(1.15); }
+  .aw.on { background:#166534; border-color:#22c55e; color:#fff; }
+  #annCv { max-width:100%; border-radius:10px; border:1px solid #374151; touch-action:none; cursor:crosshair; }
+
+  .rchk { display:flex; gap:7px; flex-wrap:wrap; margin:6px 0; }
+  .rchk .qk.on { background:#166534; border-color:#22c55e; color:#fff; }
+
   #toast { position:absolute; left:50%; bottom:calc(env(safe-area-inset-bottom, 0px) + 200px); transform:translateX(-50%);
     background:rgba(22,163,74,.95); color:#fff; padding:9px 18px; border-radius:24px; font-size:14px; font-weight:700;
     z-index:65; display:none; box-shadow:0 4px 14px rgba(0,0,0,.5); white-space:nowrap; max-width:92%; overflow:hidden; text-overflow:ellipsis; }
@@ -158,9 +207,12 @@
       </select>
     </div>
     <div class="row">
-      L: <input id="mL" type="number" step="0.01" placeholder="लंबाई">
-      × B: <input id="mB" type="number" step="0.01" placeholder="चौड़ाई">
-      <span style="color:#9ca3af">या सीधा क्षेत्रफल:</span> <input id="mA" type="number" step="0.01" placeholder="area">
+      L: <input id="mL" type="number" step="0.5" placeholder="ft/m/गज"> <input id="mLin" type="number" step="0.5" placeholder="inch" style="width:56px">
+      × B: <input id="mB" type="number" step="0.5" placeholder="ft/m/गज"> <input id="mBin" type="number" step="0.5" placeholder="inch" style="width:56px">
+    </div>
+    <div class="row">
+      <span style="color:#9ca3af">या सीधा क्षेत्रफल:</span> <input id="mA" type="number" step="0.01" placeholder="area" style="width:110px">
+      <span style="color:#6b7280;font-size:11px">(inch वाले box सिर्फ feet unit पर काम करते हैं)</span>
     </div>
     <div class="row">
       स्रोत: <select id="mSrc" style="flex:1;min-width:140px;background:#111;color:#fff;border:1px solid #444;border-radius:6px;padding:6px">
@@ -196,6 +248,7 @@
     <button id="shutter"></button>
     <button class="cbtn" id="btnMeas">📏</button>
     <button class="cbtn" id="btnBnd">🚶</button>
+    <button class="cbtn" id="btnRecce">🎯</button>
     <button class="cbtn" id="btnPDF">📄</button>
   </div>
   <div id="thumbs"></div>
@@ -220,6 +273,7 @@
     <div class="btnrow">
       <button class="rbtn" id="rShare">📤 शेयर</button>
       <button class="rbtn blue" id="rWa">💬 WhatsApp</button>
+      <button class="rbtn gray" id="rMark">✏️ Mark</button>
       <button class="rbtn gray" id="rDownload">⬇️ डाउनलोड</button>
       <button class="rbtn gray" id="rDel">🗑️</button>
       <button class="rbtn gray" id="rNew">📷 नया</button>
@@ -282,6 +336,126 @@
     <button class="rbtn blue" id="sHelp" style="width:100%;margin-bottom:20px">❓ कैसे use करें — Help</button>
   </div>
 
+  <div id="recceModal" class="modal">
+    <button class="closeX" id="recClose">✖</button>
+    <h2>🎯 SITE RECCE FORM</h2>
+    <p style="color:#9ca3af;font-size:12px;margin:6px 0">Facing (compass से auto): <b id="recFacing" style="color:#4ade80">—</b></p>
+    <div class="fld"><label>🛣️ सामने सड़क की चौड़ाई (ft)</label><input id="rRoadW" type="number" step="0.5" placeholder="जैसे: 30"></div>
+    <div class="fld"><label>🧭 सड़क किस तरफ</label>
+      <select id="rRoadS"><option>उत्तर (N)</option><option>ईशान (NE)</option><option>पूर्व (E)</option><option>आग्नेय (SE)</option><option>दक्षिण (S)</option><option>नैऋत्य (SW)</option><option>पश्चिम (W)</option><option>वायव्य (NW)</option></select></div>
+    <div class="fld"><label>📐 Plot प्रकार</label>
+      <select id="rType"><option>आयताकार (rectangle)</option><option>वर्गाकार (square)</option><option>Corner plot</option><option>L-shape</option><option>अनियमित (irregular)</option></select></div>
+    <div class="fld"><label>🚪 कितने तरफ से खुला</label>
+      <select id="rOpen"><option>1-side open</option><option>2-side open</option><option>Corner (2 roads)</option><option>3-side open</option><option>4-side open</option></select></div>
+    <h4>🔌 सुविधाएँ (tap = चुनें)</h4>
+    <div class="rchk" id="rUtils">
+      <button class="qk" data-v="पानी कनेक्शन">💧 पानी</button>
+      <button class="qk" data-v="बिजली कनेक्शन">⚡ बिजली</button>
+      <button class="qk" data-v="सीवर/नाली">🚽 सीवर</button>
+      <button class="qk" data-v="पक्की सड़क">🛣️ पक्की सड़क</button>
+      <button class="qk" data-v="बोरिंग">🕳️ बोरिंग</button>
+    </div>
+    <h4>✅ Positives (आस-पास)</h4>
+    <div class="rchk" id="rPos">
+      <button class="qk" data-v="मंदिर पास">🛕 मंदिर</button>
+      <button class="qk" data-v="स्कूल पास">🏫 स्कूल</button>
+      <button class="qk" data-v="अस्पताल पास">🏥 अस्पताल</button>
+      <button class="qk" data-v="पार्क पास">🌳 पार्क</button>
+      <button class="qk" data-v="बाज़ार पास">🛒 बाज़ार</button>
+    </div>
+    <h4>⚠️ Negatives (Vastu/site doshas)</h4>
+    <div class="rchk" id="rNeg">
+      <button class="qk" data-v="T-point/वीढ़ी शूल">🛤️ T-point</button>
+      <button class="qk" data-v="हाई-टेंशन लाइन">⚡ हाई-टेंशन</button>
+      <button class="qk" data-v="नाला पास">🕳️ नाला</button>
+      <button class="qk" data-v="स्मशान/कब्रिस्तान पास">⚰️ स्मशान</button>
+      <button class="qk" data-v="फैक्ट्री पास">🏭 फैक्ट्री</button>
+      <button class="qk" data-v="रेलवे लाइन पास">🚆 रेलवे</button>
+    </div>
+    <div class="fld"><label>🌱 मिट्टी</label>
+      <select id="rSoil"><option>काली मिट्टी</option><option>लाल/पीली मिट्टी</option><option>बलुई मिट्टी</option><option>पत्थरीली ज़मीन</option><option>जानकारी नहीं</option></select></div>
+    <div class="fld"><label>👤 मालिक/दलाल का नाम</label><input id="rOwner" type="text" placeholder="जैसे: शर्मा जी"></div>
+    <div class="fld"><label>📞 मालिक/दलाल मोबाइल</label><input id="rOwnerPh" type="tel" placeholder="98xxxxxxxx"></div>
+    <div class="fld"><label>⭐ Overall rating</label>
+      <select id="rRate"><option>⭐⭐⭐⭐⭐ (5/5 बेहतरीन)</option><option>⭐⭐⭐⭐ (4/5)</option><option selected>⭐⭐⭐ (3/5)</option><option>⭐⭐ (2/5)</option><option>⭐ (1/5)</option></select></div>
+    <div class="fld"><label>📝 नोट्स</label><input id="rNotes" type="text" placeholder="जैसे: पीछे govt school, आगे 40ft road"></div>
+    <div class="btnrow"><button class="rbtn" id="recSave">💾 RECCE CARD SAVE करें</button></div>
+  </div>
+
+  <div id="recceModal" class="modal">
+    <button class="closeX" id="recClose">✖</button>
+    <h2>🎯 SITE RECCE FORM</h2>
+    <p style="color:#9ca3af;font-size:12px;margin:6px 0">Facing (compass से auto): <b id="recFacing" style="color:#4ade80">—</b></p>
+    <div class="fld"><label>🛣️ सामने सड़क की चौड़ाई (ft)</label><input id="rRoadW" type="number" step="0.5" placeholder="जैसे: 30"></div>
+    <div class="fld"><label>🧭 सड़क किस तरफ</label>
+      <select id="rRoadS"><option>उत्तर (N)</option><option>ईशान (NE)</option><option>पूर्व (E)</option><option>आग्नेय (SE)</option><option>दक्षिण (S)</option><option>नैऋत्य (SW)</option><option>पश्चिम (W)</option><option>वायव्य (NW)</option></select></div>
+    <div class="fld"><label>📐 Plot प्रकार</label>
+      <select id="rType"><option>आयताकार (rectangle)</option><option>वर्गाकार (square)</option><option>Corner plot</option><option>L-shape</option><option>अनियमित (irregular)</option></select></div>
+    <div class="fld"><label>🚪 कितने तरफ से खुला</label>
+      <select id="rOpen"><option>1-side open</option><option>2-side open</option><option>Corner (2 roads)</option><option>3-side open</option><option>4-side open</option></select></div>
+    <h4>🔌 सुविधाएँ (tap = चुनें)</h4>
+    <div class="rchk" id="rUtils">
+      <button class="qk" data-v="पानी कनेक्शन">💧 पानी</button>
+      <button class="qk" data-v="बिजली कनेक्शन">⚡ बिजली</button>
+      <button class="qk" data-v="सीवर/नाली">🚽 सीवर</button>
+      <button class="qk" data-v="पक्की सड़क">🛣️ पक्की सड़क</button>
+      <button class="qk" data-v="बोरिंग">🕳️ बोरिंग</button>
+    </div>
+    <h4>✅ Positives (आस-पास)</h4>
+    <div class="rchk" id="rPos">
+      <button class="qk" data-v="मंदिर पास">🛕 मंदिर</button>
+      <button class="qk" data-v="स्कूल पास">🏫 स्कूल</button>
+      <button class="qk" data-v="अस्पताल पास">🏥 अस्पताल</button>
+      <button class="qk" data-v="पार्क पास">🌳 पार्क</button>
+      <button class="qk" data-v="बाज़ार पास">🛒 बाज़ार</button>
+    </div>
+    <h4>⚠️ Negatives (Vastu/site doshas)</h4>
+    <div class="rchk" id="rNeg">
+      <button class="qk" data-v="T-point/वीढ़ी शूल">🛤️ T-point</button>
+      <button class="qk" data-v="हाई-टेंशन लाइन">⚡ हाई-टेंशन</button>
+      <button class="qk" data-v="नाला पास">🕳️ नाला</button>
+      <button class="qk" data-v="स्मशान/कब्रिस्तान पास">⚰️ स्मशान</button>
+      <button class="qk" data-v="फैक्ट्री पास">🏭 फैक्ट्री</button>
+      <button class="qk" data-v="रेलवे लाइन पास">🚆 रेलवे</button>
+    </div>
+    <div class="fld"><label>🌱 मिट्टी</label>
+      <select id="rSoil"><option>काली मिट्टी</option><option>लाल/पीली मिट्टी</option><option>बलुई मिट्टी</option><option>पत्थरीली ज़मीन</option><option>जानकारी नहीं</option></select></div>
+    <div class="fld"><label>👤 मालिक/दलाल का नाम</label><input id="rOwner" type="text" placeholder="जैसे: शर्मा जी"></div>
+    <div class="fld"><label>📞 मालिक/दलाल मोबाइल</label><input id="rOwnerPh" type="tel" placeholder="98xxxxxxxx"></div>
+    <div class="fld"><label>⭐ Overall rating</label>
+      <select id="rRate"><option>⭐⭐⭐⭐⭐ (5/5 बेहतरीन)</option><option>⭐⭐⭐⭐ (4/5)</option><option selected>⭐⭐⭐ (3/5)</option><option>⭐⭐ (2/5)</option><option>⭐ (1/5)</option></select></div>
+    <div class="fld"><label>📝 नोट्स</label><input id="rNotes" type="text" placeholder="जैसे: पीछे govt school, आगे 40ft road"></div>
+    <div class="btnrow"><button class="rbtn" id="recSave">💾 RECCE CARD SAVE करें</button></div>
+  </div>
+
+  <div id="annModal" class="modal">
+    <button class="closeX" id="annClose">✖</button>
+    <h2 style="margin-bottom:2px">✏️ PHOTO MARKING</h2>
+    <p style="color:#9ca3af;font-size:11px;margin-bottom:6px">Photo par point/area mark करें — arrow, circle, box, freehand ya text</p>
+    <div id="annTools">
+      <button class="qk ann-tool on" data-tl="pen">🖊️ Pen</button>
+      <button class="qk ann-tool" data-tl="arrow">➡️ Arrow</button>
+      <button class="qk ann-tool" data-tl="circ">⭕ Circle</button>
+      <button class="qk ann-tool" data-tl="rect">▭ Box</button>
+      <button class="qk" id="annTxtBtn">🔤 Text</button>
+      <button class="qk" id="annUndo">↩️ Undo</button>
+      <button class="qk" id="annClear">🧹 Clear</button>
+    </div>
+    <div id="annSecond">
+      <span class="clr on" data-c="#ef4444" style="background:#ef4444"></span>
+      <span class="clr" data-c="#fde047" style="background:#fde047"></span>
+      <span class="clr" data-c="#22c55e" style="background:#22c55e"></span>
+      <span class="clr" data-c="#38bdf8" style="background:#38bdf8"></span>
+      <span class="clr" data-c="#ffffff" style="background:#ffffff"></span>
+      &nbsp;|&nbsp;
+      <button class="qk aw" data-w="0.0035">Patli</button>
+      <button class="qk aw on" data-w="0.0065">Medium</button>
+      <button class="qk aw" data-w="0.011">Motī</button>
+      <button class="rbtn" style="flex:0 0 auto;padding:8px 14px;margin-left:auto" id="annSave">💾 SAVE</button>
+    </div>
+    <div style="flex:1;overflow:auto;text-align:center;margin-top:6px"><canvas id="annCv"></canvas></div>
+  </div>
+
   <div id="help" class="modal">
     <button class="closeX" id="hClose">✖</button>
     <h2 id="popTitle">❓</h2><div id="popBody"></div>
@@ -293,6 +467,13 @@
     <input id="lockIn" type="password" inputmode="numeric" placeholder="••••">
     <div id="lockErr"></div>
     <button class="btn" id="lockBtn">खोलें</button>
+  </div>
+
+  <div id="dial">
+    <button id="dialClose">✖</button>
+    <div id="dialHead">🧭 Direction सेट करें — <b>लाल सुई घुमाएँ</b> (सुई = camera जिस तरफ है). Laptop/desktop के लिए.</div>
+    <canvas id="dialCv"></canvas>
+    <div id="dialBtns"></div>
   </div>
 
   <div id="toast"></div>
@@ -344,7 +525,13 @@ const ZONES = [
 const zoneOf = h => ZONES[Math.round(((h%360)+360)%360/45)%8];
 
 /* ================= FORMAT HELPERS ================= */
-const fmtLen = m => `${m.toFixed(2)} m (≈ ${(m*3.28084).toFixed(1)} ft)`;
+function ftIn(m){
+  let ti=m*39.3701; ti=Math.round(ti*2)/2;
+  let ft=Math.floor(ti/12), inch=ti-ft*12;
+  if(inch===12){ ft++; inch=0; }
+  return ft+"'"+(inch%1?inch.toFixed(1):inch)+'"';
+}
+const fmtLen = m => `${m.toFixed(2)} m (≈ ${ftIn(m)})`;
 const fmtINR = n => '₹' + Math.round(n).toLocaleString('en-IN');
 const U2X = { sqft:10.7639, sqyd:1.19599, sqm:1 };
 const ULBL = { sqft:'sq.ft', sqyd:'गज', sqm:'sq.m' };
@@ -410,11 +597,67 @@ function armCompass(){
   window.addEventListener('deviceorientationabsolute', onOrient, true);
   window.addEventListener('deviceorientation', onOrient, true);
 }
+
+/* ================= COMPASS DIAL (laptop / manual / sensor na ho) ================= */
+const DIRS8=[['N',0],['NE',45],['E',90],['SE',135],['S',180],['SW',225],['W',270],['NW',315]];
+const dcv=$('dialCv'); dcv.width=316; dcv.height=316;
+DIRS8.forEach(([n,dg])=>{ const b=document.createElement('button'); b.textContent=n;
+  b.onclick=()=>setManualDir(dg); $('dialBtns').appendChild(b); });
+function setManualDir(dg){
+  S.raw=((dg%360)+360)%360; S.hasCompass=false;
+  $('accChip').textContent='🧭 manual';
+}
+let dialDrag=false;
+function dialAngle(e){
+  const r=dcv.getBoundingClientRect();
+  const px=e.clientX, py=e.clientY;
+  const x=px-(r.left+r.width/2), y=py-(r.top+r.height/2);
+  return ((Math.atan2(x,-y)/RAD)+360)%360;
+}
+dcv.addEventListener('pointerdown',e=>{ e.preventDefault(); dcv.setPointerCapture(e.pointerId); dialDrag=true; setManualDir(dialAngle(e)); });
+dcv.addEventListener('pointermove',e=>{ if(dialDrag){ e.preventDefault(); setManualDir(dialAngle(e)); } });
+dcv.addEventListener('pointerup',()=>{ dialDrag=false; });
+$('dialClose').onclick=()=>{ $('dial').style.display='none'; };
+$('accChip').onclick=()=>{ const d=$('dial'); d.style.display = d.style.display==='block'?'none':'block'; };
+function drawDial(){
+  if($('dial').style.display!=='block') return;
+  const x=dcv.getContext('2d'), C=158, R=140;
+  x.clearRect(0,0,316,316);
+  x.fillStyle='#0b1220'; x.beginPath(); x.arc(C,C,R,0,7); x.fill();
+  x.strokeStyle='#374151'; x.lineWidth=5; x.stroke();
+  for(let d=0;d<360;d+=15){
+    const maj=d%45===0, a=d*RAD, r1=R-(maj?18:10), r2=R-4;
+    x.strokeStyle=maj?'#9ca3af':'#4b5563'; x.lineWidth=maj?3:2;
+    x.beginPath(); x.moveTo(C+Math.sin(a)*r1,C-Math.cos(a)*r1); x.lineTo(C+Math.sin(a)*r2,C-Math.cos(a)*r2); x.stroke();
+  }
+  x.textAlign='center'; x.textBaseline='middle';
+  DIRS8.forEach(([n,dg])=>{ const a=dg*RAD, rr=R-38;
+    x.fillStyle=n==='N'?'#f87171':'#fbbf24'; x.font='800 22px system-ui';
+    x.fillText(n, C+Math.sin(a)*rr, C-Math.cos(a)*rr); });
+  const a=S.smooth*RAD;
+  x.strokeStyle='#ef4444'; x.lineWidth=8; x.lineCap='round';
+  x.beginPath(); x.moveTo(C+Math.sin(a)*30,C-Math.cos(a)*30);
+  x.lineTo(C+Math.sin(a)*(R-62), C-Math.cos(a)*(R-62)); x.stroke();
+  x.strokeStyle='#94a3b8'; x.lineWidth=8;
+  x.beginPath(); x.moveTo(C,C); x.lineTo(C-Math.sin(a)*44, C+Math.cos(a)*44); x.stroke();
+  x.fillStyle='#22c55e'; x.beginPath(); x.arc(C,C,11,0,7); x.fill();
+  x.fillStyle='#fff'; x.font='800 21px system-ui';
+  x.fillText(Math.round(S.smooth)+'°', C, C+R-16);
+}
+setInterval(drawDial, 90);
+/* compass 5 sec me na mile (laptop/desktop) → dial auto-show */
+setTimeout(()=>{
+  if(!S.hasCompass){
+    $('accChip').textContent='🧭 set करें ▾';
+    $('dial').style.display='block';
+    setManualDir(90);
+  }
+}, 5000);
 if(typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function'){
   $('iosBtn').style.display='block';
   $('iosBtn').onclick=async()=>{
     try{ const r=await DeviceOrientationEvent.requestPermission();
-      if(r==='granted'){ armCompass(); $('iosBtn').style.display='none'; }
+      if(r==='granted'){ armCompass(); $('iosBtn').style.display='none'; $('dial').style.display='none'; }
       else pop('⚠️','कम्पास permission नहीं मिली। iPhone Settings → Safari → Motion & Orientation Access चालू करें।');
     }catch(e){ pop('⚠️','कम्पास error: '+e.message); }
   };
@@ -564,12 +807,19 @@ $('btnClearM').onclick=()=>{ Object.assign(S,{dist:null,ptA:null,ptB:null,wdt:nu
 const UNIT2M={ft:0.3048,m:1,yd:0.9144};
 const UNAME={ft:'ft',m:'m',yd:'गज'};
 $('btnManSize').onclick=()=>{
-  const u=$('mUnit').value, L=parseFloat($('mL').value)||0, B=parseFloat($('mB').value)||0, A=parseFloat($('mA').value)||0;
+  const u=$('mUnit').value, L0=parseFloat($('mL').value)||0, B0=parseFloat($('mB').value)||0, A=parseFloat($('mA').value)||0;
+  const Lin=parseFloat($('mLin').value)||0, Bin=parseFloat($('mBin').value)||0;
   let areaM2=null, desc='';
-  if(L>0&&B>0){ areaM2=(L*UNIT2M[u])*(B*UNIT2M[u]); desc=`${L} × ${B} ${UNAME[u]}`; }
-  else if(A>0){ areaM2=A*UNIT2M[u]*UNIT2M[u]; desc=`${A} sq.${UNAME[u]}`; }
+  if(u==='ft'){
+    const Lt=L0+Lin/12, Bt=B0+Bin/12;
+    if(Lt>0&&Bt>0){ areaM2=(Lt*0.3048)*(Bt*0.3048); desc=`${L0}'${Lin||0}" × ${B0}'${Bin||0}"`; }
+    else if(A>0){ areaM2=A*0.3048*0.3048; desc=`${A} sq.ft`; }
+  }else{
+    if(L0>0&&B0>0){ areaM2=(L0*UNIT2M[u])*(B0*UNIT2M[u]); desc=`${L0} × ${B0} ${UNAME[u]}`; }
+    else if(A>0){ areaM2=A*UNIT2M[u]*UNIT2M[u]; desc=`${A} sq.${UNAME[u]}`; }
+  }
   if(!areaM2){ $('measOut').textContent='L × B दोनों डालें, या सीधा क्षेत्रफल डालें'; return; }
-  S.manual={ l:L||null, b:B||null, unit:u, areaM2, src:$('mSrc').value, desc };
+  S.manual={ l:L0||null, b:B0||null, lin:Lin||null, bin:Bin||null, unit:u, areaM2, src:$('mSrc').value, desc };
   let s=`📝 <b style="color:#fbbf24">MANUAL / LEGAL SIZE ✅</b>: <b>${desc}</b> = <b>${fmtAreaM2(areaM2)}</b><br>स्रोत: <b>${S.manual.src}</b>`;
   const p=priceOf(areaM2);
   if(p) s+=`<br>💰 कीमत (exact area se): <b>${fmtINR(p.price)}</b> (@ ₹${p.rate}/${ULBL[p.unit]})`;
@@ -677,7 +927,211 @@ async function saveBoundary(){
   $('bndOut').innerHTML=`✅ Boundary save हो गई — 🧮 क्षेत्रफल: <b>${fmtAreaM2(area)}</b>${p?`<br>💰 कीमत: <b>${fmtINR(p.price)}</b>`:''}`;
 }
 
-/* ================= SETTINGS ================= */
+/* ================= SITE RECCE MODE ================= */
+$('btnRecce').onclick=()=>{
+  const z=zoneOf(S.smooth);
+  $('recFacing').textContent=`${z.hi} (${Math.round(S.smooth)}°)`;
+  $('recFacing').dataset.deg=Math.round(S.smooth); $('recFacing').dataset.z=z.en;
+  $('recceModal').style.display='block';
+};
+$('recClose').onclick=()=>{ $('recceModal').style.display='none'; };
+document.querySelectorAll('.rchk .qk').forEach(b=>b.onclick=e=>{ e.preventDefault(); b.classList.toggle('on'); });
+function wrapText(ctx,text,x,y,maxW,lh){
+  const words=String(text).split(' '); let line='', yy=y;
+  for(const w of words){ const t=line+w+' ';
+    if(ctx.measureText(t).width>maxW && line){ ctx.fillText(line,x,yy); line=w+' '; yy+=lh; }
+    else line=t; }
+  ctx.fillText(line,x,yy);
+}
+$('recSave').onclick=async()=>{
+  const grp=id=>[...$(id).querySelectorAll('.qk.on')].map(b=>b.dataset.v);
+  const R={ facingDeg:parseInt($('recFacing').dataset.deg||'0',10), facingZ:$('recFacing').dataset.z||'',
+    roadW:parseFloat($('rRoadW').value)||null, roadS:$('rRoadS').value,
+    type:$('rType').value, open:$('rOpen').value,
+    utils:grp('#rUtils'), pos:grp('#rPos'), neg:grp('#rNeg'), soil:$('rSoil').value,
+    owner:$('rOwner').value.trim(), ownerPh:$('rOwnerPh').value.trim(),
+    rate:$('rRate').value.split(' ')[0], notes:$('rNotes').value.trim() };
+  $('recceModal').style.display='none';
+  await saveRecce(R);
+};
+async function saveRecce(R){
+  const z=R.facingZ?zoneOf(R.facingDeg):null;
+  const W=860, H=1180, cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+  const x=cv.getContext('2d');
+  x.fillStyle='#0b1220'; x.fillRect(0,0,W,H);
+  x.fillStyle='#16a34a'; x.fillRect(0,0,W,10);
+  x.textAlign='left'; x.textBaseline='alphabetic';
+  x.fillStyle='#fff'; x.font='800 40px system-ui';
+  x.fillText('🎯 SITE RECCE CARD', 30, 64);
+  x.font='600 22px system-ui'; x.fillStyle='#a7f3d0';
+  const pl=[S.cfg.proj, S.cfg.plot, S.cfg.khasra&&('खसरा '+S.cfg.khasra), S.cfg.client].filter(Boolean).join('  •  ');
+  wrapText(x, pl||'(⚙️ Settings में प्रोजेक्ट सेट करें)', 30, 102, W-60, 28);
+  const t=new Date().toLocaleString('hi-IN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  x.fillStyle='#e5e7eb'; x.font='21px system-ui';
+  x.fillText('📅 '+t, 30, 148);
+  if(S.lat!=null) x.fillText(`📍 ${S.lat.toFixed(6)}, ${S.lon.toFixed(6)}`, 30, 180);
+  let badgeY=200;
+  if(z){
+    x.fillStyle=z.cls==='z-best'?'#16a34a':z.cls==='z-ok'?'#b45309':'#b91c1c';
+    x.fillRect(30,badgeY,430,54);
+    x.fillStyle='#fff'; x.font='800 26px system-ui';
+    x.fillText(`🧭 Facing: ${z.hi} (${R.facingDeg}°)`, 46, badgeY+37);
+    badgeY+=66;
+  }
+  const rows=[
+    ['🛣️ सड़क', (R.roadW?R.roadW+' ft ':'')+R.roadS],
+    ['📐 Plot', `${R.type}  •  ${R.open}`],
+    ['🔌 सुविधाएँ', R.utils.join(', ')||'—'],
+    ['✅ Positives', R.pos.join(', ')||'—'],
+    ['⚠️ Negatives', R.neg.join(', ')||'कोई नहीं'],
+    ['🌱 मिट्टी', R.soil],
+    ['👤 मालिक/दलाल', R.owner?R.owner+(R.ownerPh?' ('+R.ownerPh+')':''):'—'],
+    ['⭐ Rating', R.rate],
+    ['📝 नोट्स', R.notes||'—'],
+  ];
+  let yy=badgeY+16;
+  for(const [k,v] of rows){
+    x.fillStyle='#0f1d33'; x.fillRect(30,yy,W-60,46);
+    x.strokeStyle='#1e3a5f'; x.lineWidth=2; x.strokeRect(30,yy,W-60,46);
+    x.fillStyle='#93c5fd'; x.font='700 21px system-ui';
+    x.fillText(k, 42, yy+31);
+    x.fillStyle='#f8fafc'; x.font='21px system-ui';
+    wrapText(x, String(v), 265, yy+31, W-315, 26);
+    yy+=52;
+  }
+  if(z){
+    x.fillStyle='#fbbf24'; x.font='19px system-ui';
+    wrapText(x, `वास्तु: ✅ उत्तम — ${z.good}  |  ⛔ वर्जित — ${z.avoid}`, 30, yy+24, W-60, 26);
+    yy+=88;
+  }
+  x.fillStyle='#64748b'; x.font='16px system-ui';
+  x.fillText('Vastu Site Cam • Recce report — field notes; legal naap अलग से verify करें', 30, H-24);
+  const meta={ recceMode:true, rcc:R,
+    z:z?{hi:z.hi,en:z.en,cls:z.cls,tag:z.tag,good:z.good,avoid:z.avoid}:null,
+    deg:z?R.facingDeg:null, time:t,
+    lat:S.lat, lon:S.lon, gpsAcc:S.gpsAcc||0, addr:S.addr, alt:S.alt,
+    dist:null, wdt:null, len2:null, manual:S.manual?{...S.manual}:null,
+    proj:S.cfg.proj, plot:S.cfg.plot, khasra:S.cfg.khasra, client:S.cfg.client, cphone:S.cfg.phone,
+    sunAz:S.sun.az||null, remark:'' };
+  const rec={ key:Date.now()+'_rcc', raw:cv.toDataURL('image/jpeg',0.92), meta, mapCv:null, _w:W, _h:H };
+  S.photos.push(rec);
+  rec.mapCv=await getMiniMap(meta.lat,meta.lon);
+  await renderRec(rec);
+  if(rec.mapCv){ try{ rec.mapUrl=rec.mapCv.toDataURL('image/png'); }catch(e){} }
+  idbSave(rec); rebuildThumbs(); showResult(S.photos.length-1);
+  toast('🎯 Recce card save हो गई');
+}
+
+/* ================= PHOTO MARKING (annotation) ================= */
+function drawAnn(ctx,W,H,ann){
+  ctx.lineCap='round'; ctx.lineJoin='round';
+  for(const s of ann){
+    const lw=Math.max(2,(s.w||0.006)*W);
+    ctx.strokeStyle=s.c; ctx.fillStyle=s.c; ctx.lineWidth=lw;
+    if(s.t==='pen' && s.pts && s.pts.length>1){
+      ctx.beginPath();
+      s.pts.forEach((p,i)=>i?ctx.lineTo(p[0]*W,p[1]*H):ctx.moveTo(p[0]*W,p[1]*H));
+      ctx.stroke();
+    }else if(s.t==='arrow'){
+      const x1=s.x1*W, y1=s.y1*H, x2=s.x2*W, y2=s.y2*H;
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      const a=Math.atan2(y2-y1,x2-x1), L=lw*4.2;
+      ctx.beginPath();
+      ctx.moveTo(x2,y2); ctx.lineTo(x2-L*Math.cos(a-0.46), y2-L*Math.sin(a-0.46));
+      ctx.moveTo(x2,y2); ctx.lineTo(x2-L*Math.cos(a+0.46), y2-L*Math.sin(a+0.46));
+      ctx.stroke();
+    }else if(s.t==='circ'){
+      const cx=(s.x1+s.x2)/2*W, cy=(s.y1+s.y2)/2*H;
+      const rx=Math.max(4,Math.abs(s.x2-s.x1)/2*W), ry=Math.max(4,Math.abs(s.y2-s.y1)/2*H);
+      ctx.beginPath(); ctx.ellipse(cx,cy,rx,ry,0,0,7); ctx.stroke();
+    }else if(s.t==='rect'){
+      ctx.strokeRect(Math.min(s.x1,s.x2)*W, Math.min(s.y1,s.y2)*H,
+                     Math.abs(s.x2-s.x1)*W, Math.abs(s.y2-s.y1)*H);
+    }else if(s.t==='txt'){
+      const fs=Math.round((s.size||0.032)*W);
+      ctx.font=`800 ${fs}px system-ui,'Noto Sans Devanagari'`;
+      ctx.lineWidth=Math.max(2,fs/6); ctx.strokeStyle='rgba(0,0,0,.75)';
+      ctx.strokeText(s.txt, s.x*W, s.y*H);
+      ctx.fillStyle=s.c; ctx.fillText(s.txt, s.x*W, s.y*H);
+    }
+  }
+}
+let annIdx=null, annStrokes=[], annTool='pen', annColor='#ef4444', annW=0.0065, annBg=null, annCur=null, annDown=false;
+function openAnn(){
+  const p=S.photos[curIdx]; if(!p) return;
+  annIdx=curIdx; annStrokes=(p.meta._ann||[]).slice(); annCur=null;
+  annBg=new Image();
+  annBg.onload=()=>{
+    const c=$('annCv'); c.width=annBg.naturalWidth; c.height=annBg.naturalHeight;
+    annDraw();
+    $('result').style.display='none'; $('annModal').style.display='block';
+  };
+  annBg.src=p.url||p.raw;
+}
+function annDraw(){
+  const c=$('annCv'), x=c.getContext('2d');
+  x.clearRect(0,0,c.width,c.height);
+  if(annBg) x.drawImage(annBg,0,0);
+  drawAnn(x,c.width,c.height, annCur?annStrokes.concat([annCur]):annStrokes);
+}
+document.querySelectorAll('.ann-tool').forEach(b=>b.onclick=()=>{
+  annTool=b.dataset.tl;
+  document.querySelectorAll('.ann-tool').forEach(x=>x.classList.toggle('on',x===b));
+});
+document.querySelectorAll('.clr').forEach(b=>b.onclick=()=>{
+  annColor=b.dataset.c;
+  document.querySelectorAll('.clr').forEach(x=>x.classList.toggle('on',x===b));
+});
+document.querySelectorAll('.aw').forEach(b=>b.onclick=()=>{
+  annW=parseFloat(b.dataset.w);
+  document.querySelectorAll('.aw').forEach(x=>x.classList.toggle('on',x===b));
+});
+function annPos(e){
+  const c=$('annCv'), r=c.getBoundingClientRect();
+  const x=(e.clientX-r.left)*(c.width/r.width), y=(e.clientY-r.top)*(c.height/r.height);
+  return { nx:x/c.width, ny:y/c.height };
+}
+const _annCv=$('annCv');
+_annCv.addEventListener('pointerdown',e=>{
+  e.preventDefault();
+  const p=annPos(e);
+  if(annTool==='txt'){
+    const t=prompt('✏️ Marking text likhein (जैसे: यहाँ नल है / crack):','');
+    if(t) annStrokes.push({t:'txt',c:annColor,x:p.nx,y:p.ny,txt:t,size:0.032});
+    annDraw(); return;
+  }
+  annDown=true;
+  _annCv.setPointerCapture(e.pointerId);
+  if(annTool==='pen') annCur={t:'pen',c:annColor,w:annW,pts:[[p.nx,p.ny]]};
+  else annCur={t:annTool,c:annColor,w:annW,x1:p.nx,y1:p.ny,x2:p.nx,y2:p.ny};
+  annDraw();
+});
+_annCv.addEventListener('pointermove',e=>{
+  if(!annDown||!annCur) return;
+  e.preventDefault();
+  const p=annPos(e);
+  if(annCur.t==='pen') annCur.pts.push([p.nx,p.ny]);
+  else { annCur.x2=p.nx; annCur.y2=p.ny; }
+  annDraw();
+});
+_annCv.addEventListener('pointerup',()=>{
+  if(annDown&&annCur){ annStrokes.push(annCur); annCur=null; annDown=false; annDraw(); }
+});
+$('annUndo').onclick=()=>{ annStrokes.pop(); annDraw(); };
+$('annClear').onclick=()=>{ annStrokes=[]; annCur=null; annDraw(); };
+$('annClose').onclick=()=>{ $('annModal').style.display='none'; $('result').style.display='flex'; };
+$('annSave').onclick=async()=>{
+  if(annIdx==null) return;
+  const p=S.photos[annIdx];
+  p.meta._ann=annStrokes;
+  await renderRec(p);
+  idbSave(p);
+  const th=$('thumbs').querySelector(`img[data-key="${p.key}"]`); if(th) th.src=p.url;
+  $('annModal').style.display='none';
+  showResult(annIdx);
+  toast('✏️ Marking photo par save हो गई');
+};
+$('rMark').onclick=openAnn;
 function loadCfg(){
   try{ const c=JSON.parse(localStorage.getItem('vsc_cfg')); if(c) Object.assign(S.cfg,c); }catch(e){}
   $('fProj').value=S.cfg.proj; $('fPlot').value=S.cfg.plot; $('fKhasra').value=S.cfg.khasra;
@@ -802,23 +1256,25 @@ function drawBanners(ctx,W,H,m,mapCv){
   const f1=Math.round(W*0.027), f2=Math.round(W*0.020);
   let lines=[];
   const {pl}=metaLines(m); if(pl) lines.push({t:pl,f:f2,c:'#a7f3d0',w:700});
-  if(m.bnd){
+  if(m.recceMode){
+    lines.push({t:`🎯 SITE RECCE REPORT  |  ${m.time}`, f:f1, c:'#fff', w:800});
+  }else if(m.bnd){
     lines.push({t:`🚶 BOUNDARY SURVEY — ${m.bndN} पॉइंट्स  |  ${m.time}`, f:f1, c:'#fff', w:800});
     lines.push({t:`📐 परिधि: ${m.perim.toFixed(0)} m  •  क्षेत्रफल: ${fmtAreaM2(m.area)}${m.price?`  •  💰 ${fmtINR(m.price)}`:''}`, f:Math.round(W*0.022), c:'#7dd3fc', w:800});
   }else{
     lines.push({t:`🧭 दिशा: ${m.z.hi} (${m.z.en}) — ${m.deg}°  |  ${m.time}`, f:f1, c:'#fff', w:800});
   }
   lines.push({t:(m.lat!=null?`📍 ${m.lat.toFixed(6)}, ${m.lon.toFixed(6)} (±${Math.round(m.gpsAcc)}m)`:'📍 GPS नहीं मिला')+(m.addr?`  •  ${m.addr.slice(0,75)}`:''), f:f2, c:'#e5e7eb', w:600});
-  if(!m.bnd && m.manual){
+  if(!m.bnd && !m.recceMode && m.manual){
     lines.push({t:`📝 Legal Size: ${m.manual.desc} = ${fmtAreaM2(m.manual.areaM2)}  (स्रोत: ${m.manual.src})${m.price?`  •  💰 ${fmtINR(m.price)}`:''}`, f:Math.round(W*0.022), c:'#fbbf24', w:700});
   }
-  if(!m.bnd && m.dist){
+  if(!m.bnd && !m.recceMode && m.dist){
     let s=`📏 दूरी: ${fmtLen(m.dist)}${m.wdt?`  •  चौड़ाई: ${fmtLen(m.wdt)}`:''}${m.len2?`  •  लंबाई: ${fmtLen(m.len2)}`:''}${(m.wdt&&m.len2)?`  •  क्षेत्रफल: ${fmtAreaM2(m.wdt*m.len2)}`:''}${(m.price&&!m.manual)?`  •  💰 ${fmtINR(m.price)}`:''}`;
     lines.push({t:s, f:Math.round(W*0.022), c:'#4ade80', w:700});
   }
   const bh=Math.max(70, 24 + lines.reduce((a,l)=>a+l.f*1.28,0));
   ctx.fillStyle='rgba(0,0,0,0.72)'; ctx.fillRect(0,0,W,bh);
-  ctx.fillStyle=m.bnd?'#38bdf8':(m.z.cls==='z-best'?'#22c55e':m.z.cls==='z-ok'?'#f59e0b':'#ef4444');
+  ctx.fillStyle=m.recceMode?'#16a34a':m.bnd?'#38bdf8':(m.z?m.z.cls==='z-best'?'#22c55e':m.z.cls==='z-ok'?'#f59e0b':'#ef4444':'#16a34a');
   ctx.fillRect(0,bh-6,W,6);
   ctx.textBaseline='top'; let y=12;
   for(const l of lines){ ctx.font=`${l.w} ${l.f}px system-ui,'Noto Sans Devanagari'`; ctx.fillStyle=l.c; ctx.fillText(l.t,16,y); y+=l.f*1.28; }
@@ -826,7 +1282,7 @@ function drawBanners(ctx,W,H,m,mapCv){
   ctx.fillStyle='rgba(0,0,0,0.72)'; ctx.fillRect(0,H-bb,W,bb);
   ctx.textBaseline='top';
   ctx.fillStyle='#fbbf24'; ctx.font=`700 ${Math.round(W*0.019)}px system-ui,'Noto Sans Devanagari'`;
-  ctx.fillText(m.bnd?'🚶 GPS boundary walk — legal survey नहीं; verify अवश्य कराएँ':`वास्तु ${m.z.tag}: ✅ ${m.z.good.split(',')[0]}  |  ⛔ ${m.z.avoid.split(',')[0]}`, 16, H-bb+10);
+  ctx.fillText(m.recceMode?'🎯 Site Recce — field notes; legal verification अलग से कराएँ':m.bnd?'🚶 GPS boundary walk — legal survey नहीं; verify अवश्य कराएँ':`वास्तु ${m.z.tag}: ✅ ${m.z.good.split(',')[0]}  |  ⛔ ${m.z.avoid.split(',')[0]}`, 16, H-bb+10);
   if(m.remark){ ctx.fillStyle='#7dd3fc'; ctx.font=`600 ${Math.round(W*0.02)}px system-ui,'Noto Sans Devanagari'`;
     ctx.fillText('✍️ '+m.remark, 16, H-bb+14+Math.round(W*0.024)); }
   ctx.fillStyle='rgba(255,255,255,.7)'; ctx.font=`500 ${Math.round(W*0.016)}px system-ui`;
@@ -848,7 +1304,7 @@ function drawBanners(ctx,W,H,m,mapCv){
     ctx.fillRect(sx-4,sy-4,sw2+8,sh+8);
     ctx.drawImage(S.signImg, sx, sy, sw2, sh);
   }
-  if(!m.bnd){
+  if(!m.bnd && !m.recceMode){
     ctx.strokeStyle='rgba(34,197,94,.9)'; ctx.lineWidth=Math.max(3,W*0.002);
     const cx2=W/2, cy2=H*0.42, r=W*0.03;
     ctx.beginPath(); ctx.arc(cx2,cy2,r,0,7);
@@ -864,6 +1320,7 @@ async function renderRec(rec){
       const c=document.createElement('canvas'); c.width=im.width; c.height=im.height;
       const ctx=c.getContext('2d'); ctx.drawImage(im,0,0);
       drawBanners(ctx,c.width,c.height,rec.meta,rec.mapCv||null);
+      if(Array.isArray(rec.meta._ann)&&rec.meta._ann.length) drawAnn(ctx,c.width,c.height,rec.meta._ann);
       rec.url=c.toDataURL('image/jpeg',0.88);
       res(rec);
     };
@@ -924,7 +1381,26 @@ function showResult(i){
   $('rImg').src=p.url||p.raw;
   $('rkIn').value=m.remark||'';
   let rows;
-  if(m.bnd){
+  if(m.recceMode){
+    const R=m.rcc;
+    rows=[
+      ['🏗️ प्रोजेक्ट / क्लाइंट', [m.proj,m.plot,m.khasra?('खसरा '+m.khasra):'',m.client].filter(Boolean).join(' • ')||'—'],
+      ['🎯 सर्वे प्रकार', 'SITE RECCE'],
+      ['🧭 Facing', m.z?`${m.z.hi} (${m.deg}°) — ${m.z.tag}`:'—'],
+      ['🛣️ सड़क', (R.roadW?R.roadW+' ft ':'')+R.roadS],
+      ['📐 Plot', R.type+' • '+R.open],
+      ['🔌 सुविधाएँ', R.utils.join(', ')||'—'],
+      ['✅ Positives', R.pos.join(', ')||'—'],
+      ['⚠️ Negatives', R.neg.join(', ')||'कोई नहीं'],
+      ['🌱 मिट्टी', R.soil],
+      ['👤 मालिक/दलाल', R.owner?R.owner+(R.ownerPh?' ('+R.ownerPh+')':''):'—'],
+      ['⭐ Rating', R.rate],
+      ['📝 नोट्स', R.notes||'—'],
+      ['📍 GPS', m.lat!=null?`${m.lat.toFixed(6)}, ${m.lon.toFixed(6)} (±${Math.round(m.gpsAcc)}m)`:'—'],
+      ['🕐 तारीख-समय', m.time],
+      ['✍️ Remark', m.remark||'—']
+    ];
+  }else if(m.bnd){
     rows=[
       ['🏗️ प्रोजेक्ट / क्लाइंट', [m.proj,m.plot,m.khasra?('खसरा '+m.khasra):'',m.client].filter(Boolean).join(' • ')||'—'],
       ['🚶 सर्वे प्रकार', 'GPS Boundary Walk'],
@@ -976,7 +1452,9 @@ async function shareCur(){
   try{
     const blob=await (await fetch(p.url||p.raw)).blob();
     const f=new File([blob],'vastu-site.jpg',{type:'image/jpeg'});
-    const txt=m.bnd
+    const txt=m.recceMode
+      ? `🎯 SITE RECCE\n${m.proj||''} ${m.plot||''}\n${m.z?`Facing: ${m.z.hi} (${m.deg}°)\n`:''}${m.rcc?`सड़क: ${m.rcc.roadW||'?'}ft ${m.rcc.roadS} • Rating: ${m.rcc.rate}\nNegatives: ${m.rcc.neg.join(', ')||'कोई नहीं'}\n`:''}${m.lat!=null?`map: https://maps.google.com/?q=${m.lat},${m.lon}\n`:''}समय: ${m.time}`
+      : m.bnd
       ? `🚶 Boundary Survey\n${m.proj||''} ${m.plot||''}\n🧮 क्षेत्रफल: ${fmtAreaM2(m.area)}\n${m.price?`💰 ${fmtINR(m.price)}\n`:''}${m.lat!=null?`map: https://maps.google.com/?q=${m.lat},${m.lon}\n`:''}समय: ${m.time}`
       : `🧭 Vastu Site Photo\n${m.proj?m.proj+' — ':''}${m.plot||''}\nदिशा: ${m.z.hi} (${m.deg}°)\n${(m.wdt&&m.len2)?`🧮 क्षेत्रफल: ${fmtAreaM2(m.wdt*m.len2)}\n`:''}${m.price?`💰 ${fmtINR(m.price)}\n`:''}${m.lat!=null?`GPS: ${m.lat.toFixed(6)},${m.lon.toFixed(6)}\nmap: https://maps.google.com/?q=${m.lat},${m.lon}\n`:''}समय: ${m.time}`;
     if(navigator.canShare && navigator.canShare({files:[f]})) await navigator.share({files:[f],text:txt});
@@ -1011,7 +1489,7 @@ $('btnPDF').onclick=async()=>{
     doc.setFontSize(13); doc.setTextColor(0); doc.text('Record Summary', MG, y); y+=8;
     doc.setFontSize(9.5);
     list.forEach((p,i)=>{ const m=p.meta;
-      const kind=m.bnd?'Boundary':`Dir: ${m.z.en} ${m.deg}d`;
+      const kind=m.recceMode?'RECCE':m.bnd?'Boundary':`Dir: ${m.z.en} ${m.deg}d`;
       const price=m.price?` | Rs.${Math.round(m.price).toLocaleString('en-IN')}`:'';
       doc.text(`${i+1}.  ${m.time}  |  ${kind}${m.dist||m.bnd?'  |  Meas: yes':''}${price}`, MG+2, y); y+=6;
       if(y>PH-45){ doc.addPage(); y=20; }
@@ -1035,7 +1513,16 @@ $('btnPDF').onclick=async()=>{
       doc.addImage(p.url||p.raw,'JPEG',(PW-fw)/2,MG,fw,fh);
       let yy=MG+fh+8; doc.setFontSize(10); doc.setTextColor(0);
       let info;
-      if(m.bnd){
+      if(m.recceMode){
+        info=[`Record ${i+1}/${list.length} — SITE RECCE — ${m.time}`,
+          m.z?`Facing: ${m.z.en} ${m.deg} deg (${m.z.tag})`:'',
+          m.rcc?`Road: ${m.rcc.roadW||'?'}ft ${m.rcc.roadS} | Plot: ${m.rcc.type} | ${m.rcc.open} | Rating: ${m.rcc.rate}`:'',
+          m.rcc?`Utils: ${m.rcc.utils.join(', ')||'-'} | Positives: ${m.rcc.pos.join(', ')||'-'}`:'',
+          m.rcc?`Negatives: ${m.rcc.neg.join(', ')||'none'} | Soil: ${m.rcc.soil}`:'',
+          m.rcc&&m.rcc.owner?`Owner: ${m.rcc.owner} ${m.rcc.ownerPh}`:'',
+          m.rcc&&m.rcc.notes?('Notes: '+m.rcc.notes):'',
+          m.lat!=null?`GPS: ${m.lat.toFixed(6)}, ${m.lon.toFixed(6)}  map: https://maps.google.com/?q=${m.lat},${m.lon}`:''].filter(Boolean);
+      } else if(m.bnd){
         info=[`Record ${i+1}/${list.length} — BOUNDARY — ${m.time}`,
           `Points: ${m.bndN} | Perimeter: ${m.perim.toFixed(1)} m | Area: ${(m.area*10.7639).toFixed(0)} sq.ft (${(m.area*1.19599).toFixed(1)} sq.yd)`,
           m.price?`Est. price: Rs.${Math.round(m.price).toLocaleString('en-IN')} (@ Rs.${m.rate}/${ULBL[m.rateUnit]})`:'',
@@ -1065,13 +1552,14 @@ $('sCSV').onclick=()=>{
   const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
   const rows=list.map((p,i)=>{ const m=p.meta;
     const area=m.bnd?m.area:(m.wdt&&m.len2?m.wdt*m.len2:null);
-    return [i+1, m.bnd?'boundary':'photo', m.proj,m.plot,m.khasra,m.client,m.time,
+    return [i+1, m.recceMode?'recce':m.bnd?'boundary':'photo', m.proj,m.plot,m.khasra,m.client,m.time,
       m.z?m.z.hi:'', m.z?m.z.en:'', m.deg??'', m.z?m.z.tag:'',
       m.lat!=null?m.lat.toFixed(6):'', m.lon!=null?m.lon.toFixed(6):'', m.gpsAcc?Math.round(m.gpsAcc):'', m.addr,
       m.dist?m.dist.toFixed(2):'', m.wdt?m.wdt.toFixed(2):'', m.len2?m.len2.toFixed(2):'',
       area?(area*10.7639).toFixed(0):'', m.bnd?m.perim.toFixed(1):'', m.bnd?m.bndN:'',
       m.manual?m.manual.desc:'', m.manual?(m.manual.areaM2*10.7639).toFixed(0):'', m.manual?m.manual.src:'',
-      m.rateUnit||'', m.rate||'', m.price?Math.round(m.price):'', m.remark].map(esc).join(',');
+      m.rateUnit||'', m.rate||'', m.price?Math.round(m.price):'',
+      m.remark||(m.recceMode&&m.rcc?(m.rcc.notes||''):'')].map(esc).join(',');
   });
   const blob=new Blob(['\ufeff'+head.join(',')+'\n'+rows.join('\n')],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
@@ -1213,6 +1701,11 @@ $('sHelp').onclick=()=>{
   <li>📄 <b>PDF:</b> 📄 button — client के लिए professional report (signature सहित)।</li>
   <li>💾 <b>Backup:</b> ⚙️ → Backup डाउनलोड — file को Drive पर रखें; कभी भी Restore करें।</li>
   <li>⚡ <b>Fast Capture:</b> ⚙️ में चालू करें — photo लेते ही save, panel नहीं खुलेगा (site पर 20-30 photos लगातार shooting)। Thumbnail से बाद में details देखें।</li>
+  <li>🎯 <b>Recce Mode:</b> 🎯 button → site recce form (facing auto compass से, सड़क, plot type, सुविधाएँ, positives/negatives Tap-chips, मालिक, rating) → <b>RECCE CARD</b> बनकर save — PDF report में भी आता है। Client को पूरा site summary एक ही card में।</li>
+  <li>✏️ <b>Marking Tool:</b> photo खोलकर <b>"✏️ Mark"</b> → photo पर arrow ➡️, circle ⭕, box ▭, freehand pen 🖊️ ya text 🔤 डालें — किसी भी issue/जगह को point करने के लिए। रंग व मोटाई चुनें। Marking photo पर permanent छपती है (restore/export में भी बनी रहती है)।</li>
+  <li>🔄 <b>Horizontal (landscape):</b> फोन घुमाएँ — controls दाईं तरफ़, info panel बाईं तरफ़ आ जाता है। Laptop पर भी wide screen में सही layout। Conference में TV/monitor से दिखाने के लिए बढ़िया।</li>
+  <li>🖥️ <b>Laptop/Desktop:</b> camera चलेगा पर compass sensor नहीं होता — app खुद <b>🧭 dial</b> खोल देगा: लाल सुई को mouse/ungli से घुमाकर direction set करें (सुई = आगे की दिशा), या N/E/S/W buttons दबाएँ। Sensor वाले phone पर dial छुपा होता है — चाहें तो ऊपर दाईं 🧭 chip टैप करके खोलें।</li>
+  <li>📐 <b>inch/ft सपोर्ट:</b> सारे माप अब <b>12'6"</b> format में भी दिखते हैं; manual size में feet चुनने पर inch के अलग box मिलते हैं।</li>
   <li>🏷️ <b>Quick Tags:</b> photo खोलने पर ऊपर के chips (Main door/NE corner/Nal आदि) tap करें — remark तुरंत छप जाएगा।</li>
   <li>📁 <b>Project जल्दी बदलें:</b> ऊपर हरी 🏗️ chip पर tap — settings खोलने की ज़रूरत नहीं। chip में 📷 count भी दिखता है।</li>
   <li>🎥 <b>Quality vs Storage:</b> ⚙️ से HD/FHD/QHD चुनें; 📤 सारी Photos Share से पूरे project की photos एक साथ भेजें।</li>

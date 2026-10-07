@@ -11,11 +11,24 @@ Koi app install karne ki zaroorat NAHI — browser me hi chalti hai (PWA), photo
 
 ### 📷 Camera + Direction
 - 🧭 **Live compass overlay** (N/NE/E/SE/S/SW/W/NW + degrees) — device ke real compass sensor se
+- 🖥️ **Cross-device compass:** Mobile/Tablet = sensor compass; **Laptop/Desktop par interactive 🧭 dial** (lal sui drag karke ya N/E/S/W buttons se direction set karo) — koi bhi device chalega
+- 🔄 **Horizontal + Vertical dono mode** — phone ghumao, UI khud landscape में adjust (controls right, info left)
+- 📱 **Device-adaptive UI** — phone, tablet, laptop ke hisaab se UI apne-aap adjust
 - 🟢🟠🔴 **Live Vastu zone analysis** — camera ghumate hi 8 zones ka ✅ उत्तम / ⛔ वर्जित data real-time
 - 📸 Har photo par permanently stamp: **दिशा°, तारीख-समय, GPS coordinates, address, mini-map inset, project/client details, remark, digital signature**
 
+### ✏️ Professional Marking Tool
+- Photo kholkar **✏️ Mark** → photo par directly draw karo: **➡️ Arrow (site issue point), ⭕ Circle, ▭ Box, 🖊️ freehand pen, 🔤 Text labels**
+- 5 colors + 3 line widths + Undo/Clear
+- Markings **editable re-render** hoti hain (banners ke saath, restore/backup/PDF me bhi bani rehti hain)
+
+### 🎯 SITE RECCE Mode (Professional)
+- Ek tap me **professional recce card**: facing (auto compass), सड़क की चौड़ाई/तरफ, plot type + open sides, सुविधाएँ (पानी/बिजली/सीवर...), positives (मंदिर/स्कूल/पार्क...), negatives (T-point/हाई-टेंशन/नाला...), मिट्टी, मालिक contact, ⭐ rating, notes
+- Beautiful dark **RECCE CARD image** auto-generate — WhatsApp/PDF report/CSV में shamil
+
 ### 📏 Measurement & Survey
 - **📏 Measure Mode** — phone height + angle se दूरी → चौड़ाई (A/B points) → लंबाई → automatic **क्षेत्रफल** (sq.ft / गज / sq.m)
+- **📐 Feet-Inch format** — saare maap `12'6"` style me bhi dikhte hain (construction style); manual entry me feet ke saath **inch ke alag box**
 - **🎯 Laser/Tep exact input** — laser meter ya measuring tape ki exact reading डालो, सब calculation exact
 - **📝 Manual / LEGAL Size** — registry/patwari/govt naksha ki asli naap apne haath se daalo (feet/meter/गज में L×B ya सीधा area) + स्रोत select karo (पटवारी नाप, Registry naksha, Tape आदि) → photo par **golden "📝 Legal Size" line** चhapegi, approx measurement से bilkul अलग — dispute-proof record!
 - **🚶 Boundary Walk Mode** — plot ke kono par chalo, GPS se **परिधि + क्षेत्रफल + boundary shape diagram** record
