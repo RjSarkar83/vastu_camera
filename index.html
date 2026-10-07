@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#16a34a">
+<title>Vastu Site Camera — वास्तु साइट कैमरा</title>
+<link rel="manifest" href="manifest.json">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { height:100%; background:#000; color:#fff; font-family:system-ui,'Noto Sans Devanagari',sans-serif; overflow:hidden; }
+  #app { position:fixed; inset:0; }
+  #cam { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+
+  #tapeWrap { position:absolute; top:calc(env(safe-area-inset-top, 8px)); left:0; right:0; height:56px; overflow:hidden; z-index:10;
+    background:linear-gradient(180deg, rgba(0,0,0,.78), rgba(0,0,0,0)); }
+  #tape { position:absolute; top:8px; height:40px; will-change:transform; }
+  .tick { position:absolute; top:0; width:1px; background:rgba(255,255,255,.5); height:12px; }
+  .tick.major { height:20px; background:#fff; width:2px; }
+  .tlab { position:absolute; top:22px; transform:translateX(-50%); font-size:16px; font-weight:800; color:#fbbf24; text-shadow:0 1px 3px #000; }
+  #tapeMarker { position:absolute; left:50%; top:2px; transform:translateX(-50%); z-index:11;
+    border-left:8px solid transparent; border-right:8px solid transparent; border-top:12px solid #22c55e; width:0; height:0; }
+  #degBubble { position:absolute; top:calc(env(safe-area-inset-top, 8px) + 56px); left:50%; transform:translateX(-50%); z-index:10;
+    background:rgba(0,0,0,.65); border:1px solid rgba(255,255,255,.25); padding:4px 14px; border-radius:20px; font-size:18px; font-weight:800; }
+
+  .chip { position:absolute; z-index:10; font-size:11px; background:rgba(0,0,0,.55); padding:4px 8px; border-radius:8px; line-height:1.5; }
+  #gpsLine { left:10px; top:calc(env(safe-area-inset-top, 8px) + 88px); max-width:62%; }
+  #sunChip { left:10px; top:calc(env(safe-area-inset-top, 8px) + 122px); cursor:pointer; color:#fde68a; }
+  #accChip { right:10px; top:calc(env(safe-area-inset-top, 8px) + 88px); }
+  #lvlChip { right:10px; top:calc(env(safe-area-inset-top, 8px) + 122px); color:#93c5fd; }
+  #projChip { left:50%; transform:translateX(-50%); top:calc(env(safe-area-inset-top, 8px) + 88px); color:#a7f3d0; font-weight:700; display:none; }
+  #bndChip { left:50%; transform:translateX(-50%); top:calc(env(safe-area-inset-top, 8px) + 122px); color:#7dd3fc; display:none; }
+
+  #gridOv { position:absolute; inset:0; z-index:8; pointer-events:none; display:none; }
+  #gridOv .gl { position:absolute; background:rgba(255,255,255,.25); }
+  #gridOv .v1{left:33.33%;top:0;bottom:0;width:1px} #gridOv .v2{left:66.66%;top:0;bottom:0;width:1px}
+  #gridOv .h1{top:33.33%;left:0;right:0;height:1px} #gridOv .h2{top:66.66%;left:0;right:0;height:1px}
+
+  #cross { position:absolute; left:50%; top:42%; transform:translate(-50%,-50%); z-index:9; pointer-events:none; }
+  #cross .dot { width:90px; height:90px; position:relative; }
+  #cross .ch { position:absolute; background:rgba(34,197,94,.95); box-shadow:0 0 6px rgba(0,0,0,.8); }
+  #cross .ch.v { left:50%; top:0; width:2px; height:24px; transform:translateX(-50%); }
+  #cross .ch.vb { left:50%; bottom:0; width:2px; height:24px; transform:translateX(-50%); }
+  #cross .ch.h { top:50%; left:0; height:2px; width:24px; transform:translateY(-50%); }
+  #cross .ch.hb { top:50%; right:0; height:2px; width:24px; transform:translateY(-50%); }
+  #cross .c { position:absolute; left:50%; top:50%; width:8px; height:8px; border-radius:50%; background:#22c55e; transform:translate(-50%,-50%); box-shadow:0 0 10px #22c55e; }
+
+  #zoneTag { position:absolute; left:50%; top:calc(42% + 58px); transform:translateX(-50%); z-index:10; pointer-events:none;
+    padding:4px 16px; border-radius:8px; font-size:15px; font-weight:800; text-shadow:0 1px 2px #000; white-space:nowrap; }
+  .z-best { background:rgba(34,197,94,.88); } .z-ok { background:rgba(245,158,11,.88); } .z-warn { background:rgba(239,68,68,.88); }
+
+  #vastuCard { position:absolute; left:10px; right:10px; bottom:calc(env(safe-area-inset-bottom, 0px) + 116px); z-index:10;
+    background:rgba(0,0,0,.68); border:1px solid rgba(255,255,255,.18); border-radius:14px; padding:10px 12px; font-size:13px; line-height:1.55; backdrop-filter:blur(4px); }
+  #vastuCard .g { color:#4ade80; } #vastuCard .r { color:#f87171; }
+
+  .toolPanel { position:absolute; left:10px; right:10px; bottom:calc(env(safe-area-inset-bottom, 0px) + 116px); z-index:20;
+    background:rgba(2,22,11,.92); border:1px solid #22c55e; border-radius:14px; padding:10px 12px; font-size:13px; display:none; max-height:48%; overflow-y:auto; }
+  .toolPanel .row { display:flex; gap:8px; align-items:center; margin-top:7px; flex-wrap:wrap; }
+  .toolPanel input { width:70px; background:#111; color:#fff; border:1px solid #444; border-radius:6px; padding:6px; font-size:14px; }
+  .toolPanel .big { font-size:15px; font-weight:700; color:#4ade80; line-height:1.65; }
+  .mbtn { background:#166534; color:#fff; border:none; border-radius:8px; padding:7px 11px; font-size:13px; font-weight:700; }
+  .mbtn.ghost { background:#333; } .mbtn.blue { background:#075985; } .mbtn:disabled { opacity:.4; }
+  .hint { color:#fca5a5; font-size:11px; margin-top:6px; }
+  #bndPanel { border-color:#38bdf8; background:rgba(4,20,30,.93); }
+  #bndPanel .big { color:#7dd3fc; }
+
+  #controls { position:absolute; left:0; right:0; bottom:calc(env(safe-area-inset-bottom, 0px) + 28px); z-index:15;
+    display:flex; justify-content:center; align-items:center; gap:13px; }
+  .cbtn { width:46px; height:46px; border-radius:50%; border:2px solid rgba(255,255,255,.5); background:rgba(0,0,0,.55);
+    color:#fff; font-size:19px; display:flex; align-items:center; justify-content:center; }
+  .cbtn.on { border-color:#22c55e; background:rgba(34,197,94,.3); }
+  #shutter { width:72px; height:72px; border-radius:50%; border:5px solid #fff; background:radial-gradient(circle, #ef4444 62%, transparent 63%); }
+  #thumbs { position:absolute; left:0; right:0; bottom:calc(env(safe-area-inset-bottom, 0px) + 4px); z-index:14; display:flex; gap:6px; padding:0 12px; overflow-x:auto; }
+  #thumbs img { height:34px; border-radius:6px; border:1px solid rgba(255,255,255,.4); cursor:pointer; }
+
+  .panel { position:absolute; inset:0; z-index:40; background:rgba(0,0,0,.96); display:none; flex-direction:column; overflow-y:auto; padding:14px; }
+  #rImg { width:100%; border-radius:12px; border:1px solid #333; }
+  .panel h3 { margin:12px 0 6px; color:#4ade80; font-size:16px; }
+  #dtable { width:100%; border-collapse:collapse; font-size:13px; }
+  #dtable td { border:1px solid #333; padding:6px 8px; vertical-align:top; }
+  #dtable td:first-child { color:#9ca3af; width:38%; }
+  #rkRow { display:flex; gap:8px; margin-top:8px; }
+  #rkIn { flex:1; background:#111; border:1px solid #444; color:#fff; border-radius:8px; padding:9px; font-size:14px; }
+  .btnrow { display:flex; gap:10px; margin:14px 0 26px; flex-wrap:wrap; }
+  .rbtn { flex:1; min-width:100px; background:#166534; color:#fff; border:none; padding:12px 8px; border-radius:10px; font-size:14px; font-weight:800; }
+  .rbtn.gray { background:#374151; } .rbtn.blue { background:#075985; }
+
+  .modal { position:absolute; inset:0; z-index:50; background:rgba(0,0,0,.95); display:none; padding:18px; overflow-y:auto; font-size:13.5px; line-height:1.7; }
+  .modal h2 { color:#4ade80; margin:4px 0 12px; font-size:18px; }
+  .modal h4 { color:#fbbf24; margin:16px 0 6px; font-size:14px; }
+  .modal li { margin:6px 0; }
+  .fld { margin:10px 0; }
+  .fld label { display:block; color:#9ca3af; font-size:12px; margin-bottom:3px; }
+  .fld input[type=text], .fld input[type=tel], .fld input[type=number], .fld input[type=password], .fld select { width:100%; background:#111; border:1px solid #444; color:#fff; border-radius:8px; padding:10px; font-size:15px; }
+  .chk { display:flex; align-items:center; gap:8px; margin:10px 0; }
+  .chk input { width:20px; height:20px; }
+  .closeX { position:absolute; right:16px; top:calc(env(safe-area-inset-top, 8px) + 8px); background:#333; border:none; color:#fff; width:38px; height:38px; border-radius:50%; font-size:18px; z-index:55; }
+  #signPad { background:#fff; border-radius:10px; width:100%; height:110px; touch-action:none; cursor:crosshair; }
+
+  #iosBtn { position:absolute; z-index:60; left:50%; top:38%; transform:translate(-50%,-50%); display:none;
+    background:#16a34a; border:none; color:#fff; padding:16px 26px; font-size:17px; font-weight:800; border-radius:14px; box-shadow:0 4px 20px rgba(0,0,0,.6); }
+  #loading { position:absolute; inset:0; z-index:70; background:#000; display:flex; flex-direction:column; gap:12px; align-items:center; justify-content:center; font-size:15px; color:#9ca3af; text-align:center; padding:20px; }
+  .spin { width:44px; height:44px; border:4px solid #333; border-top-color:#22c55e; border-radius:50%; animation:s 1s linear infinite; }
+  @keyframes s { to { transform:rotate(360deg); } }
+
+  #toast { position:absolute; left:50%; bottom:calc(env(safe-area-inset-bottom, 0px) + 200px); transform:translateX(-50%);
+    background:rgba(22,163,74,.95); color:#fff; padding:9px 18px; border-radius:24px; font-size:14px; font-weight:700;
+    z-index:65; display:none; box-shadow:0 4px 14px rgba(0,0,0,.5); white-space:nowrap; max-width:92%; overflow:hidden; text-overflow:ellipsis; }
+  .qk { background:#1f2937; border:1px solid #4b5563; color:#e5e7eb; border-radius:20px; padding:6px 12px; font-size:13px; font-weight:600; }
+
+  #lock { position:fixed; inset:0; z-index:100; background:#020a05; display:none; flex-direction:column; align-items:center; justify-content:center; gap:16px; }
+  #lock .big { font-size:44px; }
+  #lock input { width:200px; text-align:center; font-size:26px; letter-spacing:10px; background:#111; border:2px solid #16a34a; color:#fff; border-radius:14px; padding:12px; }
+  #lock .btn { background:#16a34a; color:#fff; border:none; border-radius:12px; padding:13px 40px; font-size:17px; font-weight:800; }
+  #lockErr { color:#f87171; font-size:13px; min-height:20px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <video id="cam" autoplay playsinline muted></video>
+  <div id="gridOv"><div class="gl v1"></div><div class="gl v2"></div><div class="gl h1"></div><div class="gl h2"></div></div>
+
+  <div id="tapeWrap"><div id="tape"></div><div id="tapeMarker"></div></div>
+  <div id="degBubble">—°</div>
+  <div id="gpsLine" class="chip">📍 GPS लोकेशन ली जा रही है…</div>
+  <div id="sunChip" class="chip" style="display:none">☀️</div>
+  <div id="accChip" class="chip">🧭 —</div>
+  <div id="lvlChip" class="chip" style="display:none">📐</div>
+  <div id="projChip" class="chip"></div>
+  <div id="bndChip" class="chip" style="display:none">🚶</div>
+  <div id="manChip" class="chip" style="left:10px;top:calc(env(safe-area-inset-top, 8px) + 156px);display:none;color:#fde047;cursor:pointer"></div>
+
+  <div id="cross"><div class="dot">
+    <div class="ch v"></div><div class="ch vb"></div><div class="ch h"></div><div class="ch hb"></div><div class="c"></div>
+  </div></div>
+  <div id="zoneTag" class="z-ok">—</div>
+
+  <div id="vastuCard"><b>🧭 वास्तु विश्लेषण</b><br><span id="vcBody">कैमरा शुरू हो रहा है…</span></div>
+
+  <div id="measPanel" class="toolPanel">
+    <b>📏 माप मोड</b> <span style="color:#4ade80">(camera से andaza)</span> — फोन की ऊँचाई ज़मीन से: <input id="hIn" type="number" step="0.1" value="1.5"> m
+    <div class="row">
+      <button class="mbtn" id="btnDist">1️⃣ दूरी लॉक</button>
+      <button class="mbtn ghost" id="btnA" disabled>A (बायाँ)</button>
+      <button class="mbtn ghost" id="btnB" disabled>B (दायाँ)</button>
+      <button class="mbtn ghost" id="btnL" disabled>↔️ लंबाई</button>
+      <button class="mbtn ghost" id="btnClearM">🔄</button>
+    </div>
+    <div class="row" style="align-items:center">
+      <span style="color:#9ca3af">🎯 Laser/tep से exact दूरी:</span>
+      <input id="laserIn" type="number" step="0.01" placeholder="m"><button class="mbtn blue" id="btnLaser">✅ Set</button>
+    </div>
+    <div class="row" style="border-top:1px dashed #2d6a4f; padding-top:8px; margin-top:9px">
+      <b style="color:#fbbf24">📝 Manual / LEGAL Size</b> (Registry/Naksha ki asli naap) — unit:
+      <select id="mUnit" style="background:#111;color:#fff;border:1px solid #444;border-radius:6px;padding:6px">
+        <option value="ft">feet</option><option value="m">meter</option><option value="yd">गज</option>
+      </select>
+    </div>
+    <div class="row">
+      L: <input id="mL" type="number" step="0.01" placeholder="लंबाई">
+      × B: <input id="mB" type="number" step="0.01" placeholder="चौड़ाई">
+      <span style="color:#9ca3af">या सीधा क्षेत्रफल:</span> <input id="mA" type="number" step="0.01" placeholder="area">
+    </div>
+    <div class="row">
+      स्रोत: <select id="mSrc" style="flex:1;min-width:140px;background:#111;color:#fff;border:1px solid #444;border-radius:6px;padding:6px">
+        <option>पटवारी नाप / खसरा</option>
+        <option>Registry naksha</option>
+        <option>Govt / RERA naksha</option>
+        <option>Laser meter naap</option>
+        <option>Measuring tape naap</option>
+        <option>Owner / broker dwara</option>
+        <option>अन्य</option>
+      </select>
+      <button class="mbtn" style="background:#b45309" id="btnManSize">✅ Manual Set</button>
+      <button class="mbtn ghost" id="btnManClear">🔄</button>
+    </div>
+    <div class="row"><span class="big" id="measOut">object के base (नीचे) पर घुमा कर "दूरी लॉक" दबाएँ — या laser/tep की reading डालें</span></div>
+    <div class="hint">⚠️ angle-वाला माप अनुमानित (±10–15%) है; laser/tep वाली reading exact होती है। लीगल नक्शे के लिए हमेशा टेप/लेज़र use करें।</div>
+  </div>
+
+  <div id="bndPanel" class="toolPanel">
+    <b>🚶 Boundary Walk Mode</b> — plot की boundary के कोनो पर चलते जाएँ
+    <div class="row">
+      <button class="mbtn blue" id="bndStart">▶️ शुरू करें</button>
+      <button class="mbtn ghost" id="bndStop" disabled>⏹️ Stop + Save</button>
+      <button class="mbtn ghost" id="bndClear">🔄</button>
+    </div>
+    <div class="row"><span class="big" id="bndOut">"शुरू करें" दबाएँ, फिर plot के हर कोने पर धीरे-धीरे चलें</span></div>
+    <div class="hint">⚠️ GPS accuracy ±5–15m होती है — छोटे plots में फर्क आएगा। ये <b>legal survey नहीं</b> है; पटवारी/सर्वेयर से verify ज़रूर कराएँ।</div>
+  </div>
+
+  <div id="controls">
+    <button class="cbtn" id="btnSet">⚙️</button>
+    <button class="cbtn" id="btnFlip">🔄</button>
+    <button id="shutter"></button>
+    <button class="cbtn" id="btnMeas">📏</button>
+    <button class="cbtn" id="btnBnd">🚶</button>
+    <button class="cbtn" id="btnPDF">📄</button>
+  </div>
+  <div id="thumbs"></div>
+
+  <button id="iosBtn">🧭 कम्पास चालू करें (Tap)</button>
+
+  <div id="result" class="panel">
+    <button class="closeX" id="rClose">✖</button>
+    <img id="rImg" alt="site photo">
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px">
+      <button class="qk" data-t="Main door area">🚪 Main door</button>
+      <button class="qk" data-t="NE corner">🧿 NE corner</button>
+      <button class="qk" data-t="Nal/paani point">🚰 Nal/paani</button>
+      <button class="qk" data-t="Road facing">🛣️ Road facing</button>
+      <button class="qk" data-t="Plot corner">📐 Corner</button>
+      <button class="qk" data-t="Vastu dosh dekhna hai">⚠️ Dosh</button>
+    </div>
+    <div id="rkRow"><input id="rkIn" placeholder="✍️ Remark — जैसे: NE corner में नल है (photo पर छप जाएगा)">
+      <button class="rbtn" style="flex:0 0 auto;padding:9px 14px" id="rkSave">Save</button></div>
+    <h3>📋 साइट डिटेल्स</h3>
+    <table id="dtable"></table>
+    <div class="btnrow">
+      <button class="rbtn" id="rShare">📤 शेयर</button>
+      <button class="rbtn blue" id="rWa">💬 WhatsApp</button>
+      <button class="rbtn gray" id="rDownload">⬇️ डाउनलोड</button>
+      <button class="rbtn gray" id="rDel">🗑️</button>
+      <button class="rbtn gray" id="rNew">📷 नया</button>
+    </div>
+  </div>
+
+  <div id="settings" class="modal">
+    <button class="closeX" id="sClose">✖</button>
+    <h2>⚙️ सेटिंग्स</h2>
+
+    <h4>📁 प्रोजेक्ट (Client Folder)</h4>
+    <div class="fld"><label>🏗️ एक्टिव प्रोजेक्ट — फोटो/PDF/CSV सब इसी folder में जाएंगे</label>
+      <input id="fProj" type="text" list="projList" placeholder="जैसे: श्री गणेश एन्क्लेव"><datalist id="projList"></datalist></div>
+    <div class="fld"><label>📐 प्लॉट / यूनिट नंबर</label><input id="fPlot" type="text" placeholder="Plot 12, Scheme 78"></div>
+    <div class="fld"><label>🗺️ खसरा / सर्वे नंबर</label><input id="fKhasra" type="text" placeholder="45/2"></div>
+    <div class="fld"><label>👤 क्लाइंट का नाम</label><input id="fClient" type="text" placeholder="राकेश जी"></div>
+    <div class="fld"><label>📞 क्लाइंट मोबाइल</label><input id="fPhone" type="tel" placeholder="98xxxxxxxx"></div>
+
+    <h4>💰 Rate Calculator</h4>
+    <div class="fld"><label>Rate (₹ प्रति unit) — area निकलते ही automatic price photo पर छपेगी</label>
+      <input id="fRate" type="number" min="0" step="1" placeholder="जैसे: 2500"></div>
+    <div class="fld"><label>Rate का unit</label>
+      <select id="fRateUnit"><option value="sqft">₹ / sq.ft</option><option value="sqyd">₹ / गज (sq.yd)</option><option value="sqm">₹ / sq.m</option></select></div>
+
+    <h4>🖊️ Digital Signature (har photo + PDF पर छपेगा)</h4>
+    <canvas id="signPad"></canvas>
+    <div class="btnrow" style="margin:8px 0">
+      <button class="rbtn" id="signSave">💾 Signature सेव</button>
+      <button class="rbtn gray" id="signClear">🧹 मिटाएँ</button>
+    </div>
+
+    <h4>📤 Auto WhatsApp</h4>
+    <div class="chk"><input type="checkbox" id="fWaAuto"><label for="fWaAuto">हर photo के बाद share sheet अपने-आप खुले (1-tap WhatsApp send)</label></div>
+
+    <h4>▦ Display & Compass</h4>
+    <div class="chk"><input type="checkbox" id="fGrid"><label for="fGrid">फोटो ग्रिड (compose lines) दिखाएँ</label></div>
+    <div class="fld"><label>🎥 Camera quality (बड़ा = साफ़ photo, ज़्यादा MB storage)</label>
+      <select id="fQuality"><option value="720">HD 720p — कम storage</option><option value="1080" selected>Full HD 1080p — recommended</option><option value="1440">QHD 1440p — best quality</option></select></div>
+    <div class="chk"><input type="checkbox" id="fFast"><label for="fFast">⚡ Fast Capture — photo लेते ही तुरंत save, panel न खुले (site पर rapid shooting के लिए)</label></div>
+    <div class="fld"><label>✍️ मैनुअल दिशा (कम्पास न हो तो — 0=उत्तर, 90=पूर्व, 180=दक्षिण, 270=पश्चिम)</label>
+      <input id="manIn" type="number" min="0" max="359" value="90"></div>
+
+    <h4>🔒 PIN Lock</h4>
+    <div class="chk"><input type="checkbox" id="fPinOn"><label for="fPinOn">App खोलने पर PIN माँगे</label></div>
+    <div class="fld"><label>🔑 PIN (4+ अंक)</label><input id="fPin" type="password" inputmode="numeric" placeholder="जैसे: 4521"></div>
+
+    <h4>💾 Backup & Data</h4>
+    <div class="btnrow" style="margin:8px 0">
+      <button class="rbtn blue" id="fBackup">⬇️ Backup डाउनलोड</button>
+      <button class="rbtn gray" id="fImport">📥 Backup Restore</button>
+      <button class="rbtn blue" id="sShareAll">📤 सारी Photos Share</button>
+      <input type="file" id="fImpFile" accept=".json" style="display:none">
+    </div>
+
+    <div class="btnrow">
+      <button class="rbtn" id="sSave">💾 सारा सेव करें</button>
+      <button class="rbtn gray" id="sCSV">🧾 CSV एक्सपोर्ट</button>
+      <button class="rbtn gray" id="sClear">🗑️ फोटो हटाएँ</button>
+    </div>
+    <button class="rbtn blue" id="sHelp" style="width:100%;margin-bottom:20px">❓ कैसे use करें — Help</button>
+  </div>
+
+  <div id="help" class="modal">
+    <button class="closeX" id="hClose">✖</button>
+    <h2 id="popTitle">❓</h2><div id="popBody"></div>
+  </div>
+
+  <div id="lock">
+    <div class="big">🔒🧭</div>
+    <div style="font-size:18px;font-weight:800">Vastu Site Camera</div>
+    <input id="lockIn" type="password" inputmode="numeric" placeholder="••••">
+    <div id="lockErr"></div>
+    <button class="btn" id="lockBtn">खोलें</button>
+  </div>
+
+  <div id="toast"></div>
+
+  <div id="loading"><div class="spin"></div><div>📷 कैमरा व 🧭 कम्पास शुरू हो रहा है…<br><small>Permission आए तो <b>Allow</b> दबाएँ</small></div></div>
+</div>
+
+<script>
+/* ================= STATE ================= */
+const S = {
+  smooth:0, raw:null, beta:90, gamma:0, hasCompass:false,
+  lat:null, lon:null, gpsAcc:null, alt:null, addr:'',
+  phoneHeight:1.5, dist:null, ptA:null, ptB:null, wdt:null, len2:null, _liveD:null,
+  manual:null,
+  photos:[], camIdx:0, stream:null, sun:{}, signImg:null, signOk:false, locked:false,
+  cfg:{ proj:'', plot:'', khasra:'', client:'', phone:'', grid:false,
+        rate:0, rateUnit:'sqft', waAuto:false, pinOn:false, pin:'', fast:false, quality:'1080' }
+};
+const $ = id => document.getElementById(id);
+const RAD = Math.PI/180;
+
+/* ================= VASTU ZONES ================= */
+const ZONES = [
+ {en:'N',  hi:'उत्तर',          cls:'z-best', tag:'उत्तम',
+  good:'मुख्य द्वार, कैश काउंटर/लॉकर (कुबेर दिशा), हॉल, बड़ी खिड़कियाँ',
+  avoid:'रसोई, टॉयलेट, स्टोर, कूड़ा'},
+ {en:'NE', hi:'ईशान (उत्तर-पूर्व)', cls:'z-best', tag:'सर्वोत्तम',
+  good:'पूजा-घर, बोरिंग/पानी की टंकी, हल्का खुला हिस्सा, प्रवेश द्वार',
+  avoid:'टॉयलेट (सबसे बड़ा दोष), किचन, सीढ़ी, भारी सामान'},
+ {en:'E',  hi:'पूर्व',           cls:'z-best', tag:'उत्तम',
+  good:'मुख्य द्वार, लिविंग रूम, बैठक, बड़ी windows, लॉन',
+  avoid:'टॉयलेट, बोरिंग, कचरा ढेर'},
+ {en:'SE', hi:'आग्नेय (दक्षिण-पूर्व)', cls:'z-ok', tag:'अग्नि क्षेत्र',
+  good:'रसोई/किचन, इलेक्ट्रिक पैनल/मीटर, जनरेटर, बॉयलर',
+  avoid:'मुख्य द्वार, पानी की टंकी/बोरिंग, बच्चों का कमरा'},
+ {en:'S',  hi:'दक्षिण',          cls:'z-warn', tag:'सावधानी',
+  good:'भारी सामान/स्टोर, ऊँची दीवार, उठा हुआ फर्श',
+  avoid:'मुख्य द्वार, बोरिंग/पानी, बड़ी खुली जगह, बेसमेंट'},
+ {en:'SW', hi:'नैऋत्य (द.प.)',    cls:'z-best', tag:'स्थिरता',
+  good:'मास्टर बेडरूम, मालिक/MD केबिन, भारी मशीन, ओवरहेड टंकी (सबसे ऊँचा हिस्सा)',
+  avoid:'मुख्य द्वार, बोरिंग/पानी, बेसमेंट, गार्डन'},
+ {en:'W',  hi:'पश्चिम',          cls:'z-ok', tag:'ठीक',
+  good:'बच्चों का कमरा, डाइनिंग, स्टडी, स्टोर',
+  avoid:'बोरिंग, बड़ा खुला आँगन'},
+ {en:'NW', hi:'वायव्य (उ.प.)',    cls:'z-ok', tag:'ठीक',
+  good:'टॉयलेट, अतिथि कक्ष, सेप्टिक टैंक, parking',
+  avoid:'पूजा-घर, मालिक केबिन, भारी मशीनरी'}
+];
+const zoneOf = h => ZONES[Math.round(((h%360)+360)%360/45)%8];
+
+/* ================= FORMAT HELPERS ================= */
+const fmtLen = m => `${m.toFixed(2)} m (≈ ${(m*3.28084).toFixed(1)} ft)`;
+const fmtINR = n => '₹' + Math.round(n).toLocaleString('en-IN');
+const U2X = { sqft:10.7639, sqyd:1.19599, sqm:1 };
+const ULBL = { sqft:'sq.ft', sqyd:'गज', sqm:'sq.m' };
+function fmtAreaM2(m2){
+  let s = `${(m2*10.7639).toFixed(0)} sq.ft • ${(m2*1.19599).toFixed(1)} गज • ${m2.toFixed(1)} sq.m`;
+  if(m2 > 4000) s += ` • ${(m2/4046.86).toFixed(3)} acre`;
+  return s;
+}
+function priceOf(m2){
+  if(!S.cfg.rate || S.cfg.rate <= 0) return null;
+  return { price: m2 * U2X[S.cfg.rateUnit] * S.cfg.rate, unit: S.cfg.rateUnit, rate: S.cfg.rate };
+}
+
+/* ================= COMPASS TAPE ================= */
+const majors = {0:'N',45:'NE',90:'E',135:'SE',180:'S',225:'SW',270:'W',315:'NW'};
+let tapePx;
+function buildTape(){
+  tapePx = innerWidth/72; const tape=$('tape'); tape.innerHTML='';
+  for(let rep=-1; rep<2; rep++) for(let d=0; d<360; d+=5){
+    const x=(rep*360+d)*tapePx;
+    const t=document.createElement('div');
+    t.className='tick'+(d%45===0?' major':''); t.style.left=x+'px';
+    if(d%45!==0 && d%15!==0) t.style.height='7px';
+    tape.appendChild(t);
+    if(d%45===0){ const l=document.createElement('div'); l.className='tlab'; l.style.left=x+'px'; l.textContent=majors[d]; tape.appendChild(l); }
+  }
+}
+buildTape();
+
+/* ================= CAMERA ================= */
+async function startCam(){
+  try{
+    if(S.stream) S.stream.getTracks().forEach(t=>t.stop());
+    const devs=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='videoinput');
+    const QMAP={'720':[1280,720],'1080':[1920,1080],'1440':[2560,1440]};
+    const [qw,qh]=QMAP[S.cfg.quality]||QMAP['1080'];
+    const cons={ video:{ width:{ideal:qw}, height:{ideal:qh} }, audio:false };
+    if(devs.length) cons.video.deviceId={ exact: devs[S.camIdx%devs.length].deviceId };
+    else cons.video.facingMode={ ideal:'environment' };
+    S.stream=await navigator.mediaDevices.getUserMedia(cons);
+    $('cam').srcObject=S.stream; $('loading').style.display='none';
+  }catch(e){
+    $('loading').style.display='none';
+    pop('⚠️ कैमरा समस्या','<ul><li>ये page <b>HTTPS</b> पर ही चलेगा (live preview link use करें)</li><li>Browser में camera permission <b>Allow</b> करें</li><li>दूसरी app कैमरा use कर रही हो तो बंद करें</li></ul><small>'+e.message+'</small>');
+  }
+}
+$('btnFlip').onclick=()=>{ S.camIdx++; startCam(); };
+
+/* ================= COMPASS / SENSORS ================= */
+function onOrient(e){
+  let h=null;
+  if(e.webkitCompassHeading!==undefined) h=e.webkitCompassHeading;
+  else if(e.alpha!==null) h=360-e.alpha;
+  if(e.beta!==null&&e.beta!==undefined) S.beta=e.beta;
+  if(e.gamma!==null&&e.gamma!==undefined) S.gamma=e.gamma;
+  $('lvlChip').style.display='block';
+  if(h===null) return;
+  if(!e.webkitCompassHeading){ const sa=(screen.orientation&&screen.orientation.angle)||window.orientation||0; h=(h+sa)%360; }
+  S.raw=((h%360)+360)%360; S.hasCompass=true;
+  $('accChip').textContent='🧭 live';
+}
+function armCompass(){
+  window.addEventListener('deviceorientationabsolute', onOrient, true);
+  window.addEventListener('deviceorientation', onOrient, true);
+}
+if(typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function'){
+  $('iosBtn').style.display='block';
+  $('iosBtn').onclick=async()=>{
+    try{ const r=await DeviceOrientationEvent.requestPermission();
+      if(r==='granted'){ armCompass(); $('iosBtn').style.display='none'; }
+      else pop('⚠️','कम्पास permission नहीं मिली। iPhone Settings → Safari → Motion & Orientation Access चालू करें।');
+    }catch(e){ pop('⚠️','कम्पास error: '+e.message); }
+  };
+}else armCompass();
+
+/* ================= GPS ================= */
+if(navigator.geolocation){
+  navigator.geolocation.watchPosition(p=>{
+    S.lat=p.coords.latitude; S.lon=p.coords.longitude; S.gpsAcc=p.coords.accuracy; S.alt=p.coords.altitude;
+    $('gpsLine').textContent=`📍 ${S.lat.toFixed(6)}, ${S.lon.toFixed(6)} (±${Math.round(S.gpsAcc)}m)`;
+    if(!S.addr) reverseGeo();
+    updateSun();
+  }, ()=>{ $('gpsLine').textContent='📍 GPS permission नहीं मिली — location record नहीं होगी'; },
+  {enableHighAccuracy:true, maximumAge:5000});
+}
+async function reverseGeo(){
+  try{
+    const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${S.lat}&lon=${S.lon}&zoom=18&accept-language=hi`);
+    const j=await r.json(); S.addr=j.display_name||'';
+  }catch(e){ S.addr=''; }
+}
+
+/* ================= SUN POSITION ================= */
+const J1970=2440588, J2000=2451545, e0=RAD*23.4397;
+const toJulian=d=>d.valueOf()/86400000-0.5+J1970;
+const fromJulian=j=>new Date((j+0.5-J1970)*86400000);
+const toDays=d=>toJulian(d)-J2000;
+const dec=(l,b)=>Math.asin(Math.sin(b)*Math.cos(e0)+Math.cos(b)*Math.sin(e0)*Math.sin(l));
+const ra2=(l,b)=>Math.atan2(Math.sin(l)*Math.cos(e0)-Math.tan(b)*Math.sin(e0),Math.cos(l));
+const sM=d=>RAD*(357.5291+0.98560028*d);
+const eL=M=>{const C=RAD*(1.9148*Math.sin(M)+0.02*Math.sin(2*M)+0.0003*Math.sin(3*M));return M+C+RAD*102.9372+Math.PI;};
+const sT=(d,lw)=>RAD*(280.16+360.9856235*d)-lw;
+function sunPos(date,lat,lng){
+  const lw=RAD*-lng, phi=RAD*lat, d=toDays(date), M=sM(d), L=eL(M), D=dec(L,0), R=ra2(L,0), H=sT(d,lw)-R;
+  return { az:(Math.atan2(Math.sin(H), Math.cos(H)*Math.sin(phi)-Math.tan(D)*Math.cos(phi))/RAD+180+360)%360 };
+}
+const J0=0.0009;
+const julCyc=(d,lw)=>Math.round(d-J0-lw/(2*Math.PI));
+const apxTr=(Ht,lw,n)=>J0+(Ht+lw)/(2*Math.PI)+n;
+const solTrJ=(ds,M,L)=>J2000+ds+0.0053*Math.sin(M)-0.0069*Math.sin(2*L);
+function sunTimes(date,lat,lng){
+  const lw=RAD*-lng, phi=RAD*lat, d=toDays(date), n=julCyc(d,lw), ds=apxTr(0,lw,n);
+  const M=sM(ds), L=eL(M), D=dec(L,0), Jn=solTrJ(ds,M,L);
+  const w=Math.acos((Math.sin(-0.833*RAD)-Math.sin(phi)*Math.sin(D))/(Math.cos(phi)*Math.cos(D)));
+  const Js=solTrJ(apxTr(w,lw,n),M,L);
+  return { sunrise:fromJulian(Jn-(Js-Jn)), sunset:fromJulian(Js) };
+}
+const fT=d=>d.toLocaleTimeString('hi-IN',{hour:'2-digit',minute:'2-digit'});
+function updateSun(){
+  if(S.lat==null) return;
+  const now=new Date(), p=sunPos(now,S.lat,S.lon), t=sunTimes(now,S.lat,S.lon);
+  S.sun={az:Math.round(p.az), sr:t.sunrise, ss:t.sunset};
+  const c=$('sunChip'); c.style.display='block';
+  c.textContent=`🌅 ${fT(t.sunrise)} • 🌇 ${fT(t.sunset)} • ☀️ ${Math.round(p.az)}°`;
+}
+setInterval(updateSun, 60000);
+$('sunChip').onclick=()=>{
+  if(!S.sun.az) return;
+  const sd=zoneOf(S.sun.az);
+  pop('☀️ सूर्य की स्थिति',
+  `<ul><li>🌅 सूर्योदय: <b>${fT(S.sun.sr)}</b> • 🌇 सूर्यास्त: <b>${fT(S.sun.ss)}</b></li>
+  <li>☀️ अभी सूर्य <b>${S.sun.az}°</b> की दिशा में (${sd.hi})</li>
+  <li>💡 <b>Compass verify:</b> फोन सूर्य की ओर घुमाएँ — tape में ${S.sun.az}° दिखना चाहिए। फर्क हो तो "8" के आकार में घुमा कर calibrate करें।</li></ul>`);
+};
+
+/* ================= HUD LOOP ================= */
+const angLerp=(a,b,f)=>{ let d=b-a; d=((d+540)%360)-180; return (a+d*f+360)%360; };
+setInterval(()=>{
+  if(S.raw!==null) S.smooth = S.raw===S.smooth ? S.raw : angLerp(S.smooth,S.raw,0.25);
+  const h=S.smooth;
+  $('tape').style.transform=`translateX(${(innerWidth/2)-(h*tapePx)}px)`;
+  $('degBubble').textContent=Math.round(h)+'°';
+  const z=zoneOf(h), tag=$('zoneTag');
+  tag.className=z.cls; tag.textContent=`${z.en} · ${z.hi}`;
+  $('vcBody').innerHTML=`<span class="g">✅ उत्तम: ${z.good}</span><br><span class="r">⛔ वर्जित: ${z.avoid}</span>`;
+  if(measOn && !S.dist) liveDist();
+  if(S.hasCompass){
+    const b=Math.abs(S.beta), g=Math.abs(S.gamma), lvl=b<2&&g<2;
+    $('lvlChip').innerHTML=`📐 β${b.toFixed(0)}° γ${g.toFixed(0)}° ${lvl?'<b style="color:#4ade80">LEVEL ✅</b>':''}`;
+  }
+},60);
+
+/* ================= PANEL MANAGER ================= */
+let measOn=false, bndOn=false;
+function showPanel(name){
+  measOn = name==='meas'; bndOn = name==='bnd';
+  $('measPanel').style.display = measOn?'block':'none';
+  $('bndPanel').style.display  = bndOn?'block':'none';
+  $('vastuCard').style.display = (!measOn && !bndOn)?'block':'none';
+  $('btnMeas').classList.toggle('on', measOn);
+  $('btnBnd').classList.toggle('on', bndOn);
+  $('bndChip').style.display = bndWatch ? 'block' : 'none';
+}
+$('btnMeas').onclick=()=>showPanel(measOn?null:'meas');
+$('btnBnd').onclick =()=>showPanel(bndOn?null:'bnd');
+
+/* ================= MEASURE MODE ================= */
+$('hIn').addEventListener('change',()=>{ S.phoneHeight=parseFloat($('hIn').value)||1.5; });
+function liveDist(){
+  const th=(90-S.beta);
+  if(th<=2||th>=85){ $('measOut').textContent='फोन object के base की ओर झुकाएँ (2°–85°)'; S._liveD=null; return; }
+  S._liveD=S.phoneHeight*Math.tan(th*RAD);
+  $('measOut').innerHTML=`लाइव दूरी: <b>${fmtLen(S._liveD)}</b> — सही हो तो "दूरी लॉक" दबाएँ`;
+}
+function showMeasSummary(){
+  let s=`📏 दूरी: <b>${fmtLen(S.dist)}</b>`;
+  if(S.wdt) s+=` • चौड़ाई: <b>${fmtLen(S.wdt)}</b>`;
+  if(S.len2) s+=` • लंबाई: <b>${fmtLen(S.len2)}</b>`;
+  if(S.wdt && S.len2){
+    s+=`<br>🧮 क्षेत्रफल: <b>${fmtAreaM2(S.wdt*S.len2)}</b>`;
+    const p=priceOf(S.wdt*S.len2);
+    if(p) s+=`<br>💰 अनुमानित कीमत: <b>${fmtINR(p.price)}</b> (@ ₹${p.rate}/${ULBL[p.unit]})`;
+  }
+  s+=`<br>अब 🔴 photo लें — सब stamp हो जाएगा`;
+  $('measOut').innerHTML=s;
+}
+$('btnDist').onclick=()=>{
+  if(!S._liveD){ $('measOut').textContent='पहले object के base पर crosshair रखें (फोन नीचे झुकाएँ)'; return; }
+  S.dist=S._liveD; $('btnA').disabled=false;
+  $('measOut').innerHTML=`✅ दूरी: <b>${fmtLen(S.dist)}</b><br>अब object के LEFT किनारे पर घुमा कर "A" दबाएँ`;
+};
+$('btnLaser').onclick=()=>{
+  const v=parseFloat($('laserIn').value);
+  if(!v || v<=0){ $('measOut').textContent='सही exact दूरी डालें (जैसे 8.35)'; return; }
+  S.dist=v; S._laser=true; $('btnA').disabled=false;
+  $('measOut').innerHTML=`🎯 EXACT दूरी: <b>${fmtLen(S.dist)}</b> (laser/tep)<br>अब LEFT किनारे पर "A" दबाएँ (या सीधे 🔴 photo लें)`;
+};
+$('btnA').onclick=()=>{ S.ptA=S.smooth; $('btnB').disabled=false;
+  $('measOut').innerHTML=`✅ A locked (${Math.round(S.ptA)}°) — RIGHT किनारे पर "B" दबाएँ`; };
+$('btnB').onclick=()=>{
+  S.ptB=S.smooth;
+  const dh=Math.abs(((S.ptB-S.ptA+540)%360)-180);
+  S.wdt=S.dist*Math.tan(dh*RAD); $('btnL').disabled=false;
+  showMeasSummary();
+};
+$('btnL').onclick=()=>{
+  const lv = S._liveD || parseFloat($('laserIn').value);
+  if(!lv){ $('measOut').textContent='दूर वाले छोर के base पर फोन झुकाएँ (या laser/tep reading डालें), फिर ये बटन दबाएँ'; return; }
+  S.len2=lv;
+  showMeasSummary();
+};
+$('btnClearM').onclick=()=>{ Object.assign(S,{dist:null,ptA:null,ptB:null,wdt:null,len2:null,_liveD:null});
+  $('btnA').disabled=$('btnB').disabled=$('btnL').disabled=true;
+  $('measOut').textContent='रीसेट — object के base पर घुमा कर फिर "दूरी लॉक" करें'; };
+
+/* ---- Manual / LEGAL size (Registry-Naksha naap) ---- */
+const UNIT2M={ft:0.3048,m:1,yd:0.9144};
+const UNAME={ft:'ft',m:'m',yd:'गज'};
+$('btnManSize').onclick=()=>{
+  const u=$('mUnit').value, L=parseFloat($('mL').value)||0, B=parseFloat($('mB').value)||0, A=parseFloat($('mA').value)||0;
+  let areaM2=null, desc='';
+  if(L>0&&B>0){ areaM2=(L*UNIT2M[u])*(B*UNIT2M[u]); desc=`${L} × ${B} ${UNAME[u]}`; }
+  else if(A>0){ areaM2=A*UNIT2M[u]*UNIT2M[u]; desc=`${A} sq.${UNAME[u]}`; }
+  if(!areaM2){ $('measOut').textContent='L × B दोनों डालें, या सीधा क्षेत्रफल डालें'; return; }
+  S.manual={ l:L||null, b:B||null, unit:u, areaM2, src:$('mSrc').value, desc };
+  let s=`📝 <b style="color:#fbbf24">MANUAL / LEGAL SIZE ✅</b>: <b>${desc}</b> = <b>${fmtAreaM2(areaM2)}</b><br>स्रोत: <b>${S.manual.src}</b>`;
+  const p=priceOf(areaM2);
+  if(p) s+=`<br>💰 कीमत (exact area se): <b>${fmtINR(p.price)}</b> (@ ₹${p.rate}/${ULBL[p.unit]})`;
+  s+=`<br>अब 🔴 photo लें — "📝 Legal Size: ${desc}" photo par gold me छपेगा`;
+  $('measOut').innerHTML=s;
+  const mc=$('manChip'); mc.style.display='block';
+  mc.textContent=`📝 ${desc} (tap = हटाएँ)`;
+  toast('📝 Manual LEGAL size set — हर photo पर छपेगा');
+};
+$('btnManClear').onclick=()=>{ S.manual=null; $('mL').value=$('mB').value=$('mA').value='';
+  $('manChip').style.display='none';
+  $('measOut').textContent='Manual size हटा दिया गया'; };
+$('manChip').onclick=()=>{ $('btnManClear').click(); toast('📝 Manual size हटा दी'); };
+
+/* ================= BOUNDARY WALK MODE ================= */
+let bndWatch=null, bndPts=[];
+const havM=(a,b,c,d)=>{ const R=6371000, dLa=(c-a)*RAD, dLo=(d-b)*RAD;
+  const x=Math.sin(dLa/2)**2 + Math.cos(a*RAD)*Math.cos(c*RAD)*Math.sin(dLo/2)**2;
+  return 2*R*Math.asin(Math.sqrt(x)); };
+function bndCalc(){
+  let per=0; for(let i=1;i<bndPts.length;i++) per+=havM(bndPts[i-1].la,bndPts[i-1].lo,bndPts[i].la,bndPts[i].lo);
+  let area=null;
+  if(bndPts.length>=3){
+    const la0=bndPts[0].la, lo0=bndPts[0].lo, kx=111320*Math.cos(la0*RAD), ky=110540;
+    let s=0;
+    for(let i=0;i<bndPts.length;i++){
+      const p=bndPts[i], q=bndPts[(i+1)%bndPts.length];
+      s+=((p.lo-lo0)*kx)*((q.la-la0)*ky) - ((q.lo-lo0)*kx)*((p.la-la0)*ky);
+    }
+    area=Math.abs(s/2);
+  }
+  return {per, area};
+}
+function bndLive(){
+  const {per,area}=bndCalc();
+  const last=bndPts[bndPts.length-1];
+  let s=`📍 पॉइंट्स: <b>${bndPts.length}</b>`;
+  if(bndPts.length>1) s+=` • परिधि: <b>${per.toFixed(0)} m</b>`;
+  if(area!=null) s+=`<br>🧮 क्षेत्रफल (GPS approx): <b>${fmtAreaM2(area)}</b>`;
+  if(last) s+=`<br><small>GPS सटीकता: ±${Math.round(last.a)}m</small>`;
+  $('bndOut').innerHTML=s;
+  $('bndChip').textContent=`🚶 ${bndPts.length} pts`;
+}
+$('bndStart').onclick=()=>{
+  if(!navigator.geolocation){ $('bndOut').textContent='GPS उपलब्ध नहीं'; return; }
+  if(bndWatch!=null) return;
+  bndPts=[]; bndLive(); $('bndStop').disabled=false;
+  bndWatch=navigator.geolocation.watchPosition(p=>{
+    const pt={la:p.coords.latitude, lo:p.coords.longitude, a:p.coords.accuracy};
+    if(p.coords.accuracy>30){ $('bndOut').innerHTML=`📡 सिग्नल कमजोर (±${Math.round(p.coords.accuracy)}m) — खुली जगह में चलें…`; return; }
+    const last=bndPts[bndPts.length-1];
+    if(last && havM(last.la,last.lo,pt.la,pt.lo)<3) return;
+    bndPts.push(pt); bndLive();
+  }, ()=>{}, {enableHighAccuracy:true, maximumAge:0});
+  $('bndChip').style.display='block';
+  $('bndOut').innerHTML='🚶 Recording… plot के पहले कोने पर खड़े रहें, फिर धीरे-धीरे agle कोने की ओर चलें';
+};
+$('bndClear').onclick=()=>{ bndPts=[]; bndLive(); $('bndOut').textContent='रीसेट — दोबारा चलें'; };
+$('bndStop').onclick=async()=>{
+  if(bndWatch!=null){ navigator.geolocation.clearWatch(bndWatch); bndWatch=null; }
+  $('bndStop').disabled=true; $('bndChip').style.display='none';
+  if(bndPts.length<3){ $('bndOut').innerHTML='⚠️ कम से कम 3 पॉइंट्स चाहिए (3 कोने)। फिर से चलें।'; bndPts=[]; return; }
+  await saveBoundary();
+  bndPts=[]; showPanel(null);
+};
+async function saveBoundary(){
+  const {per,area}=bndCalc();
+  const cla=bndPts.reduce((s,p)=>s+p.la,0)/bndPts.length;
+  const clo=bndPts.reduce((s,p)=>s+p.lo,0)/bndPts.length;
+  const avgA=bndPts.reduce((s,p)=>s+p.a,0)/bndPts.length;
+  const W=720,H=900, cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+  const x=cv.getContext('2d');
+  x.fillStyle='#0b1220'; x.fillRect(0,0,W,H);
+  x.strokeStyle='rgba(148,163,184,.18)'; x.lineWidth=1;
+  for(let g=0;g<W;g+=45){ x.beginPath(); x.moveTo(g,0); x.lineTo(g,H); x.stroke(); }
+  for(let g=0;g<H;g+=45){ x.beginPath(); x.moveTo(0,g); x.lineTo(W,g); x.stroke(); }
+  const kx=111320*Math.cos(cla*RAD), ky=110540;
+  const pts=bndPts.map(p=>({x:(p.lo-clo)*kx, y:(p.la-cla)*ky}));
+  const xs=pts.map(p=>p.x), ys=pts.map(p=>p.y);
+  const sc=Math.min((W-140)/(Math.max(...xs)-Math.min(...xs)||1), (H-260)/(Math.max(...ys)-Math.min(...ys)||1));
+  const cxo=W/2, cyo=(H-160)/2+20;
+  const P=pts.map(p=>({X:cxo+p.x*sc, Y:cyo-p.y*sc}));
+  x.lineWidth=5; x.strokeStyle='#38bdf8'; x.fillStyle='rgba(56,189,248,.15)';
+  x.beginPath(); P.forEach((p,i)=>i?x.lineTo(p.X,p.Y):x.moveTo(p.X,p.Y)); x.closePath(); x.fill(); x.stroke();
+  P.forEach((p,i)=>{ x.fillStyle='#fbbf24'; x.beginPath(); x.arc(p.X,p.Y,10,0,7); x.fill();
+    x.fillStyle='#fff'; x.font='700 16px system-ui'; x.fillText(String(i+1),p.X+14,p.Y+4); });
+  x.fillStyle='#fbbf24'; x.font='800 20px system-ui'; x.textAlign='center';
+  x.fillText('▲ N (approx)', W/2, 34);
+  x.fillStyle='#94a3b8'; x.font='15px system-ui';
+  x.fillText('GPS walk survey — पटवारी/सर्वेयर नक्शे से verify करें', W/2, H-90);
+  const meta={ bnd:true, bndN:bndPts.length, perim:per, area:area,
+    lat:cla, lon:clo, gpsAcc:avgA, addr:S.addr, alt:null, deg:null, z:null, sunAz:S.sun.az||null,
+    time:new Date().toLocaleString('hi-IN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+    proj:S.cfg.proj, plot:S.cfg.plot, khasra:S.cfg.khasra, client:S.cfg.client, cphone:S.cfg.phone,
+    dist:null, wdt:null, len2:null, remark:'' };
+  const p=priceOf(area);
+  if(p){ meta.price=p.price; meta.rate=p.rate; meta.rateUnit=p.unit; }
+  const rec={ key:Date.now()+'_bnd', raw:cv.toDataURL('image/jpeg',0.92), meta, mapCv:null };
+  rec._w=W; rec._h=H;
+  S.photos.push(rec);
+  rec.mapCv=await getMiniMap(cla,clo);
+  await renderRec(rec);
+  if(rec.mapCv){ try{ rec.mapUrl=rec.mapCv.toDataURL('image/png'); }catch(e){} }
+  idbSave(rec); rebuildThumbs(); showResult(S.photos.length-1);
+  $('bndOut').innerHTML=`✅ Boundary save हो गई — 🧮 क्षेत्रफल: <b>${fmtAreaM2(area)}</b>${p?`<br>💰 कीमत: <b>${fmtINR(p.price)}</b>`:''}`;
+}
+
+/* ================= SETTINGS ================= */
+function loadCfg(){
+  try{ const c=JSON.parse(localStorage.getItem('vsc_cfg')); if(c) Object.assign(S.cfg,c); }catch(e){}
+  $('fProj').value=S.cfg.proj; $('fPlot').value=S.cfg.plot; $('fKhasra').value=S.cfg.khasra;
+  $('fClient').value=S.cfg.client; $('fPhone').value=S.cfg.phone; $('fGrid').checked=S.cfg.grid;
+  $('fRate').value=S.cfg.rate||''; $('fRateUnit').value=S.cfg.rateUnit;
+  $('fWaAuto').checked=S.cfg.waAuto; $('fPinOn').checked=S.cfg.pinOn; $('fPin').value=S.cfg.pin;
+  $('fQuality').value=S.cfg.quality||'1080'; $('fFast').checked=!!S.cfg.fast;
+  applyCfgUI();
+}
+function applyCfgUI(){
+  $('gridOv').style.display=S.cfg.grid?'block':'none';
+  const pc=$('projChip');
+  if(S.cfg.proj){ pc.style.display='block'; pc.textContent='🏗️ '+S.cfg.proj+(S.cfg.plot?' • '+S.cfg.plot:'')+' • 📷 '+activePhotos().length; }
+  else pc.style.display='none';
+}
+function refreshProjList(){
+  const set=new Set(S.photos.map(p=>p.meta.proj).filter(Boolean));
+  if(S.cfg.proj) set.add(S.cfg.proj);
+  $('projList').innerHTML=[...set].map(p=>`<option value="${p.replace(/"/g,'&quot;')}">`).join('');
+}
+$('projChip').onclick=()=>{
+  const set=new Set(S.photos.map(p=>p.meta.proj).filter(Boolean)); if(S.cfg.proj) set.add(S.cfg.proj);
+  const list=[...set];
+  let h='<p>एक्टिव प्रोजेक्ट चुनें — photos/PDF/CSV सब इसी folder में जाएंगे:</p>';
+  if(!list.length) h+='<p style="color:#9ca3af">अभी कोई प्रोजेक्ट नहीं — ⚙️ Settings से नया बनाएँ।</p>';
+  h+=list.map(p=>`<button class="rbtn ${p===S.cfg.proj?'':'gray'}" style="display:block;width:100%;margin:7px 0" data-p="${p.replace(/"/g,'&quot;')}">🏗️ ${p}${p===S.cfg.proj?' ✅':''}</button>`).join('');
+  h+=`<button class="rbtn blue" style="display:block;width:100%;margin-top:10px" data-p="__new__">➕ नया प्रोजेक्ट (Settings में)</button>`;
+  pop('📁 प्रोजेक्ट बदलें',h);
+  $('popBody').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{
+    if(b.dataset.p==='__new__'){ $('help').style.display='none'; refreshProjList(); $('settings').style.display='block'; return; }
+    S.cfg.proj=b.dataset.p; localStorage.setItem('vsc_cfg',JSON.stringify(S.cfg));
+    applyCfgUI(); rebuildThumbs(); $('help').style.display='none'; toast('📁 एक्टिव: '+b.dataset.p);
+  });
+};
+$('btnSet').onclick=()=>{ refreshProjList(); $('settings').style.display='block'; };
+$('sClose').onclick=()=>{ $('settings').style.display='none'; };
+$('sSave').onclick=()=>{
+  const oldProj=S.cfg.proj, oldQ=S.cfg.quality;
+  Object.assign(S.cfg,{
+    proj:$('fProj').value.trim(), plot:$('fPlot').value.trim(), khasra:$('fKhasra').value.trim(),
+    client:$('fClient').value.trim(), phone:$('fPhone').value.trim(), grid:$('fGrid').checked,
+    rate:parseFloat($('fRate').value)||0, rateUnit:$('fRateUnit').value,
+    waAuto:$('fWaAuto').checked, pinOn:$('fPinOn').checked, pin:$('fPin').value.trim(),
+    quality:$('fQuality').value, fast:$('fFast').checked
+  });
+  if(oldQ!==S.cfg.quality) startCam();
+  localStorage.setItem('vsc_cfg',JSON.stringify(S.cfg));
+  const mv=parseFloat($('manIn').value);
+  if(!isNaN(mv)){ S.raw=((mv%360)+360)%360; $('accChip').textContent='🧭 manual'; }
+  applyCfgUI(); $('settings').style.display='none';
+  if(oldProj!==S.cfg.proj) rebuildThumbs();
+  pop('✅ सेव हो गया',`एक्टिव प्रोजेक्ट: <b>${S.cfg.proj||'(सब)'}</b>. अब से फोटो, PDF, CSV सब इसी folder में जाएंगे।`);
+};
+loadCfg();
+
+/* ================= SIGNATURE PAD ================= */
+const sp=$('signPad'); let spCtx=null, spDraw=false;
+function spSetup(){
+  const r=sp.getBoundingClientRect();
+  if(sp.width!==Math.round(r.width*2)){ sp.width=Math.round(r.width*2); sp.height=220; spRedraw(); }
+  spCtx=sp.getContext('2d'); spCtx.lineWidth=4; spCtx.strokeStyle='#111'; spCtx.lineCap='round';
+}
+function spRedraw(){
+  const c=sp.getContext('2d'); c.fillStyle='#fff'; c.fillRect(0,0,sp.width,sp.height);
+  const s=localStorage.getItem('vsc_sign');
+  if(s){ const im=new Image(); im.onload=()=>c.drawImage(im,0,0,sp.width,sp.height); im.src=s; }
+}
+function spPos(e){ const r=sp.getBoundingClientRect(); const px=(e.touches?e.touches[0].clientX:e.clientX), py=(e.touches?e.touches[0].clientY:e.clientY);
+  return { x:(px-r.left)*(sp.width/r.width), y:(py-r.top)*(sp.height/r.height) }; }
+sp.addEventListener('pointerdown',e=>{ e.preventDefault(); spSetup(); spDraw=true; const p=spPos(e); spCtx.beginPath(); spCtx.moveTo(p.x,p.y); });
+sp.addEventListener('pointermove',e=>{ if(!spDraw)return; e.preventDefault(); const p=spPos(e); spCtx.lineTo(p.x,p.y); spCtx.stroke(); });
+sp.addEventListener('pointerup',()=>{ spDraw=false; });
+$('signSave').onclick=()=>{
+  spSetup();
+  const url=sp.toDataURL('image/png');
+  localStorage.setItem('vsc_sign',url);
+  S.signImg=new Image(); S.signImg.onload=()=>{ S.signOk=true; }; S.signImg.src=url;
+  pop('🖊️ सेव','Signature सेव हो गया — अब हर photo + PDF report पर छपेगा।');
+};
+$('signClear').onclick=()=>{ spSetup(); const c=sp.getContext('2d'); c.fillStyle='#fff'; c.fillRect(0,0,sp.width,sp.height); };
+(function loadSign(){ const s=localStorage.getItem('vsc_sign');
+  if(s){ S.signImg=new Image(); S.signImg.onload=()=>{ S.signOk=true; }; S.signImg.src=s; } })();
+
+/* ================= MINI MAP ================= */
+const lon2x=(lon,z)=>Math.floor((lon+180)/360*Math.pow(2,z));
+const lat2y=(lat,z)=>Math.floor((1-Math.log(Math.tan(lat*RAD)+1/Math.cos(lat*RAD))/Math.PI)/2*Math.pow(2,z));
+function loadTile(z,x,y){
+  return new Promise((res,rej)=>{ const im=new Image(); im.crossOrigin='anonymous';
+    im.onload=()=>res(im); im.onerror=rej;
+    im.src=`https://tile.openstreetmap.org/${z}/${((x%Math.pow(2,z))+Math.pow(2,z))%Math.pow(2,z)}/${y}.png`; });
+}
+async function getMiniMap(lat,lon){
+  if(lat==null) return null;
+  const z=17, x0=lon2x(lon,z), y0=lat2y(lat,z);
+  const cv=document.createElement('canvas'); cv.width=cv.height=768; const cx=cv.getContext('2d');
+  try{
+    const loads=[];
+    for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++)
+      loads.push(loadTile(z,x0+i,y0+j).then(im=>cx.drawImage(im,(i+1)*256,(j+1)*256)).catch(()=>{}));
+    await Promise.race([Promise.all(loads), new Promise(r=>setTimeout(r,6000))]);
+    const fx=((lon+180)/360*Math.pow(2,z)-x0+1)*256;
+    const fy=((1-Math.log(Math.tan(lat*RAD)+1/Math.cos(lat*RAD))/Math.PI)/2*Math.pow(2,z)-y0+1)*256;
+    const out=document.createElement('canvas'); out.width=out.height=320; const ox=out.getContext('2d');
+    ox.drawImage(cv,fx-160,fy-160,320,320,0,0,320,320);
+    ox.strokeStyle='#fff'; ox.lineWidth=6; ox.beginPath(); ox.moveTo(160,4); ox.lineTo(160,300); ox.moveTo(4,160); ox.lineTo(316,160); ox.stroke();
+    ox.fillStyle='#ef4444'; ox.beginPath(); ox.arc(160,160,14,0,7); ox.fill();
+    ox.strokeStyle='#fff'; ox.lineWidth=5; ox.stroke();
+    ox.fillStyle='rgba(0,0,0,.65)'; ox.fillRect(0,292,320,28);
+    ox.fillStyle='#fff'; ox.font='13px system-ui'; ox.fillText('© OpenStreetMap contributors',8,311);
+    return out;
+  }catch(e){ return null; }
+}
+
+/* ================= BANNER RENDER ================= */
+function metaLines(m){
+  const f1r=W0=>Math.round(W0*0.027), f2r=W0=>Math.round(W0*0.020);
+  const lines=[];
+  const pl=[m.proj?`🏗️ ${m.proj}`:'', m.plot?`📐 ${m.plot}`:'', m.khasra?`खसरा ${m.khasra}`:'', m.client?`👤 ${m.client}${m.cphone?' ('+m.cphone+')':''}`:''].filter(Boolean).join('  •  ');
+  return { lines, pl, f1r, f2r };
+}
+function drawBanners(ctx,W,H,m,mapCv){
+  const f1=Math.round(W*0.027), f2=Math.round(W*0.020);
+  let lines=[];
+  const {pl}=metaLines(m); if(pl) lines.push({t:pl,f:f2,c:'#a7f3d0',w:700});
+  if(m.bnd){
+    lines.push({t:`🚶 BOUNDARY SURVEY — ${m.bndN} पॉइंट्स  |  ${m.time}`, f:f1, c:'#fff', w:800});
+    lines.push({t:`📐 परिधि: ${m.perim.toFixed(0)} m  •  क्षेत्रफल: ${fmtAreaM2(m.area)}${m.price?`  •  💰 ${fmtINR(m.price)}`:''}`, f:Math.round(W*0.022), c:'#7dd3fc', w:800});
+  }else{
+    lines.push({t:`🧭 दिशा: ${m.z.hi} (${m.z.en}) — ${m.deg}°  |  ${m.time}`, f:f1, c:'#fff', w:800});
+  }
+  lines.push({t:(m.lat!=null?`📍 ${m.lat.toFixed(6)}, ${m.lon.toFixed(6)} (±${Math.round(m.gpsAcc)}m)`:'📍 GPS नहीं मिला')+(m.addr?`  •  ${m.addr.slice(0,75)}`:''), f:f2, c:'#e5e7eb', w:600});
+  if(!m.bnd && m.manual){
+    lines.push({t:`📝 Legal Size: ${m.manual.desc} = ${fmtAreaM2(m.manual.areaM2)}  (स्रोत: ${m.manual.src})${m.price?`  •  💰 ${fmtINR(m.price)}`:''}`, f:Math.round(W*0.022), c:'#fbbf24', w:700});
+  }
+  if(!m.bnd && m.dist){
+    let s=`📏 दूरी: ${fmtLen(m.dist)}${m.wdt?`  •  चौड़ाई: ${fmtLen(m.wdt)}`:''}${m.len2?`  •  लंबाई: ${fmtLen(m.len2)}`:''}${(m.wdt&&m.len2)?`  •  क्षेत्रफल: ${fmtAreaM2(m.wdt*m.len2)}`:''}${(m.price&&!m.manual)?`  •  💰 ${fmtINR(m.price)}`:''}`;
+    lines.push({t:s, f:Math.round(W*0.022), c:'#4ade80', w:700});
+  }
+  const bh=Math.max(70, 24 + lines.reduce((a,l)=>a+l.f*1.28,0));
+  ctx.fillStyle='rgba(0,0,0,0.72)'; ctx.fillRect(0,0,W,bh);
+  ctx.fillStyle=m.bnd?'#38bdf8':(m.z.cls==='z-best'?'#22c55e':m.z.cls==='z-ok'?'#f59e0b':'#ef4444');
+  ctx.fillRect(0,bh-6,W,6);
+  ctx.textBaseline='top'; let y=12;
+  for(const l of lines){ ctx.font=`${l.w} ${l.f}px system-ui,'Noto Sans Devanagari'`; ctx.fillStyle=l.c; ctx.fillText(l.t,16,y); y+=l.f*1.28; }
+  const bb=Math.max(54,W*0.055)+(m.remark?Math.round(W*0.032):0);
+  ctx.fillStyle='rgba(0,0,0,0.72)'; ctx.fillRect(0,H-bb,W,bb);
+  ctx.textBaseline='top';
+  ctx.fillStyle='#fbbf24'; ctx.font=`700 ${Math.round(W*0.019)}px system-ui,'Noto Sans Devanagari'`;
+  ctx.fillText(m.bnd?'🚶 GPS boundary walk — legal survey नहीं; verify अवश्य कराएँ':`वास्तु ${m.z.tag}: ✅ ${m.z.good.split(',')[0]}  |  ⛔ ${m.z.avoid.split(',')[0]}`, 16, H-bb+10);
+  if(m.remark){ ctx.fillStyle='#7dd3fc'; ctx.font=`600 ${Math.round(W*0.02)}px system-ui,'Noto Sans Devanagari'`;
+    ctx.fillText('✍️ '+m.remark, 16, H-bb+14+Math.round(W*0.024)); }
+  ctx.fillStyle='rgba(255,255,255,.7)'; ctx.font=`500 ${Math.round(W*0.016)}px system-ui`;
+  ctx.fillText('Vastu Site Cam • Verified Site Record', 16, H-bb+bb-24);
+  let ms=0,mx=0,my=0;
+  if(mapCv){
+    ms=Math.round(W*0.17); mx=W-ms-14; my=H-bb-ms-14;
+    ctx.fillStyle='#fff'; ctx.fillRect(mx-3,my-3,ms+6,ms+Math.round(W*0.026)+6);
+    ctx.drawImage(mapCv,mx,my,ms,ms);
+    ctx.fillStyle='#000'; ctx.font=`600 ${Math.round(W*0.016)}px system-ui`;
+    ctx.textBaseline='middle'; ctx.textAlign='center';
+    ctx.fillText('📍 MAP', mx+ms/2, my+ms+Math.round(W*0.013));
+    ctx.textAlign='left'; ctx.textBaseline='top';
+  }
+  if(S.signOk && S.signImg){
+    const sh=Math.round(W*0.055), sw2=Math.round(sh*2.6);
+    const sx=(mapCv? mx-sw2-22 : W-sw2-14), sy=H-bb-sh-10;
+    ctx.fillStyle='rgba(255,255,255,.92)';
+    ctx.fillRect(sx-4,sy-4,sw2+8,sh+8);
+    ctx.drawImage(S.signImg, sx, sy, sw2, sh);
+  }
+  if(!m.bnd){
+    ctx.strokeStyle='rgba(34,197,94,.9)'; ctx.lineWidth=Math.max(3,W*0.002);
+    const cx2=W/2, cy2=H*0.42, r=W*0.03;
+    ctx.beginPath(); ctx.arc(cx2,cy2,r,0,7);
+    ctx.moveTo(cx2-r*1.6,cy2); ctx.lineTo(cx2+r*1.6,cy2);
+    ctx.moveTo(cx2,cy2-r*1.6); ctx.lineTo(cx2,cy2+r*1.6); ctx.stroke();
+  }
+}
+async function renderRec(rec){
+  return new Promise(res=>{
+    const im=new Image();
+    im.onload=()=>{
+      rec._w=im.width; rec._h=im.height;
+      const c=document.createElement('canvas'); c.width=im.width; c.height=im.height;
+      const ctx=c.getContext('2d'); ctx.drawImage(im,0,0);
+      drawBanners(ctx,c.width,c.height,rec.meta,rec.mapCv||null);
+      rec.url=c.toDataURL('image/jpeg',0.88);
+      res(rec);
+    };
+    im.onerror=()=>res(rec);
+    im.src=rec.raw;
+  });
+}
+
+/* ================= CAPTURE ================= */
+$('shutter').onclick=async()=>{
+  const v=$('cam'); if(!v.videoWidth) return;
+  const btn=$('shutter'); btn.style.opacity='.4';
+  try{
+    const c=document.createElement('canvas'); c.width=v.videoWidth; c.height=v.videoHeight;
+    c.getContext('2d').drawImage(v,0,0);
+    const z=zoneOf(S.smooth);
+    const meta={ z:{hi:z.hi,en:z.en,cls:z.cls,tag:z.tag,good:z.good,avoid:z.avoid},
+      deg:Math.round(S.smooth),
+      time:new Date().toLocaleString('hi-IN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+      lat:S.lat, lon:S.lon, gpsAcc:S.gpsAcc||0, addr:S.addr, alt:S.alt,
+      dist:S.dist, wdt:S.wdt, len2:S.len2,
+      proj:S.cfg.proj, plot:S.cfg.plot, khasra:S.cfg.khasra, client:S.cfg.client, cphone:S.cfg.phone,
+      sunAz:S.sun.az||null, manual:S.manual?{...S.manual}:null, remark:'' };
+    const _areaP = S.manual ? S.manual.areaM2 : ((S.wdt&&S.len2)?S.wdt*S.len2:null);
+    if(_areaP){ const p=priceOf(_areaP); if(p){ meta.price=p.price; meta.rate=p.rate; meta.rateUnit=p.unit; } }
+    const rec={ key:Date.now()+'_'+Math.floor(Math.random()*9999), raw:c.toDataURL('image/jpeg',0.92), meta, mapCv:null };
+    rec._w=c.width; rec._h=c.height;
+    S.photos.push(rec);
+    rec.mapCv=await getMiniMap(meta.lat,meta.lon);
+    await renderRec(rec);
+    if(rec.mapCv){ try{ rec.mapUrl=rec.mapCv.toDataURL('image/png'); }catch(e){} }
+    idbSave(rec); rebuildThumbs();
+    if(S.cfg.fast){ toast(`⚡ #${activePhotos().length} saved — ${meta.z.en} ${meta.deg}° 📸`); }
+    else{
+      showResult(S.photos.length-1);
+      if(S.cfg.waAuto){ setTimeout(()=>{ try{ $('rWa').click(); }catch(e){} }, 700); }
+    }
+  }finally{ btn.style.opacity='1'; }
+};
+function activePhotos(){
+  const arr = S.cfg.proj ? S.photos.filter(p=>(p.meta.proj||'')===S.cfg.proj) : S.photos;
+  return arr.length || !S.cfg.proj ? arr : S.photos;
+}
+function rebuildThumbs(){
+  const t=$('thumbs'); t.innerHTML='';
+  activePhotos().forEach(p=>{
+    const img=document.createElement('img'); img.src=p.url||p.raw;
+    img.onclick=()=>showResult(S.photos.indexOf(p));
+    img.dataset.key=p.key; t.appendChild(img);
+  });
+  applyCfgUI();
+}
+
+/* ================= RESULT PANEL ================= */
+let curIdx=0;
+function showResult(i){
+  curIdx=i; const p=S.photos[i], m=p.meta;
+  $('rImg').src=p.url||p.raw;
+  $('rkIn').value=m.remark||'';
+  let rows;
+  if(m.bnd){
+    rows=[
+      ['🏗️ प्रोजेक्ट / क्लाइंट', [m.proj,m.plot,m.khasra?('खसरा '+m.khasra):'',m.client].filter(Boolean).join(' • ')||'—'],
+      ['🚶 सर्वे प्रकार', 'GPS Boundary Walk'],
+      ['📍 पॉइंट्स / सटीकता', `${m.bndN} पॉइंट्स • GPS ±${Math.round(m.gpsAcc)}m`],
+      ['📐 परिधि (Perimeter)', m.perim.toFixed(1)+' m'],
+      ['🧮 क्षेत्रफल (approx)', fmtAreaM2(m.area)],
+      ['💰 अनुमानित कीमत', m.price?`${fmtINR(m.price)} (@ ₹${m.rate}/${ULBL[m.rateUnit]})`:'—'],
+      ['📍 केंद्र (Centroid)', m.lat!=null?`${m.lat.toFixed(6)}, ${m.lon.toFixed(6)}`:'—'],
+      ['🏠 Address', m.addr||'—'],
+      ['🕐 तारीख-समय', m.time],
+      ['⚠️ चेतावनी', 'GPS walk survey legal नक्शा नहीं — पटवारी/सर्वेयर से verify कराएँ'],
+      ['✍️ Remark', m.remark||'—']
+    ];
+  }else{
+    rows=[
+      ['🏗️ प्रोजेक्ट / क्लाइंट', [m.proj,m.plot,m.khasra?('खसरा '+m.khasra):'',m.client?(m.client+(m.cphone?' ('+m.cphone+')':'')):''].filter(Boolean).join(' • ')||'—'],
+      ['🧭 दिशा (Direction)', `${m.z.hi} — ${m.z.en} (${m.deg}°)`],
+      ['📊 वास्तु रेटिंग', m.z.tag],
+      ['✅ इस direction के लिए उत्तम', m.z.good],
+      ['⛔ यहाँ रखना/बनाना वर्जित', m.z.avoid],
+      ['📍 GPS', m.lat!=null?`${m.lat.toFixed(6)}, ${m.lon.toFixed(6)} (±${Math.round(m.gpsAcc)}m)`:'उपलब्ध नहीं'],
+      ['🏠 Address', m.addr||'—'],
+      ['🕐 तारीख-समय', m.time],
+      ['☀️ सूर्य की दिशा (उस समय)', m.sunAz!=null? m.sunAz+'°':'—'],
+      ['📝 Legal Size (Manual)', m.manual?`${m.manual.desc} = <b>${fmtAreaM2(m.manual.areaM2)}</b><br>स्रोत: ${m.manual.src}`:'—'],
+      ['📏 माप (approx)', m.dist?`दूरी: ${fmtLen(m.dist)}${m.wdt?`<br>चौड़ाई: ${fmtLen(m.wdt)}`:''}${m.len2?`<br>लंबाई: ${fmtLen(m.len2)}`:''}${(m.wdt&&m.len2)?`<br>🧮 क्षेत्रफल: ${fmtAreaM2(m.wdt*m.len2)}`:''}`:'—'],
+      ['💰 अनुमानित कीमत', m.price?`${fmtINR(m.price)} (@ ₹${m.rate}/${ULBL[m.rateUnit]})${m.manual?' — <b>manual legal size se</b>':''}`:'—'],
+      ['✍️ Remark', m.remark||'—']
+    ];
+  }
+  $('dtable').innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+  $('result').style.display='flex';
+}
+$('rClose').onclick=$('rNew').onclick=()=>{ $('result').style.display='none'; };
+$('rkSave').onclick=async()=>{
+  const p=S.photos[curIdx]; p.meta.remark=$('rkIn').value.trim();
+  await renderRec(p); $('rImg').src=p.url;
+  idbSave(p);
+  const th=$('thumbs').querySelector(`img[data-key="${p.key}"]`); if(th) th.src=p.url;
+  toast('✅ Remark photo पर छप गया');
+};
+$('rDownload').onclick=()=>{
+  const p=S.photos[curIdx], a=document.createElement('a');
+  a.href=p.url||p.raw;
+  a.download=`vastu-${(p.meta.proj||'site').replace(/\s+/g,'_')}-${p.key}.jpg`; a.click();
+};
+async function shareCur(){
+  const p=S.photos[curIdx], m=p.meta;
+  try{
+    const blob=await (await fetch(p.url||p.raw)).blob();
+    const f=new File([blob],'vastu-site.jpg',{type:'image/jpeg'});
+    const txt=m.bnd
+      ? `🚶 Boundary Survey\n${m.proj||''} ${m.plot||''}\n🧮 क्षेत्रफल: ${fmtAreaM2(m.area)}\n${m.price?`💰 ${fmtINR(m.price)}\n`:''}${m.lat!=null?`map: https://maps.google.com/?q=${m.lat},${m.lon}\n`:''}समय: ${m.time}`
+      : `🧭 Vastu Site Photo\n${m.proj?m.proj+' — ':''}${m.plot||''}\nदिशा: ${m.z.hi} (${m.deg}°)\n${(m.wdt&&m.len2)?`🧮 क्षेत्रफल: ${fmtAreaM2(m.wdt*m.len2)}\n`:''}${m.price?`💰 ${fmtINR(m.price)}\n`:''}${m.lat!=null?`GPS: ${m.lat.toFixed(6)},${m.lon.toFixed(6)}\nmap: https://maps.google.com/?q=${m.lat},${m.lon}\n`:''}समय: ${m.time}`;
+    if(navigator.canShare && navigator.canShare({files:[f]})) await navigator.share({files:[f],text:txt});
+    else $('rDownload').click();
+  }catch(e){}
+}
+$('rShare').onclick=shareCur;
+$('rWa').onclick=shareCur;
+$('rDel').onclick=()=>{
+  const p=S.photos[curIdx];
+  if(!confirm('ये photo हटा दें?')) return;
+  S.photos.splice(S.photos.indexOf(p),1); idbDel(p.key);
+  rebuildThumbs();
+  $('result').style.display='none';
+};
+
+/* ================= PDF REPORT ================= */
+$('btnPDF').onclick=async()=>{
+  const list=activePhotos();
+  if(!list.length){ pop('📄 PDF','इस प्रोजेक्ट में photo नहीं है — पहले photo लें।'); return; }
+  if(!window.jspdf){ pop('📄 PDF','PDF library लोड नहीं हुई — internet check करके reload करें।'); return; }
+  pop('📄 PDF बन रही है…',`${list.length} records process हो रहे हैं…`);
+  try{
+    const { jsPDF }=window.jspdf;
+    const doc=new jsPDF('p','mm','a4'); const PW=210, PH=297, MG=14;
+    doc.setFontSize(22); doc.text('Vastu Site Survey Report', PW/2, 32, {align:'center'});
+    doc.setFontSize(12); doc.setTextColor(90);
+    let y=46;
+    const cl=[['Project',S.cfg.proj],['Plot/Unit',S.cfg.plot],['Khasra/Survey',S.cfg.khasra],['Client',S.cfg.client+(S.cfg.phone?' ('+S.cfg.phone+')':'')],['Report Date',new Date().toLocaleString('en-IN')],['Total Records',String(list.length)]];
+    for(const r of cl){ if(!r[1]) continue; doc.setTextColor(60); doc.text(r[0]+':', MG, y); doc.setTextColor(0); doc.text(String(r[1]), MG+42, y); y+=8; }
+    y+=4; doc.setDrawColor(22,163,74); doc.setLineWidth(1); doc.line(MG,y,PW-MG,y); y+=10;
+    doc.setFontSize(13); doc.setTextColor(0); doc.text('Record Summary', MG, y); y+=8;
+    doc.setFontSize(9.5);
+    list.forEach((p,i)=>{ const m=p.meta;
+      const kind=m.bnd?'Boundary':`Dir: ${m.z.en} ${m.deg}d`;
+      const price=m.price?` | Rs.${Math.round(m.price).toLocaleString('en-IN')}`:'';
+      doc.text(`${i+1}.  ${m.time}  |  ${kind}${m.dist||m.bnd?'  |  Meas: yes':''}${price}`, MG+2, y); y+=6;
+      if(y>PH-45){ doc.addPage(); y=20; }
+    });
+    if(S.signOk && S.signImg){
+      if(y>PH-50){ doc.addPage(); y=20; }
+      doc.setFontSize(10); doc.setTextColor(60); doc.text('Surveyor signature:', MG, y+2);
+      try{ doc.addImage(localStorage.getItem('vsc_sign'),'PNG',MG,y+5,55,18); }catch(e){}
+      y+=28;
+    }
+    doc.setFontSize(9); doc.setTextColor(120);
+    doc.text('Directions verified via phone compass. Sizes: camera/GPS approximations - verify legally.', MG, PH-20);
+    doc.text('Generated by Vastu Site Cam', MG, PH-14);
+    for(let i=0;i<list.length;i++){
+      const p=list[i], m=p.meta;
+      doc.addPage();
+      const ratio=(p._h||9)/(p._w||16);
+      const iw=PW-2*MG; let fw=iw, fh=iw*ratio;
+      const maxH=PH-2*MG-56;
+      if(fh>maxH){ fh=maxH; fw=fh/ratio; }
+      doc.addImage(p.url||p.raw,'JPEG',(PW-fw)/2,MG,fw,fh);
+      let yy=MG+fh+8; doc.setFontSize(10); doc.setTextColor(0);
+      let info;
+      if(m.bnd){
+        info=[`Record ${i+1}/${list.length} — BOUNDARY — ${m.time}`,
+          `Points: ${m.bndN} | Perimeter: ${m.perim.toFixed(1)} m | Area: ${(m.area*10.7639).toFixed(0)} sq.ft (${(m.area*1.19599).toFixed(1)} sq.yd)`,
+          m.price?`Est. price: Rs.${Math.round(m.price).toLocaleString('en-IN')} (@ Rs.${m.rate}/${ULBL[m.rateUnit]})`:'',
+          m.lat!=null?`Centroid: ${m.lat.toFixed(6)}, ${m.lon.toFixed(6)}  map: https://maps.google.com/?q=${m.lat},${m.lon}`:'',
+          m.remark?('Remark: '+m.remark):''].filter(Boolean);
+      }else{
+        info=[`Record ${i+1}/${list.length} — ${m.time}`,
+          `Direction: ${m.z.en} ${m.deg} deg   Rating: ${m.z.tag}`,
+          m.lat!=null?`GPS: ${m.lat.toFixed(6)}, ${m.lon.toFixed(6)}  map: https://maps.google.com/?q=${m.lat},${m.lon}`:'GPS: n/a',
+          m.dist?`Measure(approx): Dist ${m.dist.toFixed(2)}m`+(m.wdt?`  W ${m.wdt.toFixed(2)}m`:'')+(m.len2?`  L ${m.len2.toFixed(2)}m  Area ${(m.wdt*m.len2*10.7639).toFixed(0)} sq.ft`:''):'',
+          m.manual?`LEGAL SIZE (Manual): ${m.manual.desc} = ${(m.manual.areaM2*10.7639).toFixed(0)} sq.ft (${(m.manual.areaM2*1.19599).toFixed(1)} sq.yd)  [src: ${m.manual.src}]`:'',
+          m.price?`Est. price: Rs.${Math.round(m.price).toLocaleString('en-IN')} (@ Rs.${m.rate}/${ULBL[m.rateUnit]})${m.manual?' - manual legal size':''}`:'',
+          m.remark?('Remark: '+m.remark):''].filter(Boolean);
+      }
+      for(const t of info){ doc.setFontSize(t.length>90?8.2:10); doc.text(t, MG, yy); yy+=6; }
+    }
+    doc.save(`vastu-report-${(S.cfg.proj||'site').replace(/\s+/g,'_')}-${Date.now()}.pdf`);
+    $('help').style.display='none';
+  }catch(e){ pop('⚠️','PDF बनाने में समस्या: '+e.message); }
+};
+
+/* ================= CSV EXPORT ================= */
+$('sCSV').onclick=()=>{
+  const list=activePhotos();
+  if(!list.length){ pop('🧾 CSV','इस प्रोजेक्ट में record नहीं है।'); return; }
+  const head=['sr','type','project','plot','khasra','client','time','direction_hi','direction','degrees','vastu_rating','lat','lon','gps_acc_m','address','dist_m','width_m','length_m','area_sqft','perimeter_m','bnd_points','manual_size','manual_area_sqft','manual_src','rate_unit','rate_inr','price_inr','remark'];
+  const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const rows=list.map((p,i)=>{ const m=p.meta;
+    const area=m.bnd?m.area:(m.wdt&&m.len2?m.wdt*m.len2:null);
+    return [i+1, m.bnd?'boundary':'photo', m.proj,m.plot,m.khasra,m.client,m.time,
+      m.z?m.z.hi:'', m.z?m.z.en:'', m.deg??'', m.z?m.z.tag:'',
+      m.lat!=null?m.lat.toFixed(6):'', m.lon!=null?m.lon.toFixed(6):'', m.gpsAcc?Math.round(m.gpsAcc):'', m.addr,
+      m.dist?m.dist.toFixed(2):'', m.wdt?m.wdt.toFixed(2):'', m.len2?m.len2.toFixed(2):'',
+      area?(area*10.7639).toFixed(0):'', m.bnd?m.perim.toFixed(1):'', m.bnd?m.bndN:'',
+      m.manual?m.manual.desc:'', m.manual?(m.manual.areaM2*10.7639).toFixed(0):'', m.manual?m.manual.src:'',
+      m.rateUnit||'', m.rate||'', m.price?Math.round(m.price):'', m.remark].map(esc).join(',');
+  });
+  const blob=new Blob(['\ufeff'+head.join(',')+'\n'+rows.join('\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`vastu-survey-${(S.cfg.proj||'site').replace(/\s+/g,'_')}-${Date.now()}.csv`; a.click();
+};
+
+/* ================= CLEAR / BACKUP / IMPORT ================= */
+$('sClear').onclick=async()=>{
+  if(!confirm('सारे photos हटा दें? (वापस नहीं आएंगे — पहले Backup ले लें)')) return;
+  S.photos=[]; rebuildThumbs(); await idbClear();
+  pop('🗑️','सारे photos हटा दिए गए।');
+};
+$('fBackup').onclick=async()=>{
+  const data={ v:3, date:new Date().toISOString(), cfg:S.cfg, sign:localStorage.getItem('vsc_sign')||null,
+    photos:S.photos.map(p=>({key:p.key, raw:p.raw, mapUrl:p.mapUrl||null, meta:p.meta})) };
+  const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`vastu-backup-${Date.now()}.json`; a.click();
+  pop('💾 Backup','Backup file download हो गई — ise Google Drive/UPI chat me रख लें। Restore कभी भी संभव।');
+};
+$('fImport').onclick=()=>$('fImpFile').click();
+$('fImpFile').onchange=async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  try{
+    const data=JSON.parse(await f.text());
+    if(!data || !Array.isArray(data.photos)) throw new Error('invalid file');
+    if(data.cfg) Object.assign(S.cfg,data.cfg);
+    if(data.sign){ localStorage.setItem('vsc_sign',data.sign);
+      S.signImg=new Image(); S.signImg.onload=()=>{S.signOk=true;}; S.signImg.src=data.sign; }
+    localStorage.setItem('vsc_cfg',JSON.stringify(S.cfg)); loadCfg();
+    await idbClear(); S.photos=[];
+    for(const st of data.photos){
+      const rec={ key:st.key, raw:st.raw, meta:st.meta, mapCv:null, mapUrl:st.mapUrl||null };
+      if(st.mapUrl){ const im=new Image(); await new Promise(r=>{im.onload=r;im.onerror=r;im.src=st.mapUrl;});
+        try{ const cv=document.createElement('canvas'); cv.width=im.width; cv.height=im.height;
+          cv.getContext('2d').drawImage(im,0,0); rec.mapCv=cv; }catch(e){} }
+      S.photos.push(rec); await renderRec(rec); idbSave(rec);
+    }
+    rebuildThumbs();
+    pop('📥 Restore हो गया',`${data.photos.length} records restore हो गए।`);
+  }catch(err){ pop('⚠️','Restore fail: '+err.message); }
+  e.target.value='';
+};
+
+/* ================= PIN LOCK ================= */
+function applyLock(){
+  if(S.cfg.pinOn && S.cfg.pin){ S.locked=true; $('lock').style.display='flex'; $('lockIn').focus(); }
+}
+function tryUnlock(){
+  if($('lockIn').value===S.cfg.pin){ S.locked=false; $('lock').style.display='none'; $('lockIn').value=''; $('lockErr').textContent=''; }
+  else { $('lockErr').textContent='गलत PIN — दोबारा डालें'; $('lockIn').value=''; }
+}
+$('lockBtn').onclick=tryUnlock;
+$('lockIn').addEventListener('keydown',e=>{ if(e.key==='Enter') tryUnlock(); });
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden && S.cfg.pinOn && S.cfg.pin && S.locked) $('lock').style.display='flex'; });
+document.addEventListener('visibilitychange',()=>{ if(document.hidden && S.cfg.pinOn && S.cfg.pin) S.locked=true; });
+applyLock();
+
+/* ================= INDEXEDDB ================= */
+let db=null;
+function idbOpen(){ return new Promise((res,rej)=>{ if(!window.indexedDB) return rej('no idb');
+  const q=indexedDB.open('vastucam',3);
+  q.onupgradeneeded=()=>{ if(!q.result.objectStoreNames.contains('photos')) q.result.createObjectStore('photos'); };
+  q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); }); }
+async function idbSave(rec){
+  try{ db=db||await idbOpen();
+    const st={key:rec.key, raw:rec.raw, mapUrl:rec.mapUrl||null, meta:rec.meta};
+    await new Promise((res,rej)=>{ const t=db.transaction('photos','readwrite');
+      t.objectStore('photos').put(st,rec.key); t.oncomplete=res; t.onerror=rej; });
+  }catch(e){}
+}
+async function idbDel(key){
+  try{ db=db||await idbOpen();
+    await new Promise((res,rej)=>{ const t=db.transaction('photos','readwrite');
+      t.objectStore('photos').delete(key); t.oncomplete=res; t.onerror=rej; });
+  }catch(e){}
+}
+async function idbClear(){
+  try{ db=db||await idbOpen();
+    await new Promise((res,rej)=>{ const t=db.transaction('photos','readwrite');
+      t.objectStore('photos').clear(); t.oncomplete=res; t.onerror=rej; });
+  }catch(e){}
+}
+async function idbRestore(){
+  try{ db=db||await idbOpen();
+    const all=await new Promise((res,rej)=>{ const out=[];
+      const t=db.transaction('photos','readonly');
+      const c=t.objectStore('photos').openCursor();
+      c.onsuccess=()=>{ if(c.result){ out.push({key:c.result.key,...c.result.value}); c.result.continue(); } };
+      t.oncomplete=()=>res(out); t.onerror=rej; });
+    for(const st of all){
+      const rec={ key:st.key, raw:st.raw, meta:st.meta, mapCv:null, mapUrl:st.mapUrl||null };
+      if(st.mapUrl){ const im=new Image(); await new Promise(r=>{im.onload=r;im.onerror=r;im.src=st.mapUrl;});
+        try{ const cv=document.createElement('canvas'); cv.width=im.width; cv.height=im.height;
+          cv.getContext('2d').drawImage(im,0,0); rec.mapCv=cv; }catch(e){} }
+      S.photos.push(rec); await renderRec(rec);
+    }
+    rebuildThumbs();
+  }catch(e){}
+}
+
+/* ================= HELP / POPUPS ================= */
+function pop(title,html){ $('popTitle').innerHTML=title; $('popBody').innerHTML=html; $('help').style.display='block'; }
+$('hClose').onclick=()=>{ $('help').style.display='none'; };
+
+/* ================= TOAST + QUICK REMARK TAGS ================= */
+let toastT=null;
+function toast(msg){ const t=$('toast'); t.innerHTML=msg; t.style.display='block';
+  clearTimeout(toastT); toastT=setTimeout(()=>t.style.display='none',2400); }
+document.querySelectorAll('.qk').forEach(b=>b.onclick=()=>{
+  const cur=$('rkIn').value.trim();
+  $('rkIn').value = cur ? cur+', '+b.dataset.t : b.dataset.t;
+  $('rkSave').click();
+});
+
+/* ================= SHARE ALL PHOTOS ================= */
+$('sShareAll').onclick=async()=>{
+  const list=activePhotos();
+  if(!list.length){ pop('📤','इस प्रोजेक्ट में photo नहीं है।'); return; }
+  pop('📤 तैयार हो रहा है…',`${list.length} photos load ho rahi hain…`);
+  try{
+    const files=[];
+    for(const p of list){ const blob=await (await fetch(p.url||p.raw)).blob();
+      files.push(new File([blob],`vastu-${(p.meta.plot||p.key).toString().replace(/\s+/g,'_')}-${files.length+1}.jpg`,{type:'image/jpeg'})); }
+    $('help').style.display='none';
+    if(navigator.canShare && navigator.canShare({files})) await navigator.share({files, text:`Vastu Site Photos — ${S.cfg.proj||'site'} (${files.length})`});
+    else pop('📤','आपका browser एक साथ कई photos share नहीं करता — photo खोलकर एक-एक Share करें, या 📄 PDF बनाएँ (सब उसमें आ जाती हैं)।');
+  }catch(e){ $('help').style.display='none'; }
+};
+$('sHelp').onclick=()=>{
+  $('settings').style.display='none';
+  pop('❓ पूरा Help',`<ul>
+  <li>📷 <b>Photo:</b> crosshair जिस दिशा में है, वही direction + GPS + map photo पर छपता है। 🔴 button दबाएँ।</li>
+  <li>🧭 <b>Compass सही न लगे:</b> फोन "8" के आकार में घुमाएँ; metal cover निकालें। ☀️ chip से सूर्य से verify करें।</li>
+  <li>📏 <b>माप:</b> 📏 mode → height डालें → base पर घुमा कर "दूरी लॉक" → A/B = चौड़ाई → "↔️" = लंबाई → area + (rate हो तो) 💰 कीमत automatic। Laser/tep की exact reading input में डालें तो सब exact होगा।</li>
+  <li>📝 <b>Manual/Legal Size (registry नक्शा):</b> 📏 mode में नीचे golden section — naksha/khasra की असली नाप डालें (feet/meter/गज में L×B या सीधा area) + स्रोत चुनें (पटवारी नाप, Registry, Tape आदि) → photo पर <b style="color:#fbbf24">"📝 Legal Size"</b> gold me छपेगी, approx वाली green line से अलग। Rate set हो तो <b>exact area se सही कीमत</b> बनेगी।</li>
+  <li>🚶 <b>Boundary:</b> 🚶 mode → "शुरू" → plot के कोनो पर चलें → "Stop + Save" → GPS area + परिधि + कीमत का record बनेगा।</li>
+  <li>📁 <b>Folders:</b> ⚙️ में Active Project बदलें — हर प्रोजेक्ट के अपने photos, PDF, CSV।</li>
+  <li>📄 <b>PDF:</b> 📄 button — client के लिए professional report (signature सहित)।</li>
+  <li>💾 <b>Backup:</b> ⚙️ → Backup डाउनलोड — file को Drive पर रखें; कभी भी Restore करें।</li>
+  <li>⚡ <b>Fast Capture:</b> ⚙️ में चालू करें — photo लेते ही save, panel नहीं खुलेगा (site पर 20-30 photos लगातार shooting)। Thumbnail से बाद में details देखें।</li>
+  <li>🏷️ <b>Quick Tags:</b> photo खोलने पर ऊपर के chips (Main door/NE corner/Nal आदि) tap करें — remark तुरंत छप जाएगा।</li>
+  <li>📁 <b>Project जल्दी बदलें:</b> ऊपर हरी 🏗️ chip पर tap — settings खोलने की ज़रूरत नहीं। chip में 📷 count भी दिखता है।</li>
+  <li>🎥 <b>Quality vs Storage:</b> ⚙️ से HD/FHD/QHD चुनें; 📤 सारी Photos Share से पूरे project की photos एक साथ भेजें।</li>
+  <li>🔒 <b>PIN:</b> ⚙️ में PIN lock चालू करें — app हर बार खोलने पर PIN माँगेगा।</li>
+  </ul>`);
+};
+
+window.addEventListener('resize',buildTape);
+startCam();
+idbRestore();
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
+</script>
+</body>
+</html>

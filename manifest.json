@@ -1,0 +1,17 @@
+{
+  "name": "Vastu Site Camera - वास्तु साइट कैमरा",
+  "short_name": "Vastu Cam",
+  "description": "Live compass direction, GPS, Vastu analysis aur measurement ke saath site photos — sab online, bina app install.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#16a34a",
+  "lang": "hi",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
