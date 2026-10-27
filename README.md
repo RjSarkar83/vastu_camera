@@ -4,6 +4,8 @@
 
 > ❌ **पुरानी समस्या:** laptop / front camera सपोर्ट न करना, और UI का बहुत ज़्यादा भीड़-भाड़ वाला होना।
 
+> 📷 **v7 (latest):** अब ऐप में **2 अलग कैमरे** हैं — **① Architecture & Construction Vastu Camera** (पूरा वास्तु ऐप: दिशा, डिग्री, GPS, compass, report) और **② Branding Recce Camera** (साफ़ फ़ोटो — सिर्फ लाइन ड्राइंग मार्किंग + साइज़/मटेरियल caption, कोई वास्तु जानकारी नहीं)। Welcome screen पर चुनें, top bar से बदलें। विस्तार नीचे v7 सेक्शन में है।
+
 ---
 
 ## 🔍 पुराने कोड में असली कारण क्या था?
@@ -64,6 +66,81 @@
 
 **सभी devices:** mobile portrait/landscape, tablet, laptop/desktop, notch safe-area, `dvh` fallback, 48px+ touch targets, `touch-action: manipulation` (300ms delay खत्म), कोई CDN नहीं।
 
+### 🎯 v5 — Option 4: Branding Recce (लाल हाइलाइट)
+नया **4th option** साइड पैनल में जोड़ा गया है — लाल border + लाल `4` badge के साथ, ताकि वो तुरंत नज़र आए:
+
+**किन कामों के लिए:** Retail Store · Outdoor Advertisement · Office · In-shop Branding · Event Decoration · Exhibition Branding।
+
+**क्या-क्या सेव होता है:**
+- **Category select** + **साइट का नाम** + **साइज़ (W × H)** + **unit (ft / m / in)** + **Use Material** (Vinyl, Flex, ACP, Fabric…)।
+- **Recce मोड ON** करने पर हर नई फ़ोटो की stamp में ये लाइनें अपने आप छप जाती हैं:
+  `रेक्की: Outdoor Advertisement · Shri Ram Nagar` / `साइज़: 12 × 6 ft · मटेरियल: Vinyl`।
+- **आसान मार्किंग:** “मार्किंग शुरू करें” → फ़ोटो पर टैप/क्लिक करके numbered points जोड़ें, हर point के लिए छोटा नोट लिखें → **Save**। Markers फ़ोटो पर permanently burn हो जाते हैं और metadata में भी सेव होते हैं।
+- **फ़ाइल का नाम** अब उसी क्रम में बनता है: `vastu_<site>_<size>_<material>_<timestamp>.jpg`  
+  उदाहरण: `vastu_Shri_Ram_Nagar_12_6_ft_Vinyl_2026-10-27-07-06-24.jpg`
+- **Photo modal, Gallery card, HTML report और CSV** सभी में recce category, site, size, material और marker count दिखता/export होता है।
+
+> ⚠️ **v7 अपडेट:** ये Option 4 अब साइड पैनल के अंदर नहीं है — ऊपर वाले v7 सेक्शन के अनुसार ये **अलग Branding Recce Camera** बन गया है। लाल हाइलाइट वैसी ही रखी गई है।
+
+### 🖼️ v6 — ArtVision ब्रांड लोगो और नया ऐप आइकॉन
+आपके द्वारा भेजे गए **Primary Logo.png** और **LogoMark.png** अब पूरे ऐप में लगे हैं:
+
+- **Welcome screen** — बड़ा ArtVision primary wordmark + `Vastu Site Camera · by ArtVision`।
+- **Top bar** — compact LogoMark (infinity + gold stroke + red pointer), साथ में Hindi/English short title।
+- **हर stamped फ़ोटो** — ऊपर दाएँ कोने में सफ़ेद ArtVision wordmark (`logo-primary-white.png`) + app नाम; अगर image कभी load न हो तो text watermark fallback।
+- **HTML report / print** — header में embedded primary logo (data URI, यानी report **offline / अकेली HTML फ़ाइल** में भी लोगो दिखता है), footer में `· ArtVision`।
+- **WhatsApp / Share text** — `ArtVision Vastu Site Camera` से शुरू होता है।
+- **PWA icons** — `icon-192.png`, `icon-512.png`, `icon.svg` अब LogoMark से बने हैं (सफ़ेद maskable-safe background पर)। `manifest.json` name/short_name/theme भी ArtVision के अनुसार।
+- Service worker **v6** network-first — shell में तीनों logo files भी cache हैं, इसलिए offline होने पर भी branding नहीं गायब होती।
+
+> **रंग:** लोगो में मौजूद लाल और gold gradient ब्रांड का हिस्सा हैं; बाकी ऐप की minimal-red, सफ़ेद-काला-ग्रे थीम जस की तस है।
+
+### 📷 v7 — अब 2 अलग कैमरे (Recce अंदर से बाहर)
+यूज़र ने कहा: *“isme 2 camera hai ek architecture and construction vastu camera, dusra Branding Recce camera — andar se hatao, ye alag chij hai.”* अब ऐसा ही है:
+
+**Welcome screen पर 2 बड़े कार्ड** (बिना page reload के mode switch, top bar में “कैमरा बदलें” से वापस):
+
+| # | कैमरा | क्या करता है |
+|---|---|---|
+| 1 | **Architecture & Construction Vastu Camera** | पूरा वास्तु ऐप — 8 दिशाएँ, डिग्री, GPS, compass, साइट डिटेल्स, वास्तु सुझाव, stamped फ़ोटो, HTML report, CSV |
+| 2 | **Branding Recce Camera** (लाल कार्ड/पैनल) | **साफ़ कैमरा** — अलग पैनल, अलग गैलरी, अलग report/CSV |
+
+**Branding Recce कैमरे की फ़ोटो पर कोई जानकारी नहीं जाती** — दिशा, डिग्री, GPS, तारीख, कम्पास, साइट डिटेल्स या disclaimer में से कुछ भी नहीं छपता। सिर्फ:
+
+- **लाइन ड्राइंग मार्किंग** — फ़ोटो लेते ही marking editor अपने आप खुलता है: **पेन, लाइन, तीर (arrow), बॉक्स, पॉइंट + नोट**, 4 रंग, मोटाई slider, Undo, Clear। सारे निशान full-resolution JPEG में permanently burn होते हैं और metadata में vector data के रूप में भी सेव होते हैं।
+- नीचे **एक छोटी caption**: `12 × 6 ft | Vinyl` (साइज़ | मटेरियल)।
+- ऊपर दाएँ छोटा **ArtVision लोगो** — पैनल में switch से बंद किया जा सकता है।
+
+**फ़ाइल नाम** (site → size → material → timestamp):
+`Shri_Ram_Nagar_12x6ft_Vinyl_2026-10-27-082657.jpg`
+
+सेव होते ही फ़ोटो उसी नाम से **auto-download** भी होती है (पैनल में switch से बंद कर सकते हैं)। साइट, साइज़ और मटेरियल gallery, photo modal, recce HTML report और `recce_photos_*.csv` में भी सेव होते हैं। Recce report में कोई वास्तु/दिशा/GPS डेटा नहीं होता।
+
+> पुराना **Option 4 (साइड पैनल के अंदर)** अब हटा दिया गया है — वो अब **कैमरा नं. 2** है, पूरी तरह अलग। पुरानी v5/v6 की recce फ़ोटो अपने आप इस नए कैमरे की गैलरी में migrate हो जाती हैं।
+
+### 🌐 v8 — सभी devices / सभी OS के लिए user-friendly optimization
+ये final build **हर डिवाइस टाइप और हर ऑपरेटिंग सिस्टम** पर चलने के लिए ट्यून किया गया है:
+
+**टेस्ट किए गए platforms / engines**
+- **iOS / iPadOS** — iPhone 13, iPad Pro (WebKit / Safari engine)
+- **Android** — phone, tablet, 320px छोटा phone, landscape 844×390 (Chromium / Chrome, Samsung Internet, MI Browser detection)
+- **Desktop / Laptop** — Windows, macOS, Linux, ChromeOS (Chrome, Edge, Firefox, Opera)
+- **Engine compatibility** — Chromium, **WebKit (Safari)**, **Firefox** और **old WebView जहाँ `PointerEvent` नहीं है** — चारों में upload + marking + filename flow टेस्ट हुआ।
+- **Touch input** — असली `touchstart/touchmove/touchend` drag से pen stroke ड्रॉ करके JPEG सेव टेस्ट किया।
+
+**क्या-क्या जोड़ा / सुधारा**
+- **Welcome पर “सिस्टम चेक” bar** — device type, OS, browser, HTTPS, Camera API, storage, low-RAM mode और installed-PWA status के छोटे chips; साथ में **OS-specific help** (iOS Safari settings, Android site settings, Windows/macOS privacy, Firefox/Edge permissions)। अगर HTTPS या Camera API missing हो तो तुरंत लाल warning।
+- **Keyboard shortcuts** (laptop/desktop): `Space`/`Enter` = फ़ोटो, `1`–`8` = दिशा, `M` = पैनल, `G` = GPS, `?` = मदद, `Esc` = बंद। Input fields में टाइप करते वक्त shortcuts अपने आप बंद हो जाते हैं।
+- **PWA Install** — Chromium में `beforeinstallprompt` से “ऐप इनस्टॉल करें” बटन; iOS Safari पर “Share → Add to Home Screen” hint।
+- **iOS zoom fix** — touch devices पर सारे inputs **16px+**, इसलिए field टैप करने पर Safari zoom नहीं करता। `focus-visible` outline, `aria-label` और keyboard focus states।
+- **Welcome scroll fix** — lambi screen (320px / landscape) पर logo कटता नहीं; `margin:auto` + scrollable container।
+- **Top bar wrap** — 320–600px phones पर direction pill दूसरी row में जाती है, बटनें shrink होती हैं; कोई horizontal overflow नहीं।
+- **Marking compatibility** — `PointerEvent` न होने पर **mouse + touch fallback**; `requestAnimationFrame` throttling से कम RAM पर भी smooth drawing; editor अब base64 `toDataURL` की जगह **blob URL** इस्तेमाल करता है (कम memory) और URL cleanup होती है।
+- **Low-RAM auto mode** — `deviceMemory ≤ 2 GB` या `hardwareConcurrency ≤ 2` होने पर camera अपने आप **720p** पर cap हो जाता है ताकि lag न हो (Settings में बदल सकते हैं)।
+- **Storage / Private mode** — IndexedDB बंद होने पर ऐप चलता रहता है (in-memory) और एक साफ़ warning देता है: “फ़ोटो सिर्फ इस सेशन में रहेंगी, डाउनलोड कर लें।”
+- **Older browsers** — `canvas.toBlob` न होने पर data-URL fallback; `ctx.roundRect` fallback; कोई external CDN/script नहीं; service worker **v8 network-first**।
+- Landscape, notch safe-area, `overscroll-behavior`, `prefers-reduced-motion`, 44px+ touch targets — सब बरकरार।
+
 ### 🔒 भरोसा / “Genuine” होना
 - डेटा **सिर्फ आपके डिवाइस** में (IndexedDB + localStorage) — कोई server, login या upload नहीं।
 - GPS/compass वास्तविक browser APIs से; न मिले तो **“बंद / मैनुअल”** स्पष्ट दिखता है — कोई नकली डेटा नहीं।
@@ -86,7 +163,10 @@
 | `index.html` | **पूरा ऐप** — inline CSS + JS, कोई external dependency नहीं |
 | `manifest.json` | PWA install / home-screen icon |
 | `sw.js` | Network-first offline cache (update तुरंत दिखता है) |
-| `icon.svg`, `icon-192.png`, `icon-512.png` | App icons |
+| `icon.svg`, `icon-192.png`, `icon-512.png` | App icons — आपके LogoMark से बने |
+| `logo-primary.png` | ArtVision primary wordmark (welcome / report) |
+| `logo-primary-white.png` | Dark photo watermark के लिए सफ़ेद वर्ज़न |
+| `logo-mark.png` | Compact infinity mark (top bar) |
 | `README.md` | ये फ़ाइल |
 
 ---
@@ -104,11 +184,14 @@
    - `icon.svg`
    - `icon-192.png`
    - `icon-512.png`
+   - `logo-primary.png`
+   - `logo-primary-white.png`
+   - `logo-mark.png`
 4. Commit करें। 30–60 सेकंड बाद खोलें:
    **https://rjsarkar83.github.io/vastu_camera/**
 5. **Purana cache हटाने के लिए** पहली बार site खोलकर hard-refresh करें (`Ctrl+Shift+R` / mobile पर browser cache clear)। नया `sw.js` network-first है, इसलिए आगे updates तुरंत दिखेंगे।
 
-> ℹ️ Arena में इस समय **GitHub connector उपलब्ध नहीं है**, इसलिए मैं सीधे आपके repo में push नहीं कर सकता। इसीलिए नीचे **ready-to-upload **`vastu-camera-github-final-v4.zip`**** बना दिया गया है — बस उसे डाउनलोड करके repo में डाल दें।
+> ℹ️ Arena में इस समय **GitHub connector उपलब्ध नहीं है**, इसलिए मैं सीधे आपके repo में push नहीं कर सकता। इसीलिए नीचे **ready-to-upload **`vastu-camera-github-final-v8.zip`**** बना दिया गया है — बस उसे डाउनलोड करके repo में डाल दें।
 
 ---
 
@@ -148,4 +231,4 @@ google-chrome --use-fake-device-for-media-stream --use-fake-ui-for-media-stream 
 
 ---
 
-बनाया गया: 27 अक्टूबर 2026 • **v4 light/performance build** • Single-file, dependency-free, browser-based Vastu camera.
+बनाया गया: 27 अक्टूबर 2026 • **v8 — all-devices / all-OS optimized final build** (v7 के 2 अलग कैमरों के ऊपर) (Architecture Vastu + Branding Recce, ऊपर v6 ArtVision branding) • Single-file, dependency-free, browser-based Vastu camera.

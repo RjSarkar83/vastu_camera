@@ -3,11 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1d2227">
-<meta name="description" content="Vastu Site Camera — भारत के लिए बनाया गया सरल, पारदर्शी और ब्राउज़र-आधारित वास्तु साइट कैमरा। लैपटॉप, फ्रंट और बैक कैमरा सपोर्ट।">
-<title>Vastu Site Camera — सरल वास्तु कैमरा</title>
+<meta name="theme-color" content="#101214">
+<meta name="description" content="ArtVision के दो अलग कैमरे — Architecture & Construction Vastu Camera (दिशा, GPS, compass) और Branding Recce Camera (सिर्फ line marking, साइज़, मटेरियल)। लैपटॉप, फ्रंट और बैक कैमरा सपोर्ट।">
+<title>ArtVision — Vastu Camera + Branding Recce Camera</title>
+<meta name="application-name" content="ArtVision Cams">
+<meta name="apple-mobile-web-app-title" content="ArtVision Cams">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{
@@ -28,18 +31,19 @@ button{cursor:pointer;border:0;background:none;color:inherit;touch-action:manipu
 img{font-size:11px;color:var(--muted)}
 
 /* ---------- welcome ---------- */
-#welcome{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto;
+#welcome{position:fixed;inset:0;z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:18px;overflow:auto;
   background:radial-gradient(circle at 15% 10%,#eef1f3 0,transparent 45%),radial-gradient(circle at 85% 85%,#f2f4f5 0,transparent 45%),var(--bg)}
 #welcome:before,#welcome:after{content:"";position:fixed;border-radius:50%;opacity:.35;pointer-events:none}
 #welcome:before{width:380px;height:380px;background:#dfe4e8;top:-160px;right:-120px}
 #welcome:after{width:260px;height:260px;background:#e7ebee;bottom:-110px;left:-80px}
-.welcome-card{position:relative;z-index:1;width:min(560px,100%);background:rgba(255,255,255,.97);
+.welcome-card{position:relative;z-index:1;width:min(560px,100%);margin:auto;background:rgba(255,255,255,.97);
   border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:26px 22px 20px}
-.brand{display:flex;align-items:center;gap:14px}
-.brand .logo{width:58px;height:58px;border-radius:16px;background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow2)}
-.brand .logo .icon{width:34px;height:34px;stroke-width:1.6}
-.brand h1{font-size:22px;margin:0;line-height:1.2;letter-spacing:-.3px;color:var(--ink)}
-.brand p{margin:3px 0 0;color:var(--muted);font-size:13px;font-weight:600;letter-spacing:.4px}
+.brand{text-align:center;margin-bottom:2px}
+.brand-logo{width:min(310px,88%);height:auto;display:block;margin:0 auto 12px}
+.brand-sub h1{font-size:21px;margin:0;line-height:1.2;letter-spacing:-.3px;color:var(--ink)}
+.brand-sub p{margin:4px 0 0;color:var(--muted);font-size:12.5px;font-weight:600;letter-spacing:.3px}
+.brand-sub p b{color:var(--ink)}
+.tb-logo{width:26px;height:26px;object-fit:contain;display:block;flex:none}
 .made-in{display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:var(--grey);color:var(--ink);border:1px solid var(--line);
   padding:5px 10px;border-radius:20px;font-size:11.5px;font-weight:700}
 .tagline{margin:16px 0 18px;font-size:15px;line-height:1.6;color:#2a3137;font-weight:600}
@@ -140,8 +144,8 @@ img{font-size:11px;color:var(--muted)}
 .error-card .btnrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 
 /* ---------- side panel ---------- */
-#sidePanel{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--bg);border-radius:22px 22px 0 0;max-height:76vh;max-height:76dvh;transform:translateY(105%);transition:transform .24s ease;box-shadow:0 -8px 24px rgba(16,18,20,.16);display:flex;flex-direction:column;border-top:1px solid var(--line)}
-#sidePanel.open{transform:translateY(0)}
+#sidePanel,#reccePanel{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--bg);border-radius:22px 22px 0 0;max-height:76vh;max-height:76dvh;transform:translateY(105%);transition:transform .24s ease;box-shadow:0 -8px 24px rgba(16,18,20,.16);display:flex;flex-direction:column;border-top:1px solid var(--line)}
+#sidePanel.open,#reccePanel.open{transform:translateY(0)}
 .sp-handle{width:46px;height:5px;border-radius:5px;background:var(--grey2);margin:9px auto 0;flex:none}
 .sp-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 8px;flex:none}
 .sp-head h2{margin:0;font-size:16px;color:var(--ink)}
@@ -218,15 +222,143 @@ input[type=range]{width:100%;margin-top:7px;accent-color:var(--dark)}
 .help-block ul{padding-left:18px;margin:6px 0}
 .note-box{background:var(--grey);border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:12px;line-height:1.6;color:#2a3137}
 
-.toast{position:fixed;left:50%;bottom:calc(200px + var(--safeB));transform:translateX(-50%) translateY(20px);background:var(--dark);color:#fff;padding:11px 18px;border-radius:22px;font-size:13px;font-weight:800;z-index:300;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:var(--shadow2);max-width:92vw;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(200px + var(--safeB));transform:translateX(-50%) translateY(20px);background:var(--dark);color:#fff;padding:11px 18px;border-radius:22px;font-size:13px;font-weight:800;z-index:85;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:var(--shadow2);max-width:92vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.err{background:var(--danger)}
+
+
+/* ---------- option 4: branding recce + marking ---------- */
+.recce-card{position:relative;border-left:4px solid var(--danger)}
+.opt-badge{position:absolute;top:-11px;right:14px;width:26px;height:26px;border-radius:50%;background:var(--danger);color:#fff;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow2)}
+.switch-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0;padding:10px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:13px;font-weight:700;color:var(--ink)}
+.size-row{display:flex;align-items:center;gap:6px}
+.size-row input{flex:1;min-width:0;width:100%}
+.size-row select{width:76px;flex:none}
+.size-row span{color:var(--muted);font-weight:800}
+.tiny{font-size:10.5px;margin-top:8px}
+.recce-summary{background:#fff5f3;border:1px solid #f3c9c1;border-radius:9px;padding:8px 10px;font-size:11.5px;line-height:1.5;margin-top:8px;color:#5a2520}
+.mark-stage{position:relative;width:100%;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--grey);margin-top:10px;line-height:0}
+.mark-img{width:100%;height:auto;display:block}
+.mark-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
+.mark-list{display:grid;gap:8px;margin-top:12px}
+.mark-item{display:flex;align-items:center;gap:8px;background:var(--grey);border:1px solid var(--line);border-radius:10px;padding:8px}
+.mark-num{width:26px;height:26px;border-radius:50%;background:var(--danger);color:#fff;font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none}
+.mark-item input{flex:1;min-width:0;border:1px solid var(--line);border-radius:8px;padding:8px;font-size:13px;background:#fff;color:var(--ink)}
+.mark-item button{width:32px;height:32px;border-radius:8px;background:#fff;border:1px solid var(--line);color:var(--ink);display:flex;align-items:center;justify-content:center;flex:none}
+.mark-empty{font-size:12px;color:var(--muted);text-align:center;padding:10px}
+
+/* ---------- v7: two separate cameras ---------- */
+html[lang="en"] .hi-txt{display:none!important}
+html[lang="hi"] .en-txt{display:none!important}
+.mode-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 16px}
+.mode-card{position:relative;text-align:left;background:#fafbfc;border:1px solid var(--line);border-radius:14px;padding:12px 11px 12px 40px;color:var(--ink);font-weight:700;cursor:pointer;min-height:84px;transition:border-color .15s,background .15s}
+.mode-card>b{position:absolute;top:12px;left:11px;width:22px;height:22px;border-radius:50%;background:var(--dark);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center}
+.mode-card .mc-title{display:block;font-size:12.5px;line-height:1.3;font-weight:900}
+.mode-card small{display:block;color:var(--muted);font-size:10.8px;font-weight:600;line-height:1.45;margin-top:5px}
+.mode-card.on{border-color:var(--dark);background:#eef1f3;box-shadow:inset 0 0 0 1px var(--dark)}
+.mode-card.recce{border-left:4px solid var(--danger);padding-left:38px}
+.mode-card.recce .mc-title{color:#a5281c}
+.mode-card.recce>b{background:var(--danger)}
+.mode-card.recce.on{background:#fff5f3;border-color:var(--danger);box-shadow:inset 0 0 0 1px var(--danger)}
+.mode-vastu .steps-recce,.mode-vastu .trust-recce,.mode-vastu #reccePanel,.mode-vastu #recceMini{display:none!important}
+.mode-recce .steps-vastu,.mode-recce .trust-vastu,.mode-recce #sidePanel{display:none!important}
+.mode-recce #dirPill,.mode-recce #gpsBtn,.mode-recce #compassOverlay,.mode-recce #vastuMini,
+.mode-recce #sensorChip,.mode-recce #gpsChip,.mode-recce #dirBtn{display:none!important}
+#recceMini{position:absolute;right:12px;top:12px;z-index:11;background:rgba(20,24,28,.8);color:#fff;border-radius:10px;padding:7px 10px;font-size:11px;font-weight:700;line-height:1.45;max-width:62%;text-align:right}
+#recceMini b{display:block;font-size:12.5px}
+#recceMini span{opacity:.88}
+.mode-switch-btn{background:var(--grey);border:1px solid var(--line);border-radius:20px;padding:7px 11px;font-size:12px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.mode-switch-btn .icon{width:16px;height:16px}
+#reccePanel .sp-head h2{color:#a5281c}
+.recce-panel-card{border-left:4px solid var(--danger)!important}
+.recce-filename{background:#fff5f3;border:1px dashed #e8b6ad;border-radius:9px;padding:8px 10px;font-size:11px;line-height:1.5;color:#5a2520;word-break:break-all;margin-top:8px}
+.recce-filename b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.4px;opacity:.75;margin-bottom:2px}
+.clean-note{background:#fafbfc;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:11.5px;line-height:1.6;color:var(--muted);margin-top:10px}
+.clean-note b{color:var(--ink)}
+/* ---------- v7: line-drawing marking toolbar ---------- */
+.mark-tools{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 8px}
+.mark-tool{background:var(--grey);border:1px solid var(--line);border-radius:9px;padding:7px 10px;font-size:11.5px;font-weight:800;color:var(--ink)}
+.mark-tool.on{background:var(--dark);border-color:var(--dark);color:#fff}
+.mark-tool.act{background:#fff5f3;border-color:#e8b6ad;color:#a5281c}
+.mark-opts{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;font-size:11.5px;font-weight:700;color:var(--muted)}
+.mark-color{width:24px;height:24px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0;flex:none}
+.mark-color.on{box-shadow:0 0 0 2px var(--dark)}
+.mark-opts input[type=range]{width:110px;accent-color:var(--danger)}
+.mark-count{font-size:11px;color:var(--muted);font-weight:700}
+.mark-stage.recce-stage{border-color:#e8b6ad}
+@media(max-width:520px){.mode-cards{grid-template-columns:1fr}.mode-card{min-height:0}}
+@media(max-width:600px){
+ #topBar{flex-wrap:wrap;height:auto;min-height:calc(52px + var(--safeT));row-gap:3px;padding-left:8px;padding-right:8px}
+ #dirPill{order:3;flex:0 0 100%;max-width:none;justify-content:center;margin:0 0 4px;padding:5px 10px}
+ #dirPill span{font-size:12px}
+ #dirPill .icon{display:none}
+ .mode-switch-btn span{display:none!important}
+ .mode-switch-btn{padding:7px}
+ .tb-brand span{display:none}
+ .tb-right{gap:5px}
+ .icon-btn{width:36px;height:36px;border-radius:9px}
+}
+
+
+/* ---------- v8: all device types + all operating systems ---------- */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+#welcome,.modal,.sp-scroll,.mb-body{overscroll-behavior:contain}
+:focus-visible{outline:2px solid var(--dark);outline-offset:2px}
+button:focus:not(:focus-visible){outline:none}
+.sysbar{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:2px 0 12px}
+.sys-chip{display:inline-flex;align-items:center;gap:5px;background:#f1f4f6;border:1px solid var(--line);border-radius:20px;padding:5px 10px;font-size:10.8px;font-weight:800;color:var(--ink);white-space:nowrap}
+.sys-chip .dot{width:7px;height:7px;border-radius:50%;background:#2e7d5b;flex:none}
+.sys-chip.warn .dot{background:var(--danger)}
+.sys-chip.warn{background:#fff5f3;border-color:#f0c6bf;color:#8d2c20}
+.devtips{border:1px solid var(--line);background:#fafbfc;border-radius:12px;padding:0 12px;margin:0 0 14px}
+.devtips summary{cursor:pointer;font-size:12.5px;font-weight:800;color:var(--ink);padding:10px 0;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.devtips summary::-webkit-details-marker{display:none}
+.devtips[open] summary{border-bottom:1px solid var(--line)}
+.devtips ul{margin:8px 0 12px;padding-left:18px;font-size:11.6px;line-height:1.62;color:var(--muted)}
+.devtips li{margin:5px 0}
+.devtips b{color:var(--ink)}
+.install-btn{display:none;width:100%;margin:0 0 12px}
+.install-btn.show{display:inline-flex}
+.kbd{display:inline-block;background:#eef1f3;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 5px;font-size:10.5px;font-weight:800;font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--ink)}
+/* iOS Safari zooms in on focus when inputs are below 16px */
+@media(max-width:900px){
+ .field input,.field textarea,.field select,.settings-row select,.mark-item input,.size-row input,.size-row select{font-size:16px}
+ .mark-tool{min-height:40px}
+ .icon-btn{min-width:40px;min-height:40px}
+}
+@media(max-width:360px){
+ #topBar{padding-left:8px;padding-right:8px;gap:4px}
+ .tb-brand span{display:none}
+ .mode-switch-btn{padding:7px}
+ .welcome-card{padding:20px 14px 16px}
+ .mode-card{padding-left:34px}
+ #bottomBar{gap:4px}
+ .sys-chip{font-size:10px;padding:4px 8px}
+}
+@media(max-height:480px) and (orientation:landscape){
+ #welcome{align-items:flex-start}
+ .welcome-card{margin:8px 0}
+ .brand-logo{max-height:52px;width:auto;object-fit:contain}
+ .steps{grid-template-columns:repeat(3,1fr);gap:6px}
+ .steps li{padding:8px}
+ .steps small{display:none}
+ .steps b{font-size:12px}
+ #bottomBar{bottom:calc(6px + var(--safeB))}
+ .shutter{width:58px;height:58px}
+ .round-btn{width:44px;height:44px}
+ #sidePanel,#reccePanel{max-height:88dvh}
+ .vastu-mini{bottom:calc(72px + var(--safeB))}
+ .toast{bottom:calc(96px + var(--safeB))}
+}
+@media(hover:none) and (pointer:coarse){
+ .mode-card,.mark-tool,.btn,.icon-btn,.round-btn{min-height:44px}
+}
 
 /* ---------- desktop ---------- */
 @media(min-width:1024px){
   #topBar{padding-left:18px;padding-right:18px}
   #menuBtn,#panelBtn,#panelClose,.sp-handle{display:none!important}
-  #sidePanel{position:relative;transform:none!important;max-height:none;width:372px;flex:none;border-radius:0;border-left:1px solid var(--line);border-top:0;box-shadow:none}
+  #sidePanel,#reccePanel{position:relative;transform:none!important;max-height:none;width:372px;flex:none;border-radius:0;border-left:1px solid var(--line);border-top:0;box-shadow:none}
   .sp-head{padding-top:16px}
   #backdrop{display:none!important}
   .vastu-mini{bottom:calc(108px + var(--safeB));left:50%;transform:translateX(-50%);right:auto;width:min(560px,80%)}
@@ -270,22 +402,39 @@ input[type=range]{width:100%;margin-top:7px;accent-color:var(--dark)}
   <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></symbol>
 </svg>
 
-<div id="app">
+<div id="app" class="mode-vastu">
 
   <!-- ============ WELCOME ============ -->
   <section id="welcome">
     <div class="welcome-card">
       <div class="brand">
-        <div class="logo"><svg class="icon"><use href="#i-compass"/></svg></div>
-        <div><h1 data-i18n="appTitle">वास्तु साइट कैमरा</h1><p>Vastu Site Camera</p></div>
+        <img class="brand-logo" src="logo-primary.png" alt="ArtVision — Vastu Site Camera">
+        <div class="brand-sub"><h1 data-i18n="appTitle">वास्तु साइट कैमरा</h1><p>Vastu Site Camera · <b>by ArtVision</b></p></div>
       </div>
       <div class="made-in"> <span data-i18n="madeIn">भारत के लिए बनाया गया • पारदर्शी और सरल</span></div>
-      <div class="tagline" data-i18n="tagline">एक भरोसेमंद वास्तु कैमरा जो सीधे आपके browser में चले — लैपटॉप, फ्रंट या बैक कैमरा, सब में।</div>
+      <div class="tagline"><span class="hi-txt">दो अलग कैमरे — Architecture &amp; Construction Vastu Camera और Branding Recce Camera। जो चाहिए वो चुनें।</span><span class="en-txt">Two separate cameras — Architecture &amp; Construction Vastu Camera and Branding Recce Camera. Pick the one you need.</span></div>
 
-      <ol class="steps">
+      <div class="mode-cards" id="modeChoice">
+        <button class="mode-card on" data-mode="vastu" id="modeVastu">
+          <b>1</b><span class="mc-title">Architecture &amp; Construction Vastu Camera</span>
+          <small><span class="hi-txt">दिशा, डिग्री, GPS, साइट डिटेल्स — सब फ़ोटो पर stamp।</span><span class="en-txt">Direction, degrees, GPS, site details — all stamped on the photo.</span></small>
+        </button>
+        <button class="mode-card recce" data-mode="recce" id="modeRecce">
+          <b>2</b><span class="mc-title">Branding Recce Camera</span>
+          <small><span class="hi-txt">सिर्फ line drawing marking + साइज़ + मटेरियल। फ़ोटो पर कोई वास्तु जानकारी नहीं।</span><span class="en-txt">Only line-drawing marking + size + material. No Vastu info on the photo.</span></small>
+        </button>
+      </div>
+
+      <ol class="steps steps-vastu">
         <li><span>1</span><div><b data-i18n="step1t">कैमरा चालू करें</b><small data-i18n="step1s">नीचे कैमरा चुनें और Allow दबाएँ। परमिशन न मिले तो फ़ोटो अपलोड भी कर सकते हैं।</small></div></li>
         <li><span>2</span><div><b data-i18n="step2t">दिशा चुनें</b><small data-i18n="step2s">फ़ोन में sensor हो तो ऑटो, वरना 8 दिशाओं में से एक टैप करें — लैपटॉप पर यही सबसे सही तरीका है।</small></div></li>
         <li><span>3</span><div><b data-i18n="step3t">फ़ोटो लें और सेव करें</b><small data-i18n="step3s">हर फ़ोटो पर दिशा, डिग्री, तारीख, GPS और साइट डिटेल्स छपती हैं। डाउनलोड / शेयर / रिपोर्ट।</small></div></li>
+      </ol>
+
+      <ol class="steps steps-recce">
+        <li><span>1</span><div><b><span class="hi-txt">साइट, साइज़ और मटेरियल भरें</span><span class="en-txt">Enter site, size and material</span></b><small><span class="hi-txt">Retail / Outdoor / Office / In-shop / Event / Exhibition — साइट का नाम, W × H और use material।</span><span class="en-txt">Retail / Outdoor / Office / In-shop / Event / Exhibition — site name, W × H and use material.</span></small></div></li>
+        <li><span>2</span><div><b><span class="hi-txt">फ़ोटो लें और लाइन से मार्किंग करें</span><span class="en-txt">Capture and draw lines</span></b><small><span class="hi-txt">फ़ोटो लेते ही marking editor खुलेगा — पेन, लाइन, तीर, बॉक्स या पॉइंट + नोट।</span><span class="en-txt">The marking editor opens right after capture — pen, line, arrow, box or point + note.</span></small></div></li>
+        <li><span>3</span><div><b><span class="hi-txt">सेव करें — फ़ाइल नाम अपने आप बनेगा</span><span class="en-txt">Save — filename is built automatically</span></b><small><span class="hi-txt">site_साइज़_material_timestamp.jpg — फ़ोटो पर सिर्फ आपकी मार्किंग और साइज़ | मटेरियल की छोटी caption।</span><span class="en-txt">site_size_material_timestamp.jpg — the photo has only your markings and a small size | material caption.</span></small></div></li>
       </ol>
 
       <div class="cam-choice">
@@ -302,13 +451,25 @@ input[type=range]{width:100%;margin-top:7px;accent-color:var(--dark)}
 
       <details class="trust">
         <summary><span data-i18n="whyTrust">ये ऐप भरोसेमंद क्यों है?</span><span>▼</span></summary>
-        <ul>
+        <ul class="trust-vastu">
           <li data-i18n="trust1">आपकी फ़ोटो और डेटा सिर्फ आपके डिवाइस में रहता है — कोई सर्वर, कोई लॉगिन, कोई अपलोड नहीं।</li>
           <li data-i18n="trust2">कैमरा, GPS और कम्पास browser के वास्तविक sensors से आते हैं — कोई नकली डेटा नहीं।</li>
           <li data-i18n="trust3">लैपटॉप में कम्पास sensor नहीं होता, इसलिए दिशा आप खुद चुनते हैं और फ़ोटो पर स्पष्ट लिखा जाता है “मैनुअल”।</li>
           <li data-i18n="trust4">वास्तु सुझाव सामान्य परंपरागत मान्यताएँ हैं; ये कानूनी सर्वेक्षण या विशेषज्ञ की सलाह नहीं है।</li>
         </ul>
+        <ul class="trust-recce">
+          <li><span class="hi-txt">Branding Recce कैमरे की फ़ोटो पर दिशा, डिग्री, GPS, तारीख, कम्पास या disclaimer नहीं छपता।</span><span class="en-txt">Branding Recce photos carry no direction, degrees, GPS, date, compass or disclaimer.</span></li>
+          <li><span class="hi-txt">सिर्फ आपकी लाइन ड्राइंग मार्किंग और नीचे साइज़ | मटेरियल की एक छोटी caption।</span><span class="en-txt">Only your line-drawing markings plus a small size | material caption at the bottom.</span></li>
+          <li><span class="hi-txt">साइट, साइज़ और मटेरियल फ़ाइल नाम, गैलरी, report और CSV में सेव होते हैं।</span><span class="en-txt">Site, size and material are saved in the filename, gallery, report and CSV.</span></li>
+        </ul>
       </details>
+
+      <div class="sysbar" id="sysBar"></div>
+      <details class="devtips" id="devTips">
+        <summary><span><span class="hi-txt">डिवाइस / OS अनुसार मदद और कीबोर्ड शॉर्टकट</span><span class="en-txt">Device / OS help &amp; keyboard shortcuts</span></span><span>▾</span></summary>
+        <ul id="osTips"></ul>
+      </details>
+      <button id="installBtn" class="btn small ghost install-btn"><span class="hi-txt">ऐप इनस्टॉल करें</span><span class="en-txt">Install app</span></button>
 
       <div class="lang-row">
         <button id="langHi" class="on">हिंदी</button>
@@ -321,7 +482,7 @@ input[type=range]{width:100%;margin-top:7px;accent-color:var(--dark)}
   <header id="topBar" class="hidden">
     <div class="tb-left">
       <button id="menuBtn" class="icon-btn" aria-label="Panel"><svg class="icon"><use href="#i-menu"/></svg></button>
-      <div class="tb-brand"><svg class="icon"><use href="#i-compass"/></svg><span data-i18n="shortTitle">वास्तु कैमरा</span></div>
+      <div class="tb-brand"><img class="tb-logo" src="logo-mark.png" alt=""><span id="tbModeName">वास्तु कैमरा</span></div>
     </div>
     <button id="dirPill" class="dir-pill" title="Direction">
       <svg class="icon"><use href="#i-compass"/></svg>
@@ -329,9 +490,10 @@ input[type=range]{width:100%;margin-top:7px;accent-color:var(--dark)}
       <small id="dirPillMode">मैनुअल</small>
     </button>
     <div class="tb-right">
-      <button id="gpsBtn" class="icon-btn" title="GPS"><svg class="icon"><use href="#i-pin"/></svg></button>
-      <button id="galleryBtn" class="icon-btn" title="Gallery"><svg class="icon"><use href="#i-images"/></svg><span id="photoCount" class="badge">0</span></button>
-      <button id="settingsBtn" class="icon-btn" title="Settings"><svg class="icon"><use href="#i-settings"/></svg></button>
+      <button id="modeBtn" class="mode-switch-btn" title="Switch camera" aria-label="Switch camera"><svg class="icon"><use href="#i-switch"/></svg><span class="hi-txt">कैमरा बदलें</span><span class="en-txt">Switch</span></button>
+      <button id="gpsBtn" class="icon-btn" title="GPS" aria-label="GPS"><svg class="icon"><use href="#i-pin"/></svg></button>
+      <button id="galleryBtn" class="icon-btn" title="Gallery" aria-label="Gallery"><svg class="icon"><use href="#i-images"/></svg><span id="photoCount" class="badge">0</span></button>
+      <button id="settingsBtn" class="icon-btn" title="Settings" aria-label="Settings"><svg class="icon"><use href="#i-settings"/></svg></button>
     </div>
   </header>
 
@@ -376,6 +538,8 @@ input[type=range]{width:100%;margin-top:7px;accent-color:var(--dark)}
         <p class="vm-avoid">! <span id="vmAvoid"></span></p>
       </div>
 
+      <div id="recceMini"><b>साइट का नाम</b><span>12 × 6 ft | Vinyl</span></div>
+
       <div id="cameraError" class="error-card hidden">
         <div class="ec-ico"><svg class="icon lg"><use href="#i-info"/></svg></div>
         <h3 id="ecTitle">कैमरा समस्या</h3>
@@ -391,7 +555,7 @@ input[type=range]{width:100%;margin-top:7px;accent-color:var(--dark)}
       <div id="bottomBar">
         <button id="panelBtn" class="round-btn"><svg class="icon"><use href="#i-sliders"/></svg><small data-i18n="panel">पैनल</small></button>
         <button id="dirBtn" class="round-btn"><svg class="icon"><use href="#i-compass"/></svg><small data-i18n="dir">दिशा</small></button>
-        <button id="shutterBtn" class="shutter" aria-label="Capture"></button>
+        <button id="shutterBtn" class="shutter" aria-label="Capture" title="Capture photo (Space / Enter)"></button>
         <button id="flipBtn" class="round-btn"><svg class="icon"><use href="#i-switch"/></svg><small data-i18n="camera">कैमरा</small></button>
         <button id="uploadBtn" class="round-btn"><svg class="icon"><use href="#i-upload"/></svg><small data-i18n="upload">अपलोड</small></button>
       </div>
@@ -451,6 +615,52 @@ input[type=range]{width:100%;margin-top:7px;accent-color:var(--dark)}
             <li data-i18n="privacy3">यह कानूनी सर्वेक्षण नहीं है। नाप-जोख और दिशा की पुष्टि ज़रूर कराएँ।</li>
           </ul>
           <button id="helpBtn" class="btn small ghost"> <span data-i18n="help">मदद और समस्या निवारण</span></button>
+        </section>
+
+      </div>
+    </aside>
+
+    <!-- ============ BRANDING RECCE PANEL (camera 2 only) ============ -->
+    <aside id="reccePanel">
+      <div class="sp-handle"></div>
+      <div class="sp-head">
+        <h2><span class="hi-txt">ब्रांडिंग रेक्की</span><span class="en-txt">Branding Recce</span></h2>
+        <button id="reccePanelClose" class="icon-btn"><svg class="icon"><use href="#i-close"/></svg></button>
+      </div>
+      <div class="sp-scroll">
+
+        <section class="card recce-panel-card">
+          <span class="opt-badge">2</span>
+          <h3><span class="hi-txt">साइट और साइज़</span><span class="en-txt">Site &amp; size</span></h3>
+          <p class="muted"><span class="hi-txt">Retail Store · Outdoor Advertisement · Office · In-shop Branding · Event Decoration · Exhibition Branding</span><span class="en-txt">Retail Store · Outdoor Advertisement · Office · In-shop Branding · Event Decoration · Exhibition Branding</span></p>
+          <div class="field"><label><span class="hi-txt">कैटेगरी</span><span class="en-txt">Category</span></label><select id="recceCat"></select></div>
+          <div class="field"><label><span class="hi-txt">साइट का नाम</span><span class="en-txt">Site name</span></label><input id="recceSite" type="text" placeholder="Shri Ram Nagar, Main Road"></div>
+          <div class="field"><label><span class="hi-txt">साइज़ (W × H)</span><span class="en-txt">Size (W × H)</span></label>
+            <div class="size-row">
+              <input id="recceW" type="number" min="0" step="0.1" placeholder="W">
+              <span>×</span>
+              <input id="recceH" type="number" min="0" step="0.1" placeholder="H">
+              <select id="recceUnit"><option value="ft">ft</option><option value="m">m</option><option value="in">in</option></select>
+            </div>
+          </div>
+          <div class="field"><label>Use Material</label><input id="recceMat" type="text" placeholder="Vinyl, Flex, ACP, Fabric"></div>
+          <div id="recceSummary" class="recce-summary"></div>
+          <div class="recce-filename"><b><span class="hi-txt">फ़ाइल का नाम</span><span class="en-txt">File name</span></b><span id="recceFilename">site_size_material_timestamp.jpg</span></div>
+          <div class="switch-row"><span><span class="hi-txt">सेव होते ही डाउनलोड करें</span><span class="en-txt">Auto-download on save</span></span><button id="recceAutoDl" class="switch on" role="switch" aria-label="Auto download"></button></div>
+          <div class="switch-row"><span><span class="hi-txt">फ़ोटो पर ArtVision लोगो</span><span class="en-txt">ArtVision logo on photo</span></span><button id="recceLogo" class="switch on" role="switch" aria-label="Logo on photo"></button></div>
+        </section>
+
+        <section class="card">
+          <h3><span class="hi-txt">लाइन ड्राइंग मार्किंग</span><span class="en-txt">Line drawing marking</span></h3>
+          <p class="muted"><span class="hi-txt">फ़ोटो लेते ही editor खुलेगा — पेन, लाइन, तीर, बॉक्स या पॉइंट + नोट से marking करें।</span><span class="en-txt">The editor opens right after capture — mark with pen, line, arrow, box or point + note.</span></p>
+          <button id="recceMarkBtn" class="btn small danger full"><span class="hi-txt">मार्किंग शुरू करें</span><span class="en-txt">Start marking</span></button>
+          <p class="clean-note"><b><span class="hi-txt">साफ़ फ़ोटो</span><span class="en-txt">Clean photo</span></b> — <span class="hi-txt">इस कैमरे की फ़ोटो पर दिशा, डिग्री, GPS, तारीख, कम्पास, साइट डिटेल्स या disclaimer नहीं छपता। सिर्फ आपकी मार्किंग और नीचे “साइज़ | मटेरियल” की एक छोटी caption।</span><span class="en-txt">No direction, degrees, GPS, date, compass, site details or disclaimer is printed. Only your markings and a small “size | material” caption at the bottom.</span></p>
+        </section>
+
+        <section class="card">
+          <h3><span class="hi-txt">हाल की फ़ोटो</span><span class="en-txt">Recent photos</span></h3><span id="recceRecentCount" class="badge light">0</span>
+          <div id="recceRecentGrid" class="recent-grid"></div>
+          <button id="recceOpenGalleryBtn" class="btn small ghost full"><span class="hi-txt">सभी देखें</span><span class="en-txt">View all</span></button>
         </section>
 
       </div>
@@ -541,9 +751,64 @@ input[type=range]{width:100%;margin-top:7px;accent-color:var(--dark)}
             <li data-i18n="acc4">यह ऐप legal survey, रजिस्ट्री नाप या structurally safe होने का दावा नहीं करता। पटवारी/सर्वेयर/आर्किटेक्ट से पुष्टि कराएँ।</li>
           </ul>
         </div>
+        <div class="help-block"><h4><span class="hi-txt">सभी डिवाइस और ऑपरेटिंग सिस्टम</span><span class="en-txt">All devices &amp; operating systems</span></h4>
+          <ul>
+            <li><b>iPhone / iPad (iOS, iPadOS):</b> <span class="hi-txt">Safari या Chrome 15+। Settings → Safari → Camera और Motion &amp; Orientation Access चालू करें। iOS 13+ में compass के लिए “फ़ोन sensor” दबाएँ। इनस्टॉल: Share → Add to Home Screen।</span><span class="en-txt">Safari or Chrome 15+. Settings → Safari → Camera + Motion &amp; Orientation Access ON. On iOS 13+ tap “Phone sensor” for compass. Install: Share → Add to Home Screen.</span></li>
+            <li><b>Android (Chrome, Samsung Internet, MI):</b> <span class="hi-txt">⋮ → Site settings → Camera = Allow। Motion sensors चालू हों तो compass ऑटो चलेगा। Android 8+ recommended; पुराने WebView में “फ़ोटो अपलोड” चलाएँ।</span><span class="en-txt">⋮ → Site settings → Camera = Allow. Compass works with motion sensors on. Android 8+ recommended; on old WebViews use “Upload photo”.</span></li>
+            <li><b>Windows / macOS / Linux / ChromeOS (laptop, desktop):</b> <span class="hi-txt">OS privacy settings में browser को Camera अनुमति दें। यहाँ compass sensor नहीं होता — 8 direction buttons से दिशा चुनें और फ़ोटो पर “मैनुअल” लिखा जाता है।</span><span class="en-txt">Allow Camera for the browser in OS privacy settings. There is no compass sensor — choose one of the 8 directions; the photo is marked “Manual”.</span></li>
+            <li><b>Firefox / Edge / Opera / other:</b> <span class="hi-txt">Address bar के 🔒 → Permissions → Camera = Allow। Camera busy हो तो Zoom/Meet/दूसरा टैब बंद करें।</span><span class="en-txt">🔒 in the address bar → Permissions → Camera = Allow. If the camera is busy, close Zoom/Meet/other tabs.</span></li>
+            <li><b><span class="hi-txt">सभी devices</span><span class="en-txt">All devices</span>:</b> <span class="hi-txt">कोई external script/CDN नहीं — पूरा ऐप एक HTML में। Camera परमिशन सिर्फ बटन दबाने पर मांगी जाती है (iOS/Safari rule)। 320px phone से लेकर tablet, laptop, desktop और landscape तक responsive; notch safe-area; कोई CDN निर्भरता नहीं।</span><span class="en-txt">No external scripts or CDN — the entire app is one HTML file. Camera permission is requested only on a button tap (iOS/Safari rule). Responsive from 320px phones to tablets, laptops, desktops and landscape; notch safe-area; no CDN dependency.</span></li>
+          </ul>
+        </div>
+        <div class="help-block"><h4><span class="hi-txt">⌨ कीबोर्ड शॉर्टकट (laptop / desktop)</span><span class="en-txt">⌨ Keyboard shortcuts (laptop / desktop)</span></h4>
+          <ul>
+            <li><span class="kbd">Space</span> / <span class="kbd">Enter</span> — <span class="hi-txt">फ़ोटो लें</span><span class="en-txt">capture photo</span></li>
+            <li><span class="kbd">1</span>…<span class="kbd">8</span> — <span class="hi-txt">8 दिशाएँ चुनें (Vastu camera)</span><span class="en-txt">pick one of 8 directions (Vastu camera)</span></li>
+            <li><span class="kbd">M</span> — <span class="hi-txt">साइड पैनल खोलें/बंद करें</span><span class="en-txt">toggle side panel</span></li>
+            <li><span class="kbd">G</span> — <span class="hi-txt">GPS लें</span><span class="en-txt">get GPS</span> · <span class="kbd">?</span> — <span class="hi-txt">मदद</span><span class="en-txt">help</span> · <span class="kbd">Esc</span> — <span class="hi-txt">बंद करें</span><span class="en-txt">close</span></li>
+          </ul>
+        </div>
         <div class="note-box" data-i18n="firstClaimNote">हम “भारत का पहला प्लेटफ़ॉर्म” जैसा बिना प्रमाण का दावा नहीं करते। हमने टैगलाइन “भारत के लिए बनाया गया — पारदर्शी और सरल” रखी है। अगर आपके पास कोई पंजीकरण/प्रकाशन है तो उसी आधार पर टैगलाइन बदली जा सकती है।</div>
       </div>
       <div class="mb-foot"><button class="btn small primary full" data-close="helpModal"><span data-i18n="close">बंद करें</span></button></div>
+    </div>
+  </div>
+
+  <!-- ============ LINE DRAWING / MARKING MODAL (camera 2) ============ -->
+  <div id="markModal" class="modal hidden">
+    <div class="modal-box">
+      <div class="mb-head"><h2><span class="hi-txt">लाइन ड्राइंग / मार्किंग</span><span class="en-txt">Line drawing / Marking</span></h2><button class="icon-btn" data-close="markModal"><svg class="icon"><use href="#i-close"/></svg></button></div>
+      <div class="mb-body">
+        <p class="muted"><span class="hi-txt">नीचे से टूल चुनें और फ़ोटो पर ड्रैग करके marking करें। “पॉइंट + नोट” से नंबर वाला पॉइंट और लिखा नोट जोड़ें।</span><span class="en-txt">Pick a tool below and drag on the photo to mark. “Point + note” adds a numbered point with a written note.</span></p>
+        <div class="mark-tools" id="markTools">
+          <button class="mark-tool on" data-tool="pen"><span class="hi-txt">पेन</span><span class="en-txt">Pen</span></button>
+          <button class="mark-tool" data-tool="line"><span class="hi-txt">लाइन</span><span class="en-txt">Line</span></button>
+          <button class="mark-tool" data-tool="arrow"><span class="hi-txt">तीर</span><span class="en-txt">Arrow</span></button>
+          <button class="mark-tool" data-tool="rect"><span class="hi-txt">बॉक्स</span><span class="en-txt">Box</span></button>
+          <button class="mark-tool" data-tool="point"><span class="hi-txt">पॉइंट + नोट</span><span class="en-txt">Point + note</span></button>
+          <button class="mark-tool act" data-act="undo">Undo</button>
+          <button class="mark-tool act" data-act="clear"><span class="hi-txt">साफ़</span><span class="en-txt">Clear</span></button>
+        </div>
+        <div class="mark-opts">
+          <span><span class="hi-txt">रंग</span><span class="en-txt">Color</span></span>
+          <button class="mark-color on" data-color="#e53935" style="background:#e53935" aria-label="red"></button>
+          <button class="mark-color" data-color="#ffd54a" style="background:#ffd54a" aria-label="yellow"></button>
+          <button class="mark-color" data-color="#ffffff" style="background:#ffffff" aria-label="white"></button>
+          <button class="mark-color" data-color="#101214" style="background:#101214" aria-label="black"></button>
+          <span><span class="hi-txt">मोटाई</span><span class="en-txt">Width</span></span>
+          <input id="markWidth" type="range" min="2" max="14" value="5">
+          <span class="mark-count" id="markCount">0</span>
+        </div>
+        <div id="markStage" class="mark-stage recce-stage">
+          <img id="markImg" class="mark-img" alt="marking">
+          <canvas id="markCanvas" class="mark-canvas"></canvas>
+        </div>
+        <div id="markList" class="mark-list"></div>
+      </div>
+      <div class="mb-foot">
+        <button id="markCancel" class="btn small ghost"><span class="hi-txt">बंद करें</span><span class="en-txt">Close</span></button>
+        <button id="markSave" class="btn small primary"><span class="hi-txt">फ़ोटो सेव करें</span><span class="en-txt">Save photo</span></button>
+      </div>
     </div>
   </div>
 
@@ -561,7 +826,7 @@ input[type=range]{width:100%;margin-top:7px;accent-color:var(--dark)}
 const T={
  hi:{
   appTitle:'वास्तु साइट कैमरा',shortTitle:'वास्तु कैमरा',sidePanel:'साइट पैनल',
-  madeIn:'भारत के लिए बनाया गया • पारदर्शी और सरल',
+  madeIn:'ArtVision · भारत के लिए बनाया गया • पारदर्शी और सरल',
   tagline:'एक भरोसेमंद वास्तु कैमरा जो सीधे आपके browser में चले — लैपटॉप, फ्रंट या बैक कैमरा, सब में।',
   step1t:'कैमरा चालू करें',step1s:'नीचे कैमरा चुनें और Allow दबाएँ। परमिशन न मिले तो फ़ोटो अपलोड भी कर सकते हैं।',
   step2t:'दिशा चुनें',step2s:'फ़ोन में sensor हो तो ऑटो, वरना 8 दिशाओं में से एक टैप करें — लैपटॉप पर यही सबसे सही तरीका है।',
@@ -609,11 +874,21 @@ const T={
   reportReady:'रिपोर्ट डाउनलोड हो गई',csvReady:'CSV डाउनलोड हो गई',shareNotSupported:'इस browser में फ़ाइल शेयर सपोर्ट नहीं है — फ़ोटो डाउनलोड कर दी गई है।',
   waNote:'WhatsApp में text भेजा जा रहा है। फ़ोटो अटैच करने के लिए पहले डाउनलोड करें।',selectImage:'कृपया कोई image फ़ाइल चुनें',
   date:'तारीख/समय',facing:'दिशा',gps:'GPS',site:'साइट',note:'नोट',source:'स्रोत',cameraLabel:'कैमरा',mode:'मोड',accuracy:'सटीकता',map:'नक्शा',openMap:'Google Maps खोलें',
+  recceTitle:'ब्रांडिंग रेक्की',recceHelp:'अलग कैमरा — सिर्फ लाइन मार्किंग, साइज़ और मटेरियल।',
+  recceMode:'रेक्की',recceCategory:'कैटेगरी',recceSite:'साइट का नाम',recceSitePh:'जैसे: श्री राम नगर, मेन रोड',
+  recceSize:'साइज़ (W × H)',recceMaterial:'Use Material',recceMatPh:'जैसे: Vinyl, Flex, ACP, Fabric',
+  recceMark:'मार्किंग शुरू करें',recceNote:'फ़ोटो पर कोई वास्तु जानकारी नहीं — सिर्फ marking और साइज़ | मटेरियल caption।',
+  recceOn:'रेक्की कैमरा चालू।',recceOff:'रेक्की कैमरा बंद।',
+  recceNeedPhoto:'पहले एक फ़ोटो लें या अपलोड करें, फिर मार्किंग करें।',recceSaved:'रेक्की मार्किंग सेव हो गई',
+  catRetail:'Retail Store',catOutdoor:'Outdoor Advertisement',catOffice:'Office',catInshop:'In-shop Branding',catEvent:'Event Decoration',catExhibition:'Exhibition Branding',
+  markTitle:'लाइन ड्राइंग / मार्किंग',markHelp:'पेन, लाइन, तीर, बॉक्स या पॉइंट + नोट से फ़ोटो पर marking करें।',
+  markClear:'साफ़ करें',markSave:'फ़ोटो सेव करें',markEmpty:'अभी कोई marking नहीं — ऊपर से टूल चुनें।',markNotePh:'जैसे: यहाँ flex board लगेगा',
+  recceColCategory:'रेक्की कैटेगरी',recceColSize:'साइज़',recceColMaterial:'मटेरियल',recceColMarkers:'मार्कर',
   summary:'सारांश',generated:'बनाया गया',totalPhotos:'कुल फ़ोटो'
  },
  en:{
-  appTitle:'Vastu Site Camera',shortTitle:'Vastu Cam',sidePanel:'Site panel',
-  madeIn:'Made for India • transparent and simple',
+  appTitle:'Vastu Site Camera',shortTitle:'ArtVision Cam',sidePanel:'Site panel',
+  madeIn:'ArtVision · Made for India • transparent and simple',
   tagline:'A trustworthy Vastu camera that runs right in your browser — laptop, front camera or rear camera.',
   step1t:'Turn on the camera',step1s:'Pick a camera below and tap Allow. If permission fails, you can still upload a photo.',
   step2t:'Choose direction',step2s:'Use the phone sensor if available, otherwise tap one of 8 directions — best on laptops.',
@@ -663,11 +938,99 @@ const T={
   reportReady:'Report downloaded',csvReady:'CSV downloaded',shareNotSupported:'File sharing is not supported in this browser — the photo was downloaded instead.',
   waNote:'Sending text to WhatsApp. Download the photo first to attach it.',selectImage:'Please choose an image file',
   date:'Date/time',facing:'Direction',gps:'GPS',site:'Site',note:'Note',source:'Source',cameraLabel:'Camera',mode:'Mode',accuracy:'Accuracy',map:'Map',openMap:'Open Google Maps',
+  recceTitle:'Branding recce',recceHelp:'Separate camera — only line marking, size and material.',
+  recceMode:'Recce',recceCategory:'Category',recceSite:'Site name',recceSitePh:'e.g. Shri Ram Nagar, Main Road',
+  recceSize:'Size (W × H)',recceMaterial:'Use material',recceMatPh:'e.g. Vinyl, Flex, ACP, Fabric',
+  recceMark:'Start marking',recceNote:'No Vastu info on the photo — only your markings and a size | material caption.',
+  recceOn:'Recce camera on.',recceOff:'Recce camera off.',
+  recceNeedPhoto:'Capture or upload a photo first, then mark it.',recceSaved:'Recce marking saved',
+  catRetail:'Retail Store',catOutdoor:'Outdoor Advertisement',catOffice:'Office',catInshop:'In-shop Branding',catEvent:'Event Decoration',catExhibition:'Exhibition Branding',
+  markTitle:'Line drawing / Marking',markHelp:'Mark the photo with pen, line, arrow, box or point + note.',
+  markClear:'Clear',markSave:'Save photo',markEmpty:'No markings yet — pick a tool above.',markNotePh:'e.g. flex board goes here',
+  recceColCategory:'Recce category',recceColSize:'Size',recceColMaterial:'Material',recceColMarkers:'Markers',
   summary:'Summary',generated:'Generated',totalPhotos:'Total photos'
  }
 };
 let lang='hi';
 function t(k){return (T[lang]&&T[lang][k])||T.hi[k]||k;}
+function L(hi,en){return lang==='hi'?hi:en;}
+
+/* ---------- v8: device / OS / browser aware optimization ---------- */
+function lowEndDevice(){
+ const m=navigator.deviceMemory,c=navigator.hardwareConcurrency;
+ return (typeof m==='number'&&m<=2)||(typeof c==='number'&&c<=2);
+}
+function detectDevice(){
+ const ua=navigator.userAgent||'',plat=navigator.platform||'';
+ let os='Other';
+ if(/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(plat)&&navigator.maxTouchPoints>1))os='iOS / iPadOS';
+ else if(/Android/.test(ua))os='Android';
+ else if(/Windows/.test(ua))os='Windows';
+ else if(/CrOS/.test(ua))os='ChromeOS';
+ else if(/Mac OS X|Macintosh/.test(ua))os='macOS';
+ else if(/Linux/.test(ua))os='Linux';
+ let browser='Browser';
+ if(/EdgiOS|EdgA/.test(ua))browser='Edge';
+ else if(/CriOS/.test(ua))browser='Chrome';
+ else if(/FxiOS/.test(ua))browser='Firefox';
+ else if(/SamsungBrowser/.test(ua))browser='Samsung Internet';
+ else if(/MiuiBrowser/.test(ua))browser='MI Browser';
+ else if(/OPR\/|Opera/.test(ua))browser='Opera';
+ else if(/Edg\//.test(ua))browser='Edge';
+ else if(/Chrome\//.test(ua))browser='Chrome';
+ else if(/Firefox\//.test(ua))browser='Firefox';
+ else if(/Safari\//.test(ua))browser='Safari';
+ const touch=(navigator.maxTouchPoints>0)||('ontouchstart' in window);
+ const mobile=/iPhone|iPod|Windows Phone|Mobile/.test(ua)||(/Android/.test(ua)&&/Mobile/.test(ua));
+ const tablet=/iPad|Tablet/.test(ua)||(/Android/.test(ua)&&!/Mobile/.test(ua))||(os==='iOS / iPadOS'&&!/iPhone|iPod/.test(ua));
+ const type=tablet?L('टैबलेट','Tablet'):(mobile?L('मोबाइल','Mobile'):L('लैपटॉप / डेस्कटॉप','Laptop / Desktop'));
+ const standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+ return {os:os,browser:browser,type:type,touch:touch,
+  secure:secureOK(),camAPI:!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia),
+  idb:!!window.indexedDB,lowEnd:lowEndDevice(),standalone:standalone,
+  pointer:!!window.PointerEvent,blob:!!(window.Blob&&window.URL&&window.URL.createObjectURL)};
+}
+let DEVICE=null,installEvent=null;
+function osTipsHTML(d){
+ const rows=[];
+ if(!d.secure)rows.push('<li><b style="color:#a5281c">'+esc(L('ध्यान दें: पेज HTTPS पर नहीं है — camera काम नहीं करेगा। https:// लिंक खोलें।','Note: this page is not HTTPS — the camera will not work. Open the https:// link.'))+'</b></li>');
+ if(!d.camAPI)rows.push('<li><b style="color:#a5281c">'+esc(L('ध्यान दें: इस browser में Camera API नहीं है — Chrome/Safari/Edge/Firefox अपडेट करें या फ़ोटो अपलोड करें।','Note: this browser has no Camera API — update Chrome/Safari/Edge/Firefox or upload a photo.'))+'</b></li>');
+ rows.push('<li><b>iPhone / iPad (iOS, iPadOS):</b> '+esc(L('Safari या Chrome 15+; Settings → Safari → Camera और Motion & Orientation Access चालू करें। iOS 13+ में compass के लिए “फ़ोन sensor” दबाएँ। इनस्टॉल: Share → Add to Home Screen।','Safari or Chrome 15+; Settings → Safari → Camera + Motion & Orientation Access ON. On iOS 13+ tap “Phone sensor” for compass. Install: Share → Add to Home Screen.'))+'</li>');
+ rows.push('<li><b>Android (Chrome, Samsung Internet, MI):</b> '+esc(L('⋮ → Site settings → Camera = Allow। Motion sensors चालू हों तो compass ऑटो चलेगा। Android 8+ अच्छा चलता है; पुराने WebView में “फ़ोटो अपलोड” इस्तेमाल करें।','⋮ → Site settings → Camera = Allow. Compass works when motion sensors are on. Android 8+ recommended; on old WebViews use “Upload photo”.'))+'</li>');
+ rows.push('<li><b>Windows / macOS / Linux / ChromeOS:</b> '+esc(L('OS privacy settings में browser को Camera अनुमति दें। Laptop में compass sensor नहीं होता — 8 direction buttons से दिशा चुनें।','Allow Camera for the browser in OS privacy settings. Laptops have no compass — pick direction with the 8 buttons.'))+'</li>');
+ rows.push('<li><b>Firefox / Edge / Opera:</b> '+esc(L('Address bar के 🔒 → Permissions → Camera = Allow। Camera busy हो तो दूसरा टैब/ऐप बंद करें।','🔒 in the address bar → Permissions → Camera = Allow. Close other tabs/apps using the camera.'))+'</li>');
+ rows.push('<li><b>'+esc(L('सभी devices','All devices'))+':</b> '+esc(L('कोई external script/CDN नहीं — पूरा ऐप एक HTML में। Camera परमिशन सिर्फ बटन दबाने पर मांगी जाती है (iOS/Safari rule)। 320px phone से tablet/laptop/desktop/landscape तक responsive; notch safe-area support।','No external scripts/CDN — the whole app is one HTML file. Camera permission is requested only on a button tap (iOS/Safari rule). Responsive from 320px phones to tablets, laptops, desktops and landscape; notch safe-area support.'))+'</li>');
+ rows.push('<li><b>'+esc(L('कीबोर्ड शॉर्टकट','Keyboard shortcuts'))+':</b> <span class="kbd">Space</span>/<span class="kbd">Enter</span> '+esc(L('फ़ोटो','photo'))+' · <span class="kbd">1</span>–<span class="kbd">8</span> '+esc(L('दिशा','direction'))+' · <span class="kbd">M</span> '+esc(L('पैनल','panel'))+' · <span class="kbd">G</span> GPS · <span class="kbd">?</span> '+esc(L('मदद','help'))+' · <span class="kbd">Esc</span> '+esc(L('बंद','close'))+'</li>');
+ if(d.lowEnd)rows.push('<li><b>'+esc(L('कम RAM डिवाइस','Low-RAM device'))+':</b> '+esc(L('कैमरा अपने आप 720p (standard) पर चला दिया गया है ताकि ऐप lag न करे। Settings में बदल सकते हैं।','Camera resolution is automatically capped at 720p so the app stays smooth. You can change it in Settings.'))+'</li>');
+ if(S.storageOK===false)rows.push('<li><b style="color:#a5281c">'+esc(L('स्टोरेज बंद / प्राइवेट मोड — फ़ोटो सिर्फ इस सेशन में रहेंगी। डाउनलोड कर लें।','Storage off / private mode — photos stay in this session only. Please download them.'))+'</b></li>');
+ return rows.join('');
+}
+function updateSysBar(){
+ const bar=$('sysBar');if(!bar)return;
+ DEVICE=DEVICE||detectDevice();const d=DEVICE;
+ const chip=(txt,warn)=>'<span class="sys-chip'+(warn?' warn':'')+'"><i class="dot"></i>'+esc(txt)+'</span>';
+ let h='';
+ h+=chip(d.type+' · '+d.os+' · '+d.browser);
+ h+=chip(d.secure?L('HTTPS सुरक्षित','HTTPS secure'):L('HTTPS नहीं','HTTPS missing'),!d.secure);
+ h+=chip(d.camAPI?L('Camera API ✓','Camera API ✓'):L('Camera API नहीं','No Camera API'),!d.camAPI);
+ h+=chip(S.storageOK===false?L('स्टोरेज बंद · सेशन only','Storage off · session only'):L('स्टोरेज ✓','Storage ✓'),S.storageOK===false);
+ if(d.lowEnd)h+=chip(L('कम RAM · 720p','Low RAM · 720p'));
+ if(d.standalone)h+=chip(L('इनस्टॉल ऐप','Installed app'));
+ bar.innerHTML=h;
+ const tips=$('osTips');if(tips)tips.innerHTML=osTipsHTML(d);
+ const ib=$('installBtn');
+ if(ib){
+  if(installEvent){ib.classList.add('show');}
+  else if(/iOS/.test(d.os)&&!d.standalone){ib.classList.add('show');}
+  else ib.classList.remove('show');
+ }
+}
+function isTyping(el){return !!el&&(/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)||el.isContentEditable);}
+function anyModalOpen(){
+ return ['photoModal','markModal','galleryModal','settingsModal','helpModal']
+  .some(id=>!$(id).classList.contains('hidden'));
+}
+
 function applyLang(){
  document.documentElement.lang=lang;
  document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});
@@ -675,7 +1038,9 @@ function applyLang(){
  document.getElementById('langHi').classList.toggle('on',lang==='hi');
  document.getElementById('langEn').classList.toggle('on',lang==='en');
  document.getElementById('setLang').value=lang;
+ populateRecceCats();syncRecceUI();
  updateDirectionUI();updateGpsUI();updateCamUI();
+ setModeUI();
 }
 
 /* ============================================================
@@ -721,25 +1086,52 @@ function zTag(z){return lang==='hi'?z.tagHi:z.tagEn;}
 function zGood(z){return lang==='hi'?z.goodHi:z.goodEn;}
 function zAvoid(z){return lang==='hi'?z.avoidHi:z.avoidEn;}
 
+/* Branding recce categories (option 4) */
+const RECCE_CATS=[
+ {id:'retail',key:'catRetail'},{id:'outdoor',key:'catOutdoor'},{id:'office',key:'catOffice'},
+ {id:'inshop',key:'catInshop'},{id:'event',key:'catEvent'},{id:'exhibition',key:'catExhibition'}
+];
+function catLabel(id){const c=RECCE_CATS.find(x=>x.id===id)||RECCE_CATS[0];return t(c.key);}
+function recceSizeText(){
+ const r=S.settings.recce||{};const w=String(r.w||'').trim(),h=String(r.h||'').trim();
+ if(!w&&!h)return '—';
+ return (w||'?')+' × '+(h||'?')+' '+(r.unit||'ft');
+}
+function slug(s){return String(s||'x').replace(/[^a-zA-Z0-9\u0900-\u097F]+/g,'_').replace(/^_+|_+$/g,'').slice(0,40)||'x';}
+
 /* ============================================================
    3. STATE + SETTINGS
    ============================================================ */
 const LS='vastu_camera_v3';
 const defaultSettings={lang:'hi',quality:'hd',mirror:true,grid:false,sensorFlip:false,trim:0,camPref:'auto',
-  project:'',plot:'',client:'',remark:''};
+  project:'',plot:'',client:'',remark:'',
+  recce:{enabled:true,category:'retail',site:'',w:'',h:'',unit:'ft',material:'',autoDl:true,logo:true},appMode:'vastu'};
 let S={
  settings:Object.assign({},defaultSettings),
  stream:null,devices:[],deviceIndex:0,activeDeviceId:null,activeFacing:null,camLabel:'',
  baseDeg:0,mode:'manual',sensorRaw:null,sensorTimer:null,sensorRequested:false,
  gps:{status:'off',lat:null,lon:null,acc:null},watchId:null,
- photos:[],currentPhotoId:null,started:false
+ photos:[],currentPhotoId:null,started:false,appMode:'vastu',storageOK:null,storageWarned:false
 };
 let autoPanel=false;
+let markState={photoId:null,pending:null,shapes:[],img:null,canvas:null,ctx:null,cw:0,ch:0,
+  tool:'pen',color:'#e53935',width:5,drawing:false,start:null,draft:null,branded:false,
+  baseCount:0,reedit:false,tmpUrl:null};
+let markRaf=0;
 try{const raw=localStorage.getItem(LS);if(raw)Object.assign(S.settings,JSON.parse(raw));}catch(e){}
 lang=S.settings.lang||'hi';
+S.appMode=(S.settings.appMode==='recce')?'recce':'vastu';
+S.settings.recce.autoDl=(S.settings.recce.autoDl!==false);
+S.settings.recce.logo=(S.settings.recce.logo!==false);
+S.settings.recce=Object.assign({enabled:true,category:'retail',site:'',w:'',h:'',unit:'ft',material:'',autoDl:true,logo:true},S.settings.recce||{});
 function saveSettings(){try{localStorage.setItem(LS,JSON.stringify(S.settings));}catch(e){}}
 function heading(){return (((S.baseDeg+(S.settings.trim||0))%360)+360)%360;}
 const $=id=>document.getElementById(id);
+
+/* ArtVision brand assets */
+const BRAND_DATA='data:image/png;base64,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';
+let BRAND_WHITE_IMG=null;
+function preloadBrand(){try{BRAND_WHITE_IMG=new Image();BRAND_WHITE_IMG.src='logo-primary-white.png';}catch(e){}}
 
 /* ============================================================
    4. INDEXED DB — metadata + blobs stored separately (fast startup)
@@ -747,7 +1139,7 @@ const $=id=>document.getElementById(id);
 const DB_NAME='vastu_camera_photos_v3',DB_VER=2,META='meta',BLOB='blobs';
 function openDB(){
  return new Promise((res,rej)=>{
-  if(!window.indexedDB){rej(new Error('no-idb'));return;}
+  if(!window.indexedDB){S.storageOK=false;rej(new Error('no-idb'));return;}
   const r=indexedDB.open(DB_NAME,DB_VER);
   r.onupgradeneeded=()=>{
    const db=r.result,tx=r.transaction;
@@ -767,7 +1159,8 @@ function openDB(){
     }catch(e){}
    }
   };
-  r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);
+  r.onsuccess=()=>{S.storageOK=true;res(r.result);};
+  r.onerror=()=>{S.storageOK=false;rej(r.error);};
  });
 }
 async function dbPut(rec){
@@ -780,7 +1173,7 @@ async function dbPut(rec){
    if(rec.blob)tx.objectStore(BLOB).put({id:rec.id,blob:rec.blob});
    tx.oncomplete=res;tx.onerror=()=>rej(tx.error);
   });
- }catch(e){}
+ }catch(e){S.storageOK=false;}
 }
 async function dbAll(){
  try{
@@ -789,7 +1182,7 @@ async function dbAll(){
    const tx=db.transaction(META,'readonly');const rq=tx.objectStore(META).getAll();
    rq.onsuccess=()=>res(rq.result||[]);rq.onerror=()=>rej(rq.error);
   });
- }catch(e){return [];}
+ }catch(e){S.storageOK=false;return [];}
 }
 async function dbGetBlob(id){
  try{
@@ -891,6 +1284,335 @@ function buildDirGrid(){
  });
 }
 
+/* ---------- Camera 2: Branding Recce + line-drawing marking ---------- */
+function populateRecceCats(){
+ const sel=$('recceCat');if(!sel)return;
+ sel.innerHTML='';
+ RECCE_CATS.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=t(c.key);sel.appendChild(o);});
+ sel.value=(S.settings.recce&&S.settings.recce.category)||'retail';
+}
+function recceSizeCompact(){
+ const r=S.settings.recce||{};
+ const w=String(r.w||'').trim()||'?',h=String(r.h||'').trim()||'?';
+ return w+'x'+h+(r.unit||'ft');
+}
+function recceNameParts(rec){
+ const r=(rec&&rec.recce)||S.settings.recce||{};
+ const site=slug(r.site||'Site');
+ const size=slug(r.sizeCompact||recceSizeCompact());
+ const mat=slug(r.material||'Material');
+ const d=new Date((rec&&rec.createdAt)||new Date().toISOString());
+ const iso=d.toISOString();
+ const stamp=iso.slice(0,10)+'-'+iso.slice(11,19).replace(/:/g,'');
+ return [site,size,mat,stamp];
+}
+function recceFileName(rec){return recceNameParts(rec).join('_')+'.jpg';}
+function recceNamePreview(){return recceNameParts(null).slice(0,3).join('_')+'_timestamp.jpg';}
+function syncRecceUI(){
+ const r=S.settings.recce;if(!r)return;
+ const cat=$('recceCat'),site=$('recceSite'),w=$('recceW'),h=$('recceH'),u=$('recceUnit'),mat=$('recceMat');
+ if(cat)cat.value=r.category||'retail';
+ if(site)site.value=r.site||'';
+ if(w)w.value=r.w||'';if(h)h.value=r.h||'';
+ if(u)u.value=r.unit||'ft';if(mat)mat.value=r.material||'';
+ const sum=$('recceSummary');
+ if(sum)sum.textContent=catLabel(r.category)+' · '+(r.site||'—')+' · '+recceSizeText()+' · '+(r.material||'—');
+ const fn=$('recceFilename');if(fn)fn.textContent=recceNamePreview();
+ const mini=$('recceMini');
+ if(mini)mini.innerHTML='<b>'+esc(r.site||L('साइट का नाम','Site name'))+'</b><span>'+esc(recceSizeText()+' | '+(r.material||'—'))+'</span>';
+ const ad=$('recceAutoDl');if(ad)ad.classList.toggle('on',r.autoDl!==false);
+ const lg=$('recceLogo');if(lg)lg.classList.toggle('on',r.logo!==false);
+}
+function readRecce(){
+ const r=S.settings.recce;
+ r.category=$('recceCat').value||'retail';
+ r.site=$('recceSite').value.trim();
+ r.w=$('recceW').value.trim();r.h=$('recceH').value.trim();
+ r.unit=$('recceUnit').value||'ft';r.material=$('recceMat').value.trim();
+ saveSettings();syncRecceUI();
+}
+function recceMeta(extra){
+ readRecce();
+ const r=S.settings.recce;
+ return Object.assign({
+  app:'recce',branded:false,
+  date:fmtDate(new Date().toISOString()),gps:'',lat:null,lon:null,acc:null,
+  heading:0,mode:'manual',zoneHi:'',zoneEn:'',
+  project:'',plot:'',client:'',remark:'',
+  camera:S.camLabel||guessLabel(),width:0,height:0,mirrored:false,source:'camera',
+  recce:{enabled:true,category:catLabel(r.category),site:(r.site||'—'),size:recceSizeText(),
+         sizeCompact:recceSizeCompact(),material:(r.material||'—'),shapes:[],markers:[]}
+ },extra||{});
+}
+function activePhotos(){return S.photos.filter(p=>(p.app||'vastu')===S.appMode);}
+function setModeUI(){
+ const app=$('app');
+ app.classList.toggle('mode-recce',S.appMode==='recce');
+ app.classList.toggle('mode-vastu',S.appMode!=='recce');
+ document.querySelectorAll('#modeChoice .mode-card').forEach(b=>b.classList.toggle('on',b.dataset.mode===S.appMode));
+ const nm=$('tbModeName');if(nm)nm.textContent=S.appMode==='recce'?L('ब्रांडिंग रेक्की','Branding Recce'):L('वास्तु कैमरा','Vastu Camera');
+ const gb=$('gReportBtn');if(gb)gb.textContent=S.appMode==='recce'?L('रेक्की रिपोर्ट (HTML)','Recce report (HTML)'):t('report');
+ syncRecceUI();renderRecent();updateCounts();updateSysBar();
+}
+function switchMode(){
+ cleanupMarkTemp();
+ closePanel();document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden'));
+ $('welcome').classList.remove('hidden');$('topBar').classList.add('hidden');$('main').classList.add('hidden');
+ S.started=false;try{window.scrollTo(0,0);}catch(e){}
+}
+
+/* --- vector drawing: pen / line / arrow / box / numbered point --- */
+function drawShapes(ctx,W,H,shapes){
+ const k=W/1000;
+ ctx.lineJoin='round';ctx.lineCap='round';
+ (shapes||[]).forEach((s,i)=>{
+  const col=s.color||'#e53935',lw=Math.max(1.4,(s.width||5)*k);
+  ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=lw;
+  if(s.type==='pen'){
+   const pts=s.pts||[];if(pts.length<2)return;
+   ctx.beginPath();ctx.moveTo(pts[0].x*W,pts[0].y*H);
+   for(let j=1;j<pts.length;j++)ctx.lineTo(pts[j].x*W,pts[j].y*H);
+   ctx.stroke();
+  }else if(s.type==='line'||s.type==='arrow'){
+   const x1=s.x1*W,y1=s.y1*H,x2=s.x2*W,y2=s.y2*H;
+   ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+   if(s.type==='arrow'){
+    const a=Math.atan2(y2-y1,x2-x1),len=Math.max(9,54*k);
+    ctx.beginPath();ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-len*Math.cos(a-.45),y2-len*Math.sin(a-.45));
+    ctx.lineTo(x2-len*Math.cos(a+.45),y2-len*Math.sin(a+.45));
+    ctx.closePath();ctx.fill();
+   }
+  }else if(s.type==='rect'){
+   const x=Math.min(s.x1,s.x2)*W,y=Math.min(s.y1,s.y2)*H;
+   ctx.strokeRect(x,y,Math.abs(s.x2-s.x1)*W,Math.abs(s.y2-s.y1)*H);
+  }else if(s.type==='point'){
+   const px=s.x*W,py=s.y*H,rad=Math.max(8,32*k);
+   const num=(shapes.slice(0,i).filter(q=>q.type==='point').length)+1;
+   ctx.beginPath();ctx.arc(px,py,rad,0,Math.PI*2);ctx.fill();
+   ctx.strokeStyle='#fff';ctx.lineWidth=Math.max(1.4,rad*.16);ctx.stroke();
+   ctx.fillStyle='#fff';ctx.font='800 '+Math.round(rad*1.05)+'px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+   ctx.fillText(String(num),px,py);
+   ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  }
+ });
+}
+function resizeMarkCanvas(){
+ if(!markState.img||!markState.canvas)return;
+ const im=markState.img,cv=markState.canvas;
+ const w=im.clientWidth||im.naturalWidth||600,h=im.clientHeight||im.naturalHeight||400;
+ cv.width=Math.max(1,Math.round(w));cv.height=Math.max(1,Math.round(h));
+ markState.cw=cv.width;markState.ch=cv.height;
+ drawMarkCanvas();
+}
+function drawMarkCanvas(){
+ const cv=markState.canvas,ctx=markState.ctx;if(!cv||!ctx)return;
+ ctx.clearRect(0,0,cv.width,cv.height);
+ const fresh=markState.shapes.slice(markState.baseCount||0);
+ const all=markState.draft?fresh.concat([markState.draft]):fresh;
+ drawShapes(ctx,cv.width,cv.height,all);
+ const c=$('markCount');if(c)c.textContent=fresh.length+' '+L('निशान','marks');
+}
+function renderMarkList(){
+ const list=$('markList');if(!list)return;list.innerHTML='';
+ const pts=[];markState.shapes.forEach((s,i)=>{if(s.type==='point')pts.push({s:s,i:i});});
+ if(!pts.length){const d=document.createElement('div');d.className='mark-empty';
+  d.textContent=markState.reedit
+   ? L('पिछली marking पहले से फ़ोटो में है। ऊपर से टूल चुनकर नई marking जोड़ें।','Earlier markings are already in the photo. Pick a tool above to add new markings.')
+   : L('पेन/लाइन/तीर/बॉक्स से marking करें। “पॉइंट + नोट” से नंबर वाला नोट जोड़ें।','Draw with pen/line/arrow/box. Use “Point + note” for numbered notes.');
+  list.appendChild(d);return;}
+ pts.forEach((o,n)=>{
+  const row=document.createElement('div');row.className='mark-item';
+  const num=document.createElement('div');num.className='mark-num';num.textContent=n+1;
+  const inp=document.createElement('input');inp.type='text';inp.placeholder=L('जैसे: यहाँ flex board लगेगा','e.g. flex board goes here');inp.value=o.s.note||'';
+  inp.oninput=e=>{o.s.note=e.target.value;};
+  row.appendChild(num);row.appendChild(inp);
+  if(o.i>=(markState.baseCount||0)){
+   const del=document.createElement('button');del.innerHTML='<svg class="icon sm"><use href="#i-close"/></svg>';
+   del.onclick=()=>{markState.shapes.splice(o.i,1);renderMarkList();drawMarkCanvas();};
+   row.appendChild(del);
+  }
+  list.appendChild(row);
+ });
+}
+function markPos(e){
+ const r=markState.canvas.getBoundingClientRect();
+ if(!r.width||!r.height)return {x:0,y:0};
+ return {x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))};
+}
+function markEvt(e){
+ const t=(e.touches&&e.touches[0])||(e.changedTouches&&e.changedTouches[0]);
+ if(t)return {clientX:t.clientX,clientY:t.clientY,pointerId:1,
+  preventDefault:()=>{try{e.preventDefault();}catch(x){}}};
+ return e;
+}
+function bindMarkEvents(){
+ const cv=$('markCanvas');
+ if(window.PointerEvent){
+  cv.addEventListener('pointerdown',markPointerDown);
+  cv.addEventListener('pointermove',markPointerMove);
+  cv.addEventListener('pointerup',markPointerUp);
+  cv.addEventListener('pointercancel',markPointerUp);
+ }else{
+  cv.addEventListener('mousedown',e=>markPointerDown(markEvt(e)));
+  cv.addEventListener('mousemove',e=>markPointerMove(markEvt(e)));
+  window.addEventListener('mouseup',e=>markPointerUp(markEvt(e)));
+  cv.addEventListener('touchstart',e=>markPointerDown(markEvt(e)),{passive:false});
+  cv.addEventListener('touchmove',e=>markPointerMove(markEvt(e)),{passive:false});
+  cv.addEventListener('touchend',e=>markPointerUp(markEvt(e)),{passive:false});
+  cv.addEventListener('touchcancel',e=>markPointerUp(markEvt(e)),{passive:false});
+ }
+}
+function markPointerDown(e){
+ if(!markState.img||!markState.canvas)return;
+ e.preventDefault();
+ const p=markPos(e);
+ if(markState.tool==='point'){
+  markState.shapes.push({type:'point',x:p.x,y:p.y,note:'',color:markState.color,width:markState.width});
+  renderMarkList();drawMarkCanvas();return;
+ }
+ markState.drawing=true;markState.start=p;
+ if(markState.tool==='pen')markState.draft={type:'pen',pts:[p],color:markState.color,width:markState.width};
+ else markState.draft={type:markState.tool,x1:p.x,y1:p.y,x2:p.x,y2:p.y,color:markState.color,width:markState.width};
+ try{markState.canvas.setPointerCapture(e.pointerId);}catch(err){}
+ drawMarkCanvas();
+}
+function markPointerMove(e){
+ if(!markState.drawing||!markState.draft)return;
+ e.preventDefault();const p=markPos(e),d=markState.draft;
+ if(d.type==='pen'){
+  const last=d.pts[d.pts.length-1];
+  if(Math.abs(p.x-last.x)+Math.abs(p.y-last.y)>0.002)d.pts.push(p);
+ }else{d.x2=p.x;d.y2=p.y;}
+ if(markRaf)return;
+ markRaf=requestAnimationFrame(()=>{markRaf=0;drawMarkCanvas();});
+}
+function markPointerUp(e){
+ if(!markState.drawing)return;
+ e.preventDefault();markState.drawing=false;
+ const d=markState.draft;markState.draft=null;
+ if(d){
+  let keep=true;
+  if(d.type==='pen'){if((d.pts||[]).length<2)keep=false;}
+  else if(Math.abs(d.x2-d.x1)+Math.abs(d.y2-d.y1)<0.008)keep=false;
+  if(keep)markState.shapes.push(d);
+ }
+ try{markState.canvas.releasePointerCapture(e.pointerId);}catch(err){}
+ renderMarkList();drawMarkCanvas();
+}
+async function showMarkImage(url){
+ const im=$('markImg');
+ await new Promise(res=>{im.onload=res;im.onerror=res;im.src=url||'';});
+ markState.img=im;
+ openModal('markModal');
+ requestAnimationFrame(()=>{resizeMarkCanvas();renderMarkList();drawMarkCanvas();});
+}
+function freshMarkState(extra){
+ return Object.assign({photoId:null,pending:null,shapes:[],img:null,canvas:$('markCanvas'),
+  ctx:$('markCanvas').getContext('2d'),cw:0,ch:0,tool:'pen',color:'#e53935',width:5,
+  drawing:false,start:null,draft:null,branded:false,baseCount:0,reedit:false,tmpUrl:null},extra||{});
+}
+function cleanupMarkTemp(){
+ if(markState.tmpUrl){try{URL.revokeObjectURL(markState.tmpUrl);}catch(e){}markState.tmpUrl=null;}
+}
+function closeMarkModal(){cleanupMarkTemp();closeModal('markModal');}
+async function openMarkEditorForCanvas(canvas,meta){
+ cleanupMarkTemp();
+ markState=freshMarkState({pending:{canvas:canvas,meta:meta}});
+ const blob=await canvasToBlob(canvas,'image/jpeg',.9);
+ if(blob&&window.URL&&URL.createObjectURL){
+  markState.tmpUrl=URL.createObjectURL(blob);
+  await showMarkImage(markState.tmpUrl);
+ }else await showMarkImage(canvas.toDataURL('image/jpeg',.9));
+}
+async function openMarkEditor(){
+ cleanupMarkTemp();
+ const list=activePhotos();
+ let rec=S.photos.find(p=>p.id===S.currentPhotoId)||list[0];
+ if(!rec){toast(L('पहले एक फ़ोटो लें या अपलोड करें।','Capture or upload a photo first.'),true);return;}
+ let shapes=(rec.recce&&rec.recce.shapes)||[];
+ if(!shapes.length&&rec.recce&&rec.recce.markers){
+  shapes=rec.recce.markers.map(m=>({type:'point',x:m.x,y:m.y,note:m.note||'',color:'#e53935',width:5}));
+ }
+ markState=freshMarkState({photoId:rec.id,shapes:shapes.map(s=>Object.assign({},s)),
+  baseCount:rec.branded?shapes.length:0,reedit:!!rec.branded,branded:!!rec.branded});
+ await showMarkImage(await photoURL(rec));
+}
+function drawRecceBranding(ctx,W,H,meta){
+ const s=W/1000,pad=Math.round(28*s);
+ if(S.settings.recce.logo!==false&&BRAND_WHITE_IMG&&BRAND_WHITE_IMG.complete&&BRAND_WHITE_IMG.naturalWidth){
+  const bw=Math.min(W*0.18,190*s);
+  const bh=bw*BRAND_WHITE_IMG.naturalHeight/BRAND_WHITE_IMG.naturalWidth;
+  ctx.globalAlpha=.9;ctx.drawImage(BRAND_WHITE_IMG,W-pad-bw,pad,bw,bh);ctx.globalAlpha=1;
+ }
+ const r=meta&&meta.recce;
+ const cap=r?((r.size||'—')+' | '+(r.material||'—')):'';
+ if(!cap)return;
+ const fs=Math.max(12,Math.min(Math.round(20*s),Math.round(W/22)));
+ ctx.font='700 '+fs+'px system-ui,"Noto Sans Devanagari",sans-serif';
+ const tw=ctx.measureText(cap).width;
+ const bw=Math.min(W,tw+pad*1.2),bx=Math.max(0,(W-bw)/2);
+ const bh=fs+Math.round(20*s),by=H-bh-Math.round(20*s);
+ ctx.fillStyle='rgba(16,18,20,.74)';
+ if(ctx.roundRect){ctx.beginPath();ctx.roundRect(bx,by,bw,bh,Math.round(10*s));ctx.fill();}
+ else ctx.fillRect(bx,by,bw,bh);
+ ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';
+ ctx.fillText(cap,bx+bw/2,by+bh/2);
+ ctx.textAlign='left';ctx.textBaseline='alphabetic';
+}
+async function saveMarkers(){
+ const st=markState;
+ if(!st.img){closeModal('markModal');return;}
+ const nw=st.img.naturalWidth||1280,nh=st.img.naturalHeight||720;
+ const c=document.createElement('canvas');c.width=nw;c.height=nh;
+ const x=c.getContext('2d');
+ let rec=null,meta=null;
+ if(st.pending){
+  meta=st.pending.meta;
+  x.drawImage(st.pending.canvas,0,0,nw,nh);
+  if(!st.branded)drawRecceBranding(x,nw,nh,meta);
+ }else{
+  rec=S.photos.find(p=>p.id===st.photoId);
+  if(!rec){closeModal('markModal');return;}
+  meta=rec;x.drawImage(st.img,0,0,nw,nh);
+  if(!st.branded)drawRecceBranding(x,nw,nh,rec);
+ }
+ drawShapes(x,nw,nh,st.shapes.slice(st.baseCount||0));
+ const blob=await canvasToBlob(c,'image/jpeg',.93);
+ cleanupMarkTemp();
+ if(!blob){closeModal('markModal');return;}
+ const shapes=st.shapes.map(s=>Object.assign({},s));
+ const markers=shapes.filter(s=>s.type==='point').map(s=>({x:s.x,y:s.y,note:s.note||''}));
+ const autoDl=S.settings.recce.autoDl!==false;
+ if(st.pending){
+  const m=Object.assign({},meta,{
+   id:'r'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+   createdAt:new Date().toISOString(),blob:blob,thumb:makeThumb(c),
+   width:c.width,height:c.height,app:'recce',branded:true,
+   zoneHi:'',zoneEn:'',heading:0,mode:'manual',gps:'',lat:null,lon:null,
+   recce:Object.assign({},meta.recce,{shapes:shapes,markers:markers})
+  });
+  S.photos.unshift(m);await dbPut(m);
+  renderRecent();updateCounts();
+  closeModal('markModal');
+  openPhoto(m.id,true).catch(()=>{});
+  if(autoDl){downloadBlob(blob,recceFileName(m));toast(L('फ़ोटो सेव + डाउनलोड: ','Photo saved + downloaded: ')+recceFileName(m));}
+  else toast(t('photoSaved'));
+  return;
+ }
+ if(rec._url){try{URL.revokeObjectURL(rec._url);}catch(e){}delete rec._url;}
+ rec.blob=blob;rec.width=nw;rec.height=nh;rec.thumb=makeThumb(c);rec.branded=true;rec.app='recce';
+ rec.recce=Object.assign({},rec.recce||{}, {enabled:true,shapes:shapes,markers:markers});
+ await dbPut(rec);renderRecent();renderGallery();
+ closeModal('markModal');
+ if(S.currentPhotoId===rec.id){
+  const im=$('pmImg');rec._url=URL.createObjectURL(blob);im.src=rec._url;
+  $('pmMeta').innerHTML=metaRows(rec);openModal('photoModal');
+ }
+ if(autoDl)downloadBlob(blob,recceFileName(rec));
+ toast(t('recceSaved'));
+}
+
 /* ============================================================
    6. CAMERA — robust start / switch / fallback
    ============================================================ */
@@ -898,6 +1620,7 @@ function secureOK(){
  return window.isSecureContext||location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
 }
 function qualityConstraint(q){
+ if(lowEndDevice())return {width:{ideal:1280},height:{ideal:720}};
  if(q==='standard')return {width:{ideal:1280},height:{ideal:720}};
  if(q==='hd')return {width:{ideal:1920},height:{ideal:1080}};
  return {};
@@ -979,7 +1702,6 @@ async function startCamera(opts){
    const stream=await navigator.mediaDevices.getUserMedia(attempts[i]);
    await attachStream(stream);
    await refreshDevices();
-   toast(t('camReady'));
    return;
   }catch(e){
    lastErr=e;
@@ -1103,14 +1825,19 @@ function drawStamp(ctx,w,h,meta){
  lines.push({txt:(lang==='hi'?'समय: ':'Time: ')+meta.date+'   |   '+(lang==='hi'?'GPS: ':'GPS: ')+meta.gps,size:Math.round(base*.8),color:'#e5e7eb',bold:false});
  const site=[meta.project,meta.plot?('प्लॉट '+meta.plot):'',meta.client].filter(Boolean).join(' · ');
  if(site)lines.push({txt:(lang==='hi'?'साइट: ':'Site: ')+site,size:Math.round(base*.8),color:'#e5e7eb',bold:false});
+ if(meta.recce&&meta.recce.enabled){
+  lines.push({txt:(lang==='hi'?'रेक्की: ':'Recce: ')+meta.recce.category+' · '+meta.recce.site,size:Math.round(base*.8),color:'#e9edf0',bold:false});
+  lines.push({txt:(lang==='hi'?'साइज़: ':'Size: ')+meta.recce.size+' · '+(lang==='hi'?'मटेरियल: ':'Material: ')+meta.recce.material,size:Math.round(base*.8),color:'#e9edf0',bold:false});
+ }
  if(meta.remark)lines.push({txt:(lang==='hi'?'नोट: ':'Note: ')+meta.remark,size:Math.round(base*.8),color:'#e9edf0',bold:false});
- const footer='Vastu Site Camera · '+(lang==='hi'?'सुझाव पारंपरिक, कानूनी सर्वे नहीं · डेटा डिवाइस में सुरक्षित':'Traditional guidance, not a legal survey · data stays on device');
+ const footer='ArtVision Vastu Site Camera · '+(lang==='hi'?'सुझाव पारंपरिक, कानूनी सर्वे नहीं · डेटा डिवाइस में सुरक्षित':'Traditional guidance, not a legal survey · data stays on device');
  lines.push({txt:footer,size:Math.round(base*.62),color:'#b9c1c7',bold:false});
 
  // wrap each line
  let totalLines=0;
  lines.forEach(L=>{ctx.font=(L.bold?'800 ':'600 ')+L.size+'px system-ui,"Noto Sans Devanagari",sans-serif';L.wrapped=wrapLines(ctx,L.txt,maxW);totalLines+=L.wrapped.length;});
- const bandH=Math.min(h*0.52,Math.max(h*0.26,Math.round(pad*1.6+totalLines*lineH)));
+ const cap=(meta.recce&&meta.recce.enabled)?0.62:0.52;
+ const bandH=Math.min(h*cap,Math.max(h*0.26,Math.round(pad*1.6+totalLines*lineH)));
  const y0=h-bandH;
  const grad=ctx.createLinearGradient(0,y0-40*s,0,h);
  grad.addColorStop(0,'rgba(0,0,0,0)');grad.addColorStop(.18,'rgba(0,0,0,.55)');grad.addColorStop(1,'rgba(14,17,20,.9)');
@@ -1140,9 +1867,17 @@ function drawStamp(ctx,w,h,meta){
  ctx.fillText('N',cx,cy-r+Math.round(18*s));
  ctx.textAlign='left';ctx.textBaseline='alphabetic';
 
- // top-right watermark
- ctx.font='700 '+Math.round(17*s)+'px system-ui';ctx.fillStyle='rgba(255,255,255,.82)';ctx.textAlign='right';
- ctx.fillText('Vastu Site Camera',w-pad,pad+Math.round(20*s));
+ // top-right brand watermark (ArtVision)
+ if(BRAND_WHITE_IMG&&BRAND_WHITE_IMG.complete&&BRAND_WHITE_IMG.naturalWidth){
+  const bw=Math.min(w*0.24,250*s);
+  const bh=bw*BRAND_WHITE_IMG.naturalHeight/BRAND_WHITE_IMG.naturalWidth;
+  ctx.drawImage(BRAND_WHITE_IMG,w-pad-bw,pad,bw,bh);
+  ctx.font='600 '+Math.round(14*s)+'px system-ui';ctx.fillStyle='rgba(255,255,255,.72)';ctx.textAlign='right';
+  ctx.fillText('Vastu Site Camera',w-pad,pad+bh+Math.round(18*s));
+ }else{
+  ctx.font='700 '+Math.round(17*s)+'px system-ui';ctx.fillStyle='rgba(255,255,255,.82)';ctx.textAlign='right';
+  ctx.fillText('Vastu Site Camera',w-pad,pad+Math.round(20*s));
+ }
  ctx.textAlign='left';
 }
 function makeCanvasFrom(source,w,h,mirror){
@@ -1162,21 +1897,27 @@ function currentMeta(extra){
   heading:heading(),mode:S.mode,zoneHi:zoneOf(heading()).hi,zoneEn:zoneOf(heading()).enName,
   date:fmtDate(new Date().toISOString()),gps:gpsText(),lat:S.gps.lat,lon:S.gps.lon,acc:S.gps.acc,
   project:S.settings.project,plot:S.settings.plot,client:S.settings.client,remark:S.settings.remark,
-  camera:S.camLabel||guessLabel(),width:0,height:0,mirrored:false,source:'camera'
+  camera:S.camLabel||guessLabel(),width:0,height:0,mirrored:false,source:'camera',recce:null
  },extra||{});
 }
-function canvasToRecord(canvas,meta){
+function canvasToBlob(canvas,type,q){
  return new Promise(res=>{
-  canvas.toBlob(blob=>{
-   const rec=Object.assign({},meta,{
-    id:'p'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
-    createdAt:new Date().toISOString(),blob:blob,thumb:makeThumb(canvas),
-    width:canvas.width,height:canvas.height,
-    zoneHi:zoneOf(meta.heading).hi,zoneEn:zoneOf(meta.heading).enName
-   });
-   res(rec);
-  },'image/jpeg',.92);
+  type=type||'image/jpeg';q=(q==null?.92:q);
+  if(canvas.toBlob){try{canvas.toBlob(b=>res(b),type,q);return;}catch(e){}}
+  try{
+   const du=canvas.toDataURL(type,q),bin=atob(String(du).split(',')[1]||'');
+   const arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+   res(new Blob([arr],{type:type}));
+  }catch(e){res(null);}
  });
+}
+function canvasToRecord(canvas,meta){
+ return canvasToBlob(canvas,'image/jpeg',.92).then(blob=>Object.assign({},meta,{
+  id:'p'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+  createdAt:new Date().toISOString(),blob:blob,thumb:makeThumb(canvas),
+  width:canvas.width,height:canvas.height,
+  zoneHi:zoneOf(meta.heading).hi,zoneEn:zoneOf(meta.heading).enName
+ }));
 }
 async function saveAndReview(canvas,meta,isUpload){
  const rec=await canvasToRecord(canvas,meta);
@@ -1188,10 +1929,19 @@ async function saveAndReview(canvas,meta,isUpload){
 function capture(){
  const v=$('video');
  if(!S.stream||!v.videoWidth){toast(t('errNotFound'),true);return;}
- const meta=currentMeta({source:'camera'});
  const mirror=$('video').classList.contains('mirror');
- meta.mirrored=mirror;
  const c=makeCanvasFrom(v,v.videoWidth,v.videoHeight,mirror);
+ if(S.appMode==='recce'){
+  readRecce();
+  const rr=S.settings.recce;
+  if(!rr.site||!rr.w||!rr.h||!rr.material)
+   toast(L('साइट, साइज़ और मटेरियल भरें — फ़ाइल नाम उसी से बनेगा।','Fill site, size and material — they build the filename.'),true);
+  const meta=recceMeta({source:'camera',mirrored:mirror});
+  openMarkEditorForCanvas(c,meta).catch(()=>{});
+  return;
+ }
+ const meta=currentMeta({source:'camera'});
+ meta.mirrored=mirror;
  drawStamp(c.getContext('2d'),c.width,c.height,Object.assign({},meta,{date:meta.date}));
  saveAndReview(c,meta,false);
 }
@@ -1210,11 +1960,16 @@ async function handleUpload(file){
   }
  }catch(e){toast(t('selectImage'),true);return;}
  if(!w||!h){toast(t('selectImage'),true);return;}
- const meta=currentMeta({source:'upload',mirrored:false,camera:lang==='hi'?'अपलोड की गई फ़ोटो':'Uploaded photo'});
  const c=makeCanvasFrom(src,w,h,false);
- drawStamp(c.getContext('2d'),w,h,Object.assign({},meta,{date:meta.date}));
  $('topBar').classList.remove('hidden');$('main').classList.remove('hidden');$('welcome').classList.add('hidden');S.started=true;
  $('cameraError').classList.add('hidden');$('videoPlaceholder').classList.add('hidden');
+ if(S.appMode==='recce'){
+  const meta=recceMeta({source:'upload',mirrored:false,camera:L('अपलोड की गई फ़ोटो','Uploaded photo')});
+  openMarkEditorForCanvas(c,meta).catch(()=>{});
+  return;
+ }
+ const meta=currentMeta({source:'upload',mirrored:false,camera:L('अपलोड की गई फ़ोटो','Uploaded photo')});
+ drawStamp(c.getContext('2d'),w,h,Object.assign({},meta,{date:meta.date}));
  saveAndReview(c,meta,true);
 }
 
@@ -1236,30 +1991,41 @@ async function photoURL(rec){
 }
 function imgAttrs(im){im.loading='lazy';im.decoding='async';}
 function renderRecent(){
- const g=$('recentGrid');g.innerHTML='';
- const list=S.photos.slice(0,6);
- if(!list.length){const d=document.createElement('div');d.className='empty';d.textContent=t('noPhotos');g.appendChild(d);return;}
- list.forEach(rec=>{
-  const d=document.createElement('div');d.className='thumb';
-  const im=document.createElement('img');imgAttrs(im);im.src=rec.thumb||'';im.alt=rec.zoneHi||'';
-  im.onclick=()=>{openPhoto(rec.id,false).catch(()=>{});};d.appendChild(im);g.appendChild(d);
+ const list=activePhotos().slice(0,6);
+ ['recentGrid','recceRecentGrid'].forEach(id=>{
+  const g=$(id);if(!g)return;g.innerHTML='';
+  if(!list.length){const d=document.createElement('div');d.className='empty';d.textContent=t('noPhotos');g.appendChild(d);return;}
+  list.forEach(rec=>{
+   const d=document.createElement('div');d.className='thumb';
+   const im=document.createElement('img');imgAttrs(im);im.src=rec.thumb||'';
+   im.alt=rec.app==='recce'?((rec.recce&&rec.recce.site)||''):(rec.zoneHi||'');
+   im.onclick=()=>{openPhoto(rec.id,false).catch(()=>{});};d.appendChild(im);g.appendChild(d);
+  });
  });
 }
 function updateCounts(){
- $('photoCount').textContent=S.photos.length;
- $('recentCount').textContent=S.photos.length;
+ const n=activePhotos().length;
+ $('photoCount').textContent=n;
+ $('recentCount').textContent=n;
+ const rc=$('recceRecentCount');if(rc)rc.textContent=n;
 }
 function renderGallery(){
  const g=$('galleryGrid');g.innerHTML='';
- if(!S.photos.length){g.innerHTML='<div class="empty-state"><svg class="icon"><use href="#i-images"/></svg><div>'+esc(t('noPhotos'))+'</div></div>';return;}
+ const list=activePhotos();
+ if(!list.length){g.innerHTML='<div class="empty-state"><svg class="icon"><use href="#i-images"/></svg><div>'+esc(t('noPhotos'))+'</div></div>';return;}
  const frag=document.createDocumentFragment();
- S.photos.forEach(rec=>{
+ list.forEach(rec=>{
   const c=document.createElement('div');c.className='g-card';
-  const im=document.createElement('img');imgAttrs(im);im.src=rec.thumb||'';im.alt=rec.zoneHi||'';im.onclick=()=>{openPhoto(rec.id,false).catch(()=>{});};
+  const im=document.createElement('img');imgAttrs(im);im.src=rec.thumb||'';
+  im.alt=rec.app==='recce'?((rec.recce&&rec.recce.site)||''):(rec.zoneHi||'');
+  im.onclick=()=>{openPhoto(rec.id,false).catch(()=>{});};
   const del=document.createElement('button');del.className='g-del';del.innerHTML='<svg class="icon sm"><use href="#i-close"/></svg>';
   del.onclick=async(e)=>{e.stopPropagation();await deletePhoto(rec.id);renderGallery();};
   const info=document.createElement('div');info.className='g-info';
-  info.innerHTML='<b>'+esc(rec.zoneHi||'')+' · '+Math.round(rec.heading)+'°</b><small>'+esc(fmtDate(rec.createdAt))+'</small>';
+  if(rec.app==='recce'){
+   const r=rec.recce||{};
+   info.innerHTML='<b>'+esc(r.site||'—')+'</b><small>'+esc(r.size||'—')+' · '+esc(r.material||'—')+'</small><small>'+esc(fmtDate(rec.createdAt))+'</small>';
+  }else info.innerHTML='<b>'+esc(rec.zoneHi||'')+' · '+Math.round(rec.heading)+'°</b><small>'+esc(fmtDate(rec.createdAt))+'</small>';
   c.appendChild(im);c.appendChild(del);c.appendChild(info);frag.appendChild(c);
  });
  g.appendChild(frag);
@@ -1275,6 +2041,21 @@ async function deletePhoto(id){
  renderRecent();updateCounts();
 }
 function metaRows(rec){
+ if(rec.app==='recce'){
+  const r=rec.recce||{},sh=r.shapes||[];
+  const rows=[
+   [L('साइट','Site'),esc(r.site||'—')],
+   [L('कैटेगरी','Category'),esc(r.category||'—')],
+   [L('साइज़','Size'),esc(r.size||'—')],
+   [L('मटेरियल','Material'),esc(r.material||'—')],
+   [L('लाइन / मार्कर','Lines / markers'),esc(sh.filter(q=>q.type!=='point').length+' / '+(r.markers||[]).length)],
+   [L('फ़ाइल नाम','File name'),esc(recceFileName(rec))],
+   [t('cameraLabel'),esc(rec.camera||'')],
+   [t('source'),esc(rec.source==='upload'?L('अपलोड','Upload'):L('कैमरा','Camera'))],
+   [t('date'),esc(fmtDate(rec.createdAt))]
+  ];
+  return rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('');
+ }
  const mapUrl=(rec.lat!=null)?('https://www.google.com/maps?q='+rec.lat+','+rec.lon):'';
  const rows=[
   [t('facing'),esc(rec.zoneHi||'')+' ('+esc(rec.zoneEn||'')+') · '+Math.round(rec.heading)+'° · '+(rec.mode==='sensor'?t('modeSensor'):t('modeManual'))],
@@ -1283,7 +2064,7 @@ function metaRows(rec){
   [t('cameraLabel'),esc(rec.camera||'')],
   [t('site'),esc([rec.project,rec.plot,rec.client].filter(Boolean).join(' · ')||'—')],
   [t('note'),esc(rec.remark||'—')],
-  [t('source'),esc(rec.source==='upload'?(lang==='hi'?'अपलोड':'Upload'):(lang==='hi'?'कैमरा':'Camera'))]
+  [t('source'),esc(rec.source==='upload'?L('अपलोड','Upload'):L('कैमरा','Camera'))]
  ];
  if(mapUrl)rows.push([t('map'),'<a href="'+esc(mapUrl)+'" target="_blank" rel="noopener">'+esc(t('openMap'))+'</a>']);
  return rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('');
@@ -1310,12 +2091,12 @@ function currentBlobOrDataURL(rec){
  return rec.blob||rec.thumb;
 }
 function photoFileName(rec){
+ if(rec.app==='recce')return recceFileName(rec);
  const d=new Date(rec.createdAt),stamp=d.toISOString().slice(0,19).replace(/[:T]/g,'-');
- const zone=(rec.zoneEn||rec.zoneHi||'dir').replace(/[^a-z0-9]/gi,'_');
- return 'vastu_'+zone+'_'+stamp+'.jpg';
+ return ['vastu',slug(rec.zoneEn||rec.zoneHi||'dir'),stamp].join('_')+'.jpg';
 }
 function buildReport(){
- const photos=S.photos.slice().reverse();
+ const photos=activePhotos().slice().reverse();
  const rows=photos.map((p,i)=>{
   const map=(p.lat!=null)?'<a href="https://www.google.com/maps?q='+p.lat+','+p.lon+'" target="_blank" rel="noopener">'+esc(t('openMap'))+'</a>':'—';
   return '<section class="ph"><h2>#'+(i+1)+' · '+esc(p.zoneHi)+' ('+esc(p.zoneEn)+') · '+Math.round(p.heading)+'°</h2>'+
@@ -1325,48 +2106,99 @@ function buildReport(){
    '<tr><td>'+esc(t('cameraLabel'))+'</td><td>'+esc(p.camera||'')+'</td></tr>'+
    '<tr><td>'+esc(t('site'))+'</td><td>'+esc([p.project,p.plot,p.client].filter(Boolean).join(' · ')||'—')+'</td></tr>'+
    '<tr><td>'+esc(t('note'))+'</td><td>'+esc(p.remark||'—')+'</td></tr>'+
+   (p.recce&&p.recce.enabled?'<tr><td>'+esc(t('recceColCategory'))+'</td><td>'+esc(p.recce.category)+' · '+esc(p.recce.site)+'</td></tr>'+
+    '<tr><td>'+esc(t('recceColSize'))+'</td><td>'+esc(p.recce.size)+' · '+esc(t('recceColMaterial'))+': '+esc(p.recce.material)+'</td></tr>'+
+    '<tr><td>'+esc(t('recceColMarkers'))+'</td><td>'+((p.recce.markers||[]).length)+'</td></tr>':'')+
    '<tr><td>'+esc(t('mode'))+'</td><td>'+(p.mode==='sensor'?esc(t('modeSensor')):esc(t('modeManual')))+'</td></tr>'+
    '<tr><td>'+esc(t('map'))+'</td><td>'+map+'</td></tr></table></section>';
  }).join('');
  const html='<!doctype html><html lang="'+lang+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vastu Site Report</title>'+
- '<style>body{font-family:system-ui,"Noto Sans Devanagari",sans-serif;color:#101214;max-width:900px;margin:0 auto;padding:28px;line-height:1.55}h1{color:#101214;margin:0 0 4px}p.sub{color:#616b73;margin:0 0 22px}.sum{background:#f2f4f5;border:1px solid #e2e6e9;border-radius:12px;padding:14px 18px;margin-bottom:26px}.sum b{color:#101214}.ph{page-break-inside:avoid;border-top:2px solid #1d2227;padding-top:16px;margin-top:26px}.ph h2{font-size:16px;margin:0 0 10px;color:#101214}.ph img{width:100%;border-radius:10px;border:1px solid #e2e6e9;display:block}.ph table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12.5px}.ph td{border-bottom:1px solid #e6eaed;padding:6px 8px}.ph td:first-child{color:#616b73;width:32%;font-weight:700}a{color:#1d2227}.foot{margin-top:34px;font-size:11px;color:#616b73;background:#f2f4f5;border:1px solid #e2e6e9;border-radius:10px;padding:12px}@media print{body{padding:0}.noprint{display:none}}</style></head><body>'+
- '<h1>Vastu Site Camera — '+esc(t('report'))+'</h1><p class="sub">'+esc(t('generated'))+': '+esc(fmtDate(new Date().toISOString()))+' · '+esc(S.settings.project||'—')+'</p>'+
+ '<style>body{font-family:system-ui,"Noto Sans Devanagari",sans-serif;color:#101214;max-width:900px;margin:0 auto;padding:28px;line-height:1.55}h1{color:#101214;margin:0 0 4px}.rep-logo{width:230px;height:auto;display:block;margin:0 0 10px}p.sub{color:#616b73;margin:0 0 22px}.sum{background:#f2f4f5;border:1px solid #e2e6e9;border-radius:12px;padding:14px 18px;margin-bottom:26px}.sum b{color:#101214}.ph{page-break-inside:avoid;border-top:2px solid #1d2227;padding-top:16px;margin-top:26px}.ph h2{font-size:16px;margin:0 0 10px;color:#101214}.ph img{width:100%;border-radius:10px;border:1px solid #e2e6e9;display:block}.ph table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12.5px}.ph td{border-bottom:1px solid #e6eaed;padding:6px 8px}.ph td:first-child{color:#616b73;width:32%;font-weight:700}a{color:#1d2227}.foot{margin-top:34px;font-size:11px;color:#616b73;background:#f2f4f5;border:1px solid #e2e6e9;border-radius:10px;padding:12px}@media print{body{padding:0}.noprint{display:none}}</style></head><body>'+
+ '<img class="rep-logo" src="'+BRAND_DATA+'" alt="ArtVision"><h1>Vastu Site Camera — '+esc(t('report'))+'</h1><p class="sub">'+esc(t('generated'))+': '+esc(fmtDate(new Date().toISOString()))+' · '+esc(S.settings.project||'—')+'</p>'+
  '<div class="sum"><b>'+esc(t('summary'))+':</b> '+esc(t('totalPhotos'))+' = '+photos.length+' · '+esc(t('project'))+' = '+esc(S.settings.project||'—')+' · '+esc(t('plot'))+' = '+esc(S.settings.plot||'—')+' · '+esc(t('client'))+' = '+esc(S.settings.client||'—')+'</div>'+
  (rows||'<p>'+esc(t('noPhotos'))+'</p>')+
- '<div class="foot">'+esc(lang==='hi'?'यह रिपोर्ट सामान्य वास्तु परंपरा पर आधारित है। दिशा फ़ोन सेंसर या मैनुअल चयन से आती है; GPS ब्राउज़र से आता है। यह कानूनी सर्वेक्षण, रजिस्ट्री नाप या संरचनात्मक सुरक्षा प्रमाणपत्र नहीं है। पुष्टि के लिए सर्वेयर/आर्किटेक्ट से संपर्क करें।':'This report is based on common Vastu tradition. Direction comes from a phone sensor or manual selection; GPS comes from the browser. It is not a legal survey, registry measurement or structural safety certificate. Verify with a surveyor/architect.')+'</div>'+
+ '<div class="foot">'+esc(lang==='hi'?'यह रिपोर्ट सामान्य वास्तु परंपरा पर आधारित है। दिशा फ़ोन सेंसर या मैनुअल चयन से आती है; GPS ब्राउज़र से आता है। यह कानूनी सर्वेक्षण, रजिस्ट्री नाप या संरचनात्मक सुरक्षा प्रमाणपत्र नहीं है। पुष्टि के लिए सर्वेयर/आर्किटेक्ट से संपर्क करें। · ArtVision':'This report is based on common Vastu tradition. Direction comes from a phone sensor or manual selection; GPS comes from the browser. It is not a legal survey, registry measurement or structural safety certificate. Verify with a surveyor/architect. · ArtVision')+'</div>'+
+ '</body></html>';
+ return html;
+}
+function buildRecceReport(){
+ const photos=activePhotos().slice().reverse();
+ const rows=photos.map((p,i)=>{
+  const r=p.recce||{},sh=r.shapes||[];
+  const lines=sh.filter(q=>q.type!=='point').length;
+  return '<section class="ph"><h2>#'+(i+1)+' · '+esc(r.site||'—')+' · '+esc(r.size||'—')+'</h2>'+
+   '<img loading="lazy" decoding="async" src="'+esc(p.thumb||'')+'" alt="recce photo">'+
+   '<table>'+
+   '<tr><td>'+esc(L('कैटेगरी','Category'))+'</td><td>'+esc(r.category||'—')+'</td></tr>'+
+   '<tr><td>'+esc(L('साइज़','Size'))+'</td><td>'+esc(r.size||'—')+'</td></tr>'+
+   '<tr><td>'+esc(L('मटेरियल','Material'))+'</td><td>'+esc(r.material||'—')+'</td></tr>'+
+   '<tr><td>'+esc(L('लाइन / मार्कर','Lines / markers'))+'</td><td>'+lines+' / '+(r.markers||[]).length+'</td></tr>'+
+   '<tr><td>'+esc(L('फ़ाइल नाम','File name'))+'</td><td>'+esc(recceFileName(p))+'</td></tr>'+
+   '<tr><td>'+esc(t('date'))+'</td><td>'+esc(fmtDate(p.createdAt))+'</td></tr>'+
+   '</table></section>';
+ }).join('');
+ const html='<!doctype html><html lang="'+lang+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Branding Recce Report</title>'+
+ '<style>body{font-family:system-ui,"Noto Sans Devanagari",sans-serif;color:#101214;max-width:900px;margin:0 auto;padding:28px;line-height:1.55}h1{color:#101214;margin:0 0 4px}.rep-logo{width:230px;height:auto;display:block;margin:0 0 10px}p.sub{color:#616b73;margin:0 0 22px}.sum{background:#f2f4f5;border:1px solid #e2e6e9;border-radius:12px;padding:14px 18px;margin-bottom:26px}.ph{page-break-inside:avoid;border-top:2px solid #c0392b;padding-top:16px;margin-top:26px}.ph h2{font-size:16px;margin:0 0 10px;color:#101214}.ph img{width:100%;border-radius:10px;border:1px solid #e2e6e9;display:block}.ph table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12.5px}.ph td{border-bottom:1px solid #e6eaed;padding:6px 8px}.ph td:first-child{color:#616b73;width:32%;font-weight:700}.foot{margin-top:34px;font-size:11px;color:#616b73;background:#f2f4f5;border:1px solid #e2e6e9;border-radius:10px;padding:12px}@media print{body{padding:0}}</style></head><body>'+
+ '<img class="rep-logo" src="'+BRAND_DATA+'" alt="ArtVision"><h1>Branding Recce — '+esc(t('report'))+'</h1><p class="sub">'+esc(t('generated'))+': '+esc(fmtDate(new Date().toISOString()))+' · '+esc(S.settings.recce.site||'—')+'</p>'+
+ '<div class="sum"><b>'+esc(t('summary'))+':</b> '+esc(t('totalPhotos'))+' = '+photos.length+' · '+esc(L('साइट','Site'))+' = '+esc(S.settings.recce.site||'—')+' · '+esc(L('साइज़','Size'))+' = '+esc(recceSizeText())+' · Material = '+esc(S.settings.recce.material||'—')+'</div>'+
+ (rows||'<p>'+esc(t('noPhotos'))+'</p>')+
+ '<div class="foot">'+esc(L('ब्रांडिंग रेक्की रिपोर्ट — फ़ोटो पर कोई वास्तु/दिशा/GPS जानकारी नहीं होती; सिर्फ लाइन मार्किंग और साइज़ | मटेरियल caption। · ArtVision','Branding recce report — photos carry no Vastu / direction / GPS information; only line markings and a size | material caption. · ArtVision'))+'</div>'+
  '</body></html>';
  return html;
 }
 function downloadReport(){
+ const d=new Date().toISOString().slice(0,10);
+ if(S.appMode==='recce'){
+  const blob=new Blob([buildRecceReport()],{type:'text/html;charset=utf-8'});
+  downloadBlob(blob,'recce_report_'+d+'.html');toast(t('reportReady'));return;
+ }
  const blob=new Blob([buildReport()],{type:'text/html;charset=utf-8'});
- downloadBlob(blob,'vastu_report_'+new Date().toISOString().slice(0,10)+'.html');
+ downloadBlob(blob,'vastu_report_'+d+'.html');
  toast(t('reportReady'));
 }
 function csvCell(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"';}
 function downloadCsv(){
+ const d=new Date().toISOString().slice(0,10);
+ if(S.appMode==='recce'){
+  const head=['id','date','site','category','size','material','lines','markers','notes','filename','source','width','height'];
+  const lines=[head.join(',')];
+  activePhotos().slice().reverse().forEach(p=>{
+   const r=p.recce||{},sh=r.shapes||[];
+   lines.push([p.id,p.createdAt,r.site,r.category,r.size,r.material,
+    sh.filter(q=>q.type!=='point').length,(r.markers||[]).length,
+    (r.markers||[]).map(m=>m.note||'').filter(Boolean).join(' | '),
+    recceFileName(p),p.source,p.width,p.height].map(csvCell).join(','));
+  });
+  const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  downloadBlob(blob,'recce_photos_'+d+'.csv');toast(t('csvReady'));return;
+ }
  const head=['id','date','zone_hi','zone_en','degrees','mode','gps','lat','lon','accuracy_m','camera','project','plot','client','remark','source','width','height'];
  const lines=[head.join(',')];
- S.photos.slice().reverse().forEach(p=>{
+ activePhotos().slice().reverse().forEach(p=>{
   lines.push([p.id,p.createdAt,p.zoneHi,p.zoneEn,Math.round(p.heading),p.mode,p.gps,p.lat,p.lon,p.acc,p.camera,p.project,p.plot,p.client,p.remark,p.source,p.width,p.height].map(csvCell).join(','));
  });
  const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
- downloadBlob(blob,'vastu_photos_'+new Date().toISOString().slice(0,10)+'.csv');
+ downloadBlob(blob,'vastu_photos_'+d+'.csv');
  toast(t('csvReady'));
 }
 
 /* ============================================================
    11. SIDE PANEL / MODALS WIRING
    ============================================================ */
-function openPanel(){$('sidePanel').classList.add('open');$('backdrop').classList.remove('hidden');}
+function openPanel(){const p=$(S.appMode==='recce'?'reccePanel':'sidePanel');p.classList.add('open');$('backdrop').classList.remove('hidden');}
 function autoOpenPanel(){autoPanel=true;openPanel();}
-function closePanel(){autoPanel=false;$('sidePanel').classList.remove('open');$('backdrop').classList.add('hidden');}
+function closePanel(){autoPanel=false;['sidePanel','reccePanel'].forEach(id=>$(id).classList.remove('open'));$('backdrop').classList.add('hidden');}
 function bootApp(){
+ setModeUI();
  $('welcome').classList.add('hidden');$('topBar').classList.remove('hidden');$('main').classList.remove('hidden');
  S.started=true;applyLang();buildDirGrid();updateDirectionUI();updateGpsUI();updateCamUI();renderRecent();updateCounts();
  if(window.innerWidth<1024)setTimeout(autoOpenPanel,450);
 }
 function bind(){
- // welcome
+ // welcome — choose which of the two cameras to start
+ document.querySelectorAll('#modeChoice .mode-card').forEach(b=>{
+  b.onclick=()=>{S.appMode=b.dataset.mode;S.settings.appMode=S.appMode;saveSettings();setModeUI();};
+ });
  document.querySelectorAll('#camPref button').forEach(b=>{
   b.onclick=()=>{document.querySelectorAll('#camPref button').forEach(x=>x.classList.remove('on'));b.classList.add('on');S.settings.camPref=b.dataset.pref;saveSettings();};
  });
@@ -1378,6 +2210,8 @@ function bind(){
  // top bar
  $('menuBtn').onclick=openPanel;
  $('panelClose').onclick=closePanel;
+ $('reccePanelClose').onclick=closePanel;
+ $('modeBtn').onclick=switchMode;
  $('backdrop').onclick=closePanel;
  $('dirPill').onclick=()=>{openPanel();$('dirGrid').scrollIntoView({behavior:'smooth',block:'center'});};
  $('gpsBtn').onclick=()=>{enableGps();};
@@ -1406,17 +2240,105 @@ function bind(){
   saveSettings();toast(t('detailsSaved'));
  };
  $('openGalleryBtn').onclick=()=>{renderGallery();openModal('galleryModal');};
+ $('recceOpenGalleryBtn').onclick=()=>{renderGallery();openModal('galleryModal');};
  $('helpBtn').onclick=()=>openModal('helpModal');
 
+ // camera 2: branding recce fields
+ ['recceCat','recceSite','recceW','recceH','recceUnit','recceMat'].forEach(id=>{
+  $(id).addEventListener('input',readRecce);$(id).addEventListener('change',readRecce);
+ });
+ $('recceAutoDl').onclick=()=>{
+  S.settings.recce.autoDl=!(S.settings.recce.autoDl!==false);saveSettings();syncRecceUI();
+  toast(S.settings.recce.autoDl?L('सेव होते ही डाउनलोड चालू','Auto-download on'):L('ऑटो डाउनलोड बंद','Auto-download off'));
+ };
+ $('recceLogo').onclick=()=>{
+  S.settings.recce.logo=!(S.settings.recce.logo!==false);saveSettings();syncRecceUI();
+  toast(S.settings.recce.logo?L('फ़ोटो पर लोगो चालू','Logo on'):L('फ़ोटो पर लोगो बंद','Logo off'));
+ };
+ $('recceMarkBtn').onclick=()=>{openMarkEditor().catch(()=>{});};
+
+ // line-drawing marking editor
+ bindMarkEvents();
+ document.querySelectorAll('#markTools .mark-tool').forEach(b=>{
+  b.onclick=()=>{
+   if(b.dataset.act==='undo'){if(markState.shapes.length>(markState.baseCount||0))markState.shapes.pop();renderMarkList();drawMarkCanvas();return;}
+   if(b.dataset.act==='clear'){markState.shapes=markState.shapes.slice(0,markState.baseCount||0);renderMarkList();drawMarkCanvas();return;}
+   markState.tool=b.dataset.tool;
+   document.querySelectorAll('#markTools .mark-tool[data-tool]').forEach(x=>x.classList.toggle('on',x===b));
+  };
+ });
+ document.querySelectorAll('.mark-color').forEach(b=>{
+  b.onclick=()=>{markState.color=b.dataset.color;document.querySelectorAll('.mark-color').forEach(x=>x.classList.toggle('on',x===b));};
+ });
+ $('markWidth').oninput=e=>{markState.width=Number(e.target.value);};
+ $('markCancel').onclick=closeMarkModal;
+ $('markSave').onclick=()=>{saveMarkers().catch(()=>{});};
+ const resizeMark=()=>{if(!$('markModal').classList.contains('hidden'))resizeMarkCanvas();};
+ window.addEventListener('resize',resizeMark,{passive:true});
+ window.addEventListener('orientationchange',()=>{setTimeout(()=>{resizeMark();updateSysBar();},350);},{passive:true});
+
  // generic close buttons
- document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
- document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.add('hidden');}));
- document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden'));closePanel();}});
+ document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{
+  if(b.dataset.close==='markModal')cleanupMarkTemp();
+  closeModal(b.dataset.close);
+ });
+ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
+  if(e.target===m){
+   if(m.id==='markModal')cleanupMarkTemp();
+   m.classList.add('hidden');
+  }
+ }));
+
+ // keyboard shortcuts (laptop / desktop) + single Escape handler
+ document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+   cleanupMarkTemp();document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden'));closePanel();return;
+  }
+  if(isTyping(e.target)||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.target&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)&&(e.key===' '||e.key==='Enter'))return;
+  if(!$('welcome').classList.contains('hidden'))return;
+  if(anyModalOpen())return;
+  const k=e.key.toLowerCase();
+  if(e.key===' '||e.key==='Enter'){
+   e.preventDefault();
+   if(S.started&&S.stream&&!$('shutterBtn').classList.contains('disabled'))$('shutterBtn').click();
+   return;
+  }
+  if(e.key==='?'||e.key==='/'){e.preventDefault();openModal('helpModal');return;}
+  if(k==='m'){
+   e.preventDefault();
+   const pn=$(S.appMode==='recce'?'reccePanel':'sidePanel');
+   pn.classList.contains('open')?closePanel():openPanel();
+   return;
+  }
+  if(k==='g'&&S.appMode==='vastu'){e.preventDefault();enableGps();return;}
+  if(S.appMode==='vastu'&&/^[1-8]$/.test(e.key)){
+   const b=document.querySelectorAll('#dirGrid button')[Number(e.key)-1];
+   if(b){e.preventDefault();b.click();}
+  }
+ });
+
+ // PWA install (Chromium) + manual hint for iOS Safari
+ const ib=$('installBtn');
+ if(ib)ib.onclick=async()=>{
+  if(installEvent){
+   try{installEvent.prompt();if(installEvent.userChoice)await installEvent.userChoice;}catch(err){}
+   installEvent=null;ib.classList.remove('show');
+  }else toast(L('iPhone: Share → Add to Home Screen. Android/PC: browser menu → Install app.','iPhone: Share → Add to Home Screen. Android/PC: browser menu → Install app.'));
+ };
+ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvent=e;updateSysBar();});
+ window.addEventListener('appinstalled',()=>{installEvent=null;updateSysBar();});
 
  // gallery
  $('gReportBtn').onclick=downloadReport;
  $('gCsvBtn').onclick=downloadCsv;
- $('gClearBtn').onclick=async()=>{if(!S.photos.length){toast(t('noPhotos'));return;}if(!confirm(t('confirmClear')))return;await dbClear();revokeAllUrls();S.photos=[];renderRecent();updateCounts();renderGallery();closeModal('galleryModal');toast(t('dataCleared'));};
+ $('gClearBtn').onclick=async()=>{
+  const list=activePhotos();if(!list.length){toast(t('noPhotos'));return;}
+  if(!confirm(L('इस कैमरे की सभी फ़ोटो हटाएँ?','Delete all photos of this camera?')))return;
+  for(const rec of list){if(rec._url){try{URL.revokeObjectURL(rec._url);}catch(e){}delete rec._url;}await dbDel(rec.id);}
+  const ids=new Set(list.map(r=>r.id));S.photos=S.photos.filter(r=>!ids.has(r.id));
+  renderRecent();updateCounts();renderGallery();closeModal('galleryModal');toast(t('dataCleared'));
+ };
 
  // photo modal
  $('pmDownload').onclick=async()=>{const rec=S.photos.find(p=>p.id===S.currentPhotoId);if(!rec)return;const b=await getBlob(rec);if(!b){toast(t('errGeneric'),true);return;}downloadBlob(b,photoFileName(rec));};
@@ -1425,13 +2347,18 @@ function bind(){
   const b=await getBlob(rec);if(!b){toast(t('errGeneric'),true);return;}
   const file=new File([b],photoFileName(rec),{type:'image/jpeg'});
   if(navigator.canShare&&navigator.canShare({files:[file]})){
-   try{await navigator.share({files:[file],title:'Vastu Site Camera',text:rec.zoneHi+' · '+Math.round(rec.heading)+'° · '+fmtDate(rec.createdAt)});return;}catch(e){return;}
+   const shareText=rec.app==='recce'
+    ? (rec.recce.site||'')+' · '+(rec.recce.size||'')+' · '+(rec.recce.material||'')
+    : rec.zoneHi+' · '+Math.round(rec.heading)+'° · '+fmtDate(rec.createdAt);
+   try{await navigator.share({files:[file],title:rec.app==='recce'?'ArtVision Branding Recce':'ArtVision Vastu Site Camera',text:shareText});return;}catch(e){return;}
   }
   downloadBlob(b,photoFileName(rec));toast(t('shareNotSupported'));
  };
  $('pmWa').onclick=()=>{
   const rec=S.photos.find(p=>p.id===S.currentPhotoId);if(!rec)return;
-  const txt='Vastu Site Camera\n'+rec.zoneHi+' ('+rec.zoneEn+') · '+Math.round(rec.heading)+'°\n'+fmtDate(rec.createdAt)+'\nGPS: '+(rec.gps||'')+'\nSite: '+[rec.project,rec.plot,rec.client].filter(Boolean).join(', ')+'\n'+(rec.remark||'');
+  const txt=rec.app==='recce'
+   ? 'ArtVision Branding Recce\n'+(rec.recce.site||'')+'\n'+(rec.recce.size||'')+' | '+(rec.recce.material||'')
+   : 'ArtVision Vastu Site Camera\n'+rec.zoneHi+' ('+rec.zoneEn+') · '+Math.round(rec.heading)+'°\n'+fmtDate(rec.createdAt)+'\nGPS: '+(rec.gps||'')+'\nSite: '+[rec.project,rec.plot,rec.client].filter(Boolean).join(', ')+'\n'+(rec.remark||'');
   window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank','noopener');toast(t('waNote'));
  };
  $('pmDelete').onclick=async()=>{if(!S.currentPhotoId)return;await deletePhoto(S.currentPhotoId);toast(t('dataCleared'));};
@@ -1462,13 +2389,31 @@ async function init(){
  $('degRange').value=S.settings.trim||0;
  $('fProject').value=S.settings.project||'';$('fPlot').value=S.settings.plot||'';
  $('fClient').value=S.settings.client||'';$('fRemark').value=S.settings.remark||'';
- applyLang();buildDirGrid();updateDirectionUI();updateGpsUI();updateCounts();
+ applyLang();buildDirGrid();populateRecceCats();syncRecceUI();updateDirectionUI();updateGpsUI();updateCounts();
+ preloadBrand();
  bind();
- // restore photos
+ // restore photos + tag older records with their camera
  const saved=await dbAll();
- if(saved&&saved.length){S.photos=saved.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));renderRecent();updateCounts();}
- // service worker
- if('serviceWorker' in navigator&&location.protocol==='https:'){
+ if(saved&&saved.length){
+  const dirty=[];
+  saved.forEach(rec=>{
+   if(!rec.app){rec.app=(rec.recce&&rec.recce.enabled)?'recce':'vastu';dirty.push(rec);}
+   if(rec.app==='recce'){
+    if(!rec.branded){rec.branded=true;if(dirty.indexOf(rec)<0)dirty.push(rec);}
+    if(rec.recce&&!rec.recce.sizeCompact){rec.recce.sizeCompact=slug(rec.recce.size||'size');if(dirty.indexOf(rec)<0)dirty.push(rec);}
+   }
+  });
+  S.photos=saved.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  renderRecent();updateCounts();
+  if(dirty.length)await Promise.all(dirty.map(rec=>dbPut(rec)));
+ }
+ if(S.storageOK===false&&!S.storageWarned){
+  S.storageWarned=true;
+  setTimeout(()=>toast(L('स्टोरेज बंद / प्राइवेट मोड — फ़ोटो सिर्फ इस सेशन में रहेंगी, डाउनलोड कर लें।','Storage off / private mode — photos stay in this session only; download them.'),true),1400);
+ }
+ updateSysBar();
+ // service worker (https production + localhost testing are both secure contexts)
+ if('serviceWorker' in navigator&&window.isSecureContext){
   navigator.serviceWorker.register('sw.js').catch(()=>{});
  }
 }

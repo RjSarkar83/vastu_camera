@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Vastu Site Camera — सरल वास्तु कैमरा",
-  "short_name": "Vastu Cam",
-  "description": "भारत के लिए बनाया गया तेज़, हल्का और पारदर्शी वास्तु साइट कैमरा — लैपटॉप, फ्रंट और बैक कैमरा सपोर्ट।",
+  "name": "ArtVision — Vastu Camera + Branding Recce Camera",
+  "short_name": "ArtVision Cams",
+  "description": "ArtVision के दो अलग कैमरे — Vastu Camera (दिशा/GPS/compass) और Branding Recce Camera (सिर्फ line marking + साइज़/मटेरियल)। सभी devices/OS: iPhone, iPad, Android phone/tablet, Windows, macOS, Linux, ChromeOS; Chrome, Safari, Firefox, Edge, Samsung Internet.",
   "lang": "hi",
   "dir": "ltr",
   "start_url": "./",
@@ -10,11 +10,35 @@
   "display": "standalone",
   "orientation": "any",
   "background_color": "#f6f7f8",
-  "theme_color": "#1d2227",
-  "categories": ["utilities", "productivity", "business"],
+  "theme_color": "#101214",
+  "categories": [
+    "utilities",
+    "productivity",
+    "business"
+  ],
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
-  ]
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "prefer_related_applications": false
 }

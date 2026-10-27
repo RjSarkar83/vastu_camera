@@ -1,8 +1,8 @@
-/* Vastu Site Camera — network-first service worker (v4).
+/* Vastu Site Camera — network-first service worker (v8).
    Always try the network first so updates on GitHub Pages appear immediately.
    Offline fallback uses a small cached app shell. */
-const CACHE = 'vastu-camera-v4';
-const SHELL = ['./', './index.html', './manifest.json', './icon.svg', './icon-192.png', './icon-512.png'];
+const CACHE = 'vastu-camera-v8';
+const SHELL = ['./', './index.html', './manifest.json', './icon.svg', './icon-192.png', './icon-512.png', './logo-primary.png', './logo-primary-white.png', './logo-mark.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
