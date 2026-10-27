@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Vastu Site Camera">
+  <rect width="512" height="512" rx="112" fill="#1d2227"/>
+  <circle cx="256" cy="256" r="142" fill="none" stroke="#ffffff" stroke-width="9" opacity="0.95"/>
+  <circle cx="256" cy="256" r="118" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.3"/>
+  <g fill="#ffffff" font-family="system-ui, sans-serif" font-weight="800" font-size="30" text-anchor="middle">
+    <text x="256" y="84">N</text>
+    <text x="428" y="268">E</text>
+    <text x="256" y="452">S</text>
+    <text x="84" y="268">W</text>
+  </g>
+  <g transform="rotate(35 256 256)">
+    <polygon points="256,144 278,256 256,236 234,256" fill="#ffffff"/>
+    <polygon points="256,368 234,256 256,276 278,256" fill="#9aa3ab"/>
+  </g>
+  <circle cx="256" cy="256" r="13" fill="#ffffff"/>
+  <g fill="none" stroke="#ffffff" stroke-width="5" opacity="0.85">
+    <rect x="352" y="368" width="48" height="38" rx="9"/>
+    <circle cx="376" cy="387" r="10"/>
+  </g>
+  <path d="M256 108 L256 126 M256 398 L256 416 M108 256 L126 256 M398 256 L416 256" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
+</svg>

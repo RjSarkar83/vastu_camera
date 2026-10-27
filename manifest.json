@@ -1,16 +1,20 @@
 {
-  "name": "Vastu Site Camera - वास्तु साइट कैमरा",
+  "id": "./",
+  "name": "Vastu Site Camera — सरल वास्तु कैमरा",
   "short_name": "Vastu Cam",
-  "description": "Live compass direction, GPS, Vastu analysis aur measurement ke saath site photos — sab online, bina app install.",
-  "start_url": "./index.html",
+  "description": "भारत के लिए बनाया गया तेज़, हल्का और पारदर्शी वास्तु साइट कैमरा — लैपटॉप, फ्रंट और बैक कैमरा सपोर्ट।",
+  "lang": "hi",
+  "dir": "ltr",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#16a34a",
-  "lang": "hi",
+  "orientation": "any",
+  "background_color": "#f6f7f8",
+  "theme_color": "#1d2227",
+  "categories": ["utilities", "productivity", "business"],
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
   ]
 }
