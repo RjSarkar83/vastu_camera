@@ -2,7 +2,7 @@
   "id": "./",
   "name": "ArtVision — Vastu Camera + Branding Recce Camera",
   "short_name": "ArtVision Cams",
-  "description": "ArtVision के दो अलग कैमरे — Vastu Camera (दिशा/GPS/compass) और Branding Recce Camera (सिर्फ line marking + साइज़/मटेरियल)। सभी devices/OS: iPhone, iPad, Android phone/tablet, Windows, macOS, Linux, ChromeOS; Chrome, Safari, Firefox, Edge, Samsung Internet.",
+  "description": "ArtVision के 2 अलग कैमरे — Vastu Camera और Branding Recce Camera। लंबे store recce sessions: एक बार डिटेल्स → कई फ़ोटो, marking के दौरान कैमरा auto-pause, session report एक HTML में। सभी devices/OS सपोर्ट।",
   "lang": "hi",
   "dir": "ltr",
   "start_url": "./",

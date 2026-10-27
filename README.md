@@ -141,6 +141,26 @@
 - **Older browsers** — `canvas.toBlob` न होने पर data-URL fallback; `ctx.roundRect` fallback; कोई external CDN/script नहीं; service worker **v8 network-first**।
 - Landscape, notch safe-area, `overscroll-behavior`, `prefers-reduced-motion`, 44px+ touch targets — सब बरकरार।
 
+### 🔋 v9 — पूरे store की लंबी रेक्की बिना डिवाइस गरम किए
+**समस्या:** एक साइट की कई फ़ोटो लेनी होती हैं — पहले साइज़/डिटेल्स, फिर फ़ोटो, फिर marking और सेव। पूरे समय कैमरा चालू रहने से फ़ोन गर्म होता है, बैटरी जल्दी खत्म होती है, पुराने devices पर ऐप slow/crash हो सकता है।
+
+**समाधान — “एक बार सेटअप, कई फ़ोटो, कैमरा सिर्फ फ़ोटो के समय”:**
+
+1. **सेटअप Welcome screen पर, कैमरा चालू करने से पहले** — Recce card चुनते ही साइट का नाम, कैटेगरी, **साइज़ (W × H)**, **Use Material** और **माप / नोट** का form Welcome पर ही दिखता है। ये सब **एक बार** भरें; फिर “कैमरा शुरू करें” दबाएँ। (Form अपने आप side panel में चला जाता है — duplicate fields नहीं।)
+2. **Session** — हर store के लिए एक सेशन अपने आप बन जाता है। **Reload/page बंद होने के बाद भी सेशन और फ़ोटो बने रहते हैं** (localStorage + IndexedDB)। Counter + thumbnail strip दिखता है “सेशन 12 फ़ोटो”। नए store के लिए “सेशन खत्म / नया store” दबाएँ — पुरानी फ़ोटो सुरक्षित रहती हैं।
+3. **Camera auto-pause (पावर-सेव)** — फ़ोटो लेते ही marking editor खुलने से **पहले कैमरा बंद** हो जाता है। आप 5–10 मिनट marking करें, तब तक camera sensor/CPU/बैटरी इस्तेमाल नहीं होते। सेव होते ही कैमरा **अपने आप वापस चालू** हो जाता है — अगली फ़ोटो के लिए ready।
+   - 1 मिनट कोई फ़ोटो न लें → **idle auto-pause**।
+   - Tab background में जाए → **visibility auto-pause**, वापस आते ही resume।
+   - Bottom bar में **पॉज़** बटन (manual), और pause overlay पर **“कैमरा चालू करें / अगली फ़ोटो”** — एक टैप में resume।
+   - Photo modal में **“अगली फ़ोटो →”** और panel में **“अगली फ़ोटो”** — डिटेल्स दोबारा भरने की ज़रूरत नहीं।
+   - Settings/options में **पावर-सेव मोड** switch (default ON) — चाहें तो बंद करें।
+4. **Memory-safe for 50+ फ़ोटो** — हर save के बाद पुराने full-res canvases/blobs और object URLs तुरंत release होते हैं (सिर्फ current photo memory में रहती है)। IndexedDB से photos lazy-load होती हैं, इसलिए 100+ फ़ोटो पर भी ऐप नहीं फंसता।
+5. **कम हीट के लिए 720p** — low-RAM/Dual-core devices पर camera अपने आप 720p पर cap (पहले से मौजूद v8 optimization)।
+6. **हर फ़ोटो का अपना नाम** — marking editor में optional **“एरिया / शॉट”** (Front fascia, Entry gate…) जो filename, gallery, CSV और report में जाता है: `Central_Mall_Store_12x6ft_Vinyl_Front_fascia_2026-10-27-102841.jpg`। खाली छोड़ें तो पुराना `site_size_material_timestamp.jpg` ही रहता है।
+7. **पूरे store की एक फ़ाइल** — **“सेशन रिपोर्ट (सभी फ़ोटो)”** एक offline HTML बनाता है जिसमें सेशन की **सभी full-resolution marked फ़ोटो**, हर फ़ोटो का download button, साइज़/मटेरियल/माप/एरिया/मार्किंग डिटेल्स — सब एक जगह। साथ में session CSV। Report में कोई Vastu/दिशा/GPS जानकारी नहीं होती।
+
+> नतीजा: 30–40 फ़ोटो के लंबे recce में कैमरा सिर्फ उन 30–40 छोटे capture moments में चालू रहता है, बाकी पूरा समय बंद — डिवाइस ठंडा, बैटरी बची, ऐप responsive।
+
 ### 🔒 भरोसा / “Genuine” होना
 - डेटा **सिर्फ आपके डिवाइस** में (IndexedDB + localStorage) — कोई server, login या upload नहीं।
 - GPS/compass वास्तविक browser APIs से; न मिले तो **“बंद / मैनुअल”** स्पष्ट दिखता है — कोई नकली डेटा नहीं।
@@ -191,7 +211,7 @@
    **https://rjsarkar83.github.io/vastu_camera/**
 5. **Purana cache हटाने के लिए** पहली बार site खोलकर hard-refresh करें (`Ctrl+Shift+R` / mobile पर browser cache clear)। नया `sw.js` network-first है, इसलिए आगे updates तुरंत दिखेंगे।
 
-> ℹ️ Arena में इस समय **GitHub connector उपलब्ध नहीं है**, इसलिए मैं सीधे आपके repo में push नहीं कर सकता। इसीलिए नीचे **ready-to-upload **`vastu-camera-github-final-v8.zip`**** बना दिया गया है — बस उसे डाउनलोड करके repo में डाल दें।
+> ℹ️ Arena में इस समय **GitHub connector उपलब्ध नहीं है**, इसलिए मैं सीधे आपके repo में push नहीं कर सकता। इसीलिए नीचे **ready-to-upload **`vastu-camera-github-final-v9.zip`**** बना दिया गया है — बस उसे डाउनलोड करके repo में डाल दें।
 
 ---
 
@@ -231,4 +251,4 @@ google-chrome --use-fake-device-for-media-stream --use-fake-ui-for-media-stream 
 
 ---
 
-बनाया गया: 27 अक्टूबर 2026 • **v8 — all-devices / all-OS optimized final build** (v7 के 2 अलग कैमरों के ऊपर) (Architecture Vastu + Branding Recce, ऊपर v6 ArtVision branding) • Single-file, dependency-free, browser-based Vastu camera.
+बनाया गया: 27 अक्टूबर 2026 • **v9 — long recce sessions (power-safe) final build** (v8 all-devices + v7 दोनों कैमरों के ऊपर) (Architecture Vastu + Branding Recce, ऊपर v6 ArtVision branding) • Single-file, dependency-free, browser-based Vastu camera.

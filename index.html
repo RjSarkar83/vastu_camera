@@ -354,6 +354,42 @@ button:focus:not(:focus-visible){outline:none}
  .mode-card,.mark-tool,.btn,.icon-btn,.round-btn{min-height:44px}
 }
 
+
+/* ---------- v9: long recce sessions without heating the device ---------- */
+.mode-vastu #recceFormSlotWelcome{display:none}
+.mode-vastu #pauseBtn,.mode-vastu #sessionChip,.mode-vastu #pmNext{display:none!important}
+#recceFormSlotWelcome{margin:4px 0 16px}
+#recceFormSlotWelcome .recce-panel-card{box-shadow:none;background:#fbfcfd}
+#recceFormCard{position:relative}
+#recceFormSlotWelcome #recceFormCard .opt-badge{display:none}
+.session-card{border-left:4px solid var(--danger)!important}
+.session-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.session-head b{font-size:13px;color:var(--ink)}
+.session-count{display:inline-flex;align-items:center;gap:6px;background:#fff5f3;border:1px solid #f3c9c1;color:#8d2c20;border-radius:20px;padding:4px 10px;font-size:11.5px;font-weight:900}
+.session-note{font-size:11.2px;line-height:1.6;color:var(--muted);margin:8px 0}
+.shot-strip{display:flex;gap:6px;overflow-x:auto;padding:4px 0 8px;-webkit-overflow-scrolling:touch}
+.shot-strip img{width:56px;height:44px;object-fit:cover;border-radius:7px;border:1px solid var(--line);flex:none;cursor:pointer}
+.shot-strip .shot-empty{font-size:11px;color:var(--muted);padding:8px 0}
+.session-btns{display:flex;flex-wrap:wrap;gap:6px}
+.session-btns .btn{flex:1 1 46%;min-width:120px}
+.pause-overlay{position:absolute;inset:0;z-index:15;background:rgba(12,15,18,.86);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:22px;text-align:center}
+.pause-overlay .po-ico{width:58px;height:58px;border-radius:50%;border:2px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center}
+.pause-overlay .po-ico .icon{width:28px;height:28px;stroke-width:2.4}
+.pause-overlay h3{margin:2px 0 0;font-size:18px}
+.pause-overlay p{margin:0;font-size:12.5px;line-height:1.6;opacity:.86;max-width:340px}
+.pause-overlay small{font-size:10.8px;opacity:.65;max-width:320px;line-height:1.5}
+.pause-overlay .btn{margin-top:2px;background:#fff;color:#101214}
+.pause-overlay .btn:hover{background:#eef1f3}
+#pauseBtn.paused{background:#fff5f3;border-color:#e8b6ad;color:#a5281c}
+#sessionChip{background:rgba(255,255,255,.94);color:#8d2c20;border-color:#f3c9c1}
+.mark-area-field{margin:2px 0 8px}
+.mark-area-field input{width:100%;border:1.5px solid var(--line);border-radius:9px;padding:9px 10px;font-size:13px;background:#fbfcfd;color:var(--ink)}
+@media(max-width:900px){.mark-area-field input{font-size:16px}}
+
+.recce-opts{border-top:1px solid var(--line);margin-top:10px;padding-top:8px}
+.recce-opts summary{cursor:pointer;font-size:12px;font-weight:800;color:var(--ink);list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 0}
+.recce-opts summary::-webkit-details-marker{display:none}
+.recce-opts[open] summary{margin-bottom:4px}
 /* ---------- desktop ---------- */
 @media(min-width:1024px){
   #topBar{padding-left:18px;padding-right:18px}
@@ -398,6 +434,7 @@ button:focus:not(:focus-visible){outline:none}
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
   <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.4"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.4v.4"/></symbol>
   <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></symbol>
 </svg>
@@ -423,6 +460,35 @@ button:focus:not(:focus-visible){outline:none}
           <b>2</b><span class="mc-title">Branding Recce Camera</span>
           <small><span class="hi-txt">सिर्फ line drawing marking + साइज़ + मटेरियल। फ़ोटो पर कोई वास्तु जानकारी नहीं।</span><span class="en-txt">Only line-drawing marking + size + material. No Vastu info on the photo.</span></small>
         </button>
+      </div>
+
+      <div id="recceFormSlotWelcome">
+        <section class="card recce-panel-card" id="recceFormCard">
+          <span class="opt-badge">2</span>
+          <h3><span class="hi-txt">साइट और साइज़</span><span class="en-txt">Site &amp; size</span></h3>
+          <p class="muted"><span class="hi-txt">Retail Store · Outdoor Advertisement · Office · In-shop Branding · Event Decoration · Exhibition Branding</span><span class="en-txt">Retail Store · Outdoor Advertisement · Office · In-shop Branding · Event Decoration · Exhibition Branding</span></p>
+          <div class="field"><label><span class="hi-txt">कैटेगरी</span><span class="en-txt">Category</span></label><select id="recceCat"></select></div>
+          <div class="field"><label><span class="hi-txt">साइट का नाम</span><span class="en-txt">Site name</span></label><input id="recceSite" type="text" placeholder="Shri Ram Nagar, Main Road"></div>
+          <div class="field"><label><span class="hi-txt">साइज़ (W × H)</span><span class="en-txt">Size (W × H)</span></label>
+            <div class="size-row">
+              <input id="recceW" type="number" min="0" step="0.1" placeholder="W">
+              <span>×</span>
+              <input id="recceH" type="number" min="0" step="0.1" placeholder="H">
+              <select id="recceUnit"><option value="ft">ft</option><option value="m">m</option><option value="in">in</option></select>
+            </div>
+          </div>
+          <div class="field"><label>Use Material</label><input id="recceMat" type="text" placeholder="Vinyl, Flex, ACP, Fabric"></div>
+          <div id="recceSummary" class="recce-summary"></div>
+          <div class="recce-filename"><b><span class="hi-txt">फ़ाइल का नाम</span><span class="en-txt">File name</span></b><span id="recceFilename">site_size_material_timestamp.jpg</span></div>
+          <div class="field"><label><span class="hi-txt">माप / नोट (पूरे store के लिए एक बार)</span><span class="en-txt">Measurements / note (once for the whole store)</span></label><textarea id="recceMeasure" rows="2" placeholder="जैसे: Front wall 12×6 ft, Side wall 8×6 ft, Entry 4×3 ft"></textarea></div>
+          <details class="recce-opts">
+            <summary><span class="hi-txt">विकल्प — डाउनलोड, लोगो, पावर-सेव</span><span class="en-txt">Options — download, logo, power-save</span><span>▾</span></summary>
+            <div class="switch-row"><span><span class="hi-txt">पावर-सेव मोड (मार्किंग में कैमरा पॉज़)</span><span class="en-txt">Power-save mode (pause camera while marking)</span></span><button id="reccePowerSave" class="switch on" role="switch" aria-label="Power save"></button></div>
+            <div class="switch-row"><span><span class="hi-txt">सेव होते ही डाउनलोड करें</span><span class="en-txt">Auto-download on save</span></span><button id="recceAutoDl" class="switch on" role="switch" aria-label="Auto download"></button></div>
+            <div class="switch-row"><span><span class="hi-txt">फ़ोटो पर ArtVision लोगो</span><span class="en-txt">ArtVision logo on photo</span></span><button id="recceLogo" class="switch on" role="switch" aria-label="Logo on photo"></button></div>
+            <p class="muted tiny"><span class="hi-txt">एक बार डिटेल्स भरें → बार-बार फ़ोटो लें। हर फ़ोटो के बाद marking के दौरान कैमरा अपने आप बंद हो जाएगा — डिवाइस गर्म नहीं होगा, बैटरी बचेगी।</span><span class="en-txt">Fill the details once, then take as many photos as you need. The camera pauses automatically during marking — less heat and battery drain.</span></p>
+          </details>
+        </section>
       </div>
 
       <ol class="steps steps-vastu">
@@ -508,6 +574,14 @@ button:focus:not(:focus-visible){outline:none}
         <p data-i18n="camOffMsg">ऊपर “कैमरा शुरू करें” दबाएँ, या नीचे से कोई मौजूदा फ़ोटो अपलोड करें।</p>
       </div>
 
+      <div id="pauseOverlay" class="pause-overlay hidden">
+        <div class="po-ico"><svg class="icon"><use href="#i-pause"/></svg></div>
+        <h3><span class="hi-txt">कैमरा पॉज़ है</span><span class="en-txt">Camera paused</span></h3>
+        <p id="pauseReason"><span class="hi-txt">बैटरी और हीट बचाने के लिए कैमरा बंद कर दिया गया है।</span><span class="en-txt">The camera was turned off to save battery and heat.</span></p>
+        <button id="resumeCamBtn" class="btn primary"><span class="hi-txt">▶ कैमरा चालू करें / अगली फ़ोटो</span><span class="en-txt">▶ Resume camera / next photo</span></button>
+        <small><span class="hi-txt">मार्किंग, डिटेल्स या 1 मिनट की idle के दौरान कैमरा अपने आप पॉज़ हो जाता है। फ़ोटो और डेटा सुरक्षित रहते हैं।</span><span class="en-txt">The camera pauses automatically during marking, details entry or after 1 minute idle. Photos and data stay safe.</span></small>
+      </div>
+
       <div id="grid" class="grid hidden"></div>
       <div id="crosshair" class="crosshair"></div>
 
@@ -530,6 +604,7 @@ button:focus:not(:focus-visible){outline:none}
         <span id="camChip" class="chip"> —</span>
         <span id="sensorChip" class="chip"> —</span>
         <span id="gpsChip" class="chip"> —</span>
+        <span id="sessionChip" class="chip">सेशन 0</span>
       </div>
 
       <div id="vastuMini" class="vastu-mini">
@@ -553,6 +628,7 @@ button:focus:not(:focus-visible){outline:none}
       </div>
 
       <div id="bottomBar">
+        <button id="pauseBtn" class="round-btn" title="Pause / resume camera"><svg class="icon"><use href="#i-pause"/></svg><small data-i18n="pauseCam">पॉज़</small></button>
         <button id="panelBtn" class="round-btn"><svg class="icon"><use href="#i-sliders"/></svg><small data-i18n="panel">पैनल</small></button>
         <button id="dirBtn" class="round-btn"><svg class="icon"><use href="#i-compass"/></svg><small data-i18n="dir">दिशा</small></button>
         <button id="shutterBtn" class="shutter" aria-label="Capture" title="Capture photo (Space / Enter)"></button>
@@ -629,32 +705,28 @@ button:focus:not(:focus-visible){outline:none}
       </div>
       <div class="sp-scroll">
 
-        <section class="card recce-panel-card">
-          <span class="opt-badge">2</span>
-          <h3><span class="hi-txt">साइट और साइज़</span><span class="en-txt">Site &amp; size</span></h3>
-          <p class="muted"><span class="hi-txt">Retail Store · Outdoor Advertisement · Office · In-shop Branding · Event Decoration · Exhibition Branding</span><span class="en-txt">Retail Store · Outdoor Advertisement · Office · In-shop Branding · Event Decoration · Exhibition Branding</span></p>
-          <div class="field"><label><span class="hi-txt">कैटेगरी</span><span class="en-txt">Category</span></label><select id="recceCat"></select></div>
-          <div class="field"><label><span class="hi-txt">साइट का नाम</span><span class="en-txt">Site name</span></label><input id="recceSite" type="text" placeholder="Shri Ram Nagar, Main Road"></div>
-          <div class="field"><label><span class="hi-txt">साइज़ (W × H)</span><span class="en-txt">Size (W × H)</span></label>
-            <div class="size-row">
-              <input id="recceW" type="number" min="0" step="0.1" placeholder="W">
-              <span>×</span>
-              <input id="recceH" type="number" min="0" step="0.1" placeholder="H">
-              <select id="recceUnit"><option value="ft">ft</option><option value="m">m</option><option value="in">in</option></select>
-            </div>
-          </div>
-          <div class="field"><label>Use Material</label><input id="recceMat" type="text" placeholder="Vinyl, Flex, ACP, Fabric"></div>
-          <div id="recceSummary" class="recce-summary"></div>
-          <div class="recce-filename"><b><span class="hi-txt">फ़ाइल का नाम</span><span class="en-txt">File name</span></b><span id="recceFilename">site_size_material_timestamp.jpg</span></div>
-          <div class="switch-row"><span><span class="hi-txt">सेव होते ही डाउनलोड करें</span><span class="en-txt">Auto-download on save</span></span><button id="recceAutoDl" class="switch on" role="switch" aria-label="Auto download"></button></div>
-          <div class="switch-row"><span><span class="hi-txt">फ़ोटो पर ArtVision लोगो</span><span class="en-txt">ArtVision logo on photo</span></span><button id="recceLogo" class="switch on" role="switch" aria-label="Logo on photo"></button></div>
-        </section>
+        <div id="recceFormSlotPanel"></div>
 
         <section class="card">
           <h3><span class="hi-txt">लाइन ड्राइंग मार्किंग</span><span class="en-txt">Line drawing marking</span></h3>
           <p class="muted"><span class="hi-txt">फ़ोटो लेते ही editor खुलेगा — पेन, लाइन, तीर, बॉक्स या पॉइंट + नोट से marking करें।</span><span class="en-txt">The editor opens right after capture — mark with pen, line, arrow, box or point + note.</span></p>
           <button id="recceMarkBtn" class="btn small danger full"><span class="hi-txt">मार्किंग शुरू करें</span><span class="en-txt">Start marking</span></button>
           <p class="clean-note"><b><span class="hi-txt">साफ़ फ़ोटो</span><span class="en-txt">Clean photo</span></b> — <span class="hi-txt">इस कैमरे की फ़ोटो पर दिशा, डिग्री, GPS, तारीख, कम्पास, साइट डिटेल्स या disclaimer नहीं छपता। सिर्फ आपकी मार्किंग और नीचे “साइज़ | मटेरियल” की एक छोटी caption।</span><span class="en-txt">No direction, degrees, GPS, date, compass, site details or disclaimer is printed. Only your markings and a small “size | material” caption at the bottom.</span></p>
+        </section>
+
+        <section class="card session-card" id="sessionCard">
+          <div class="session-head">
+            <b><span class="hi-txt">इस store का सेशन</span><span class="en-txt">This store session</span></b>
+            <span class="session-count" id="sessionCount">0</span>
+          </div>
+          <p class="session-note"><span class="hi-txt">एक ही सेशन में अलग-अलग फ़ोटो लें — साइट, साइज़ और मटेरियल बार-बार भरने की ज़रूरत नहीं। सेशन reload के बाद भी बना रहता है।</span><span class="en-txt">Take many photos in one session — no need to re-enter site, size and material. The session survives a reload.</span></p>
+          <div class="shot-strip" id="shotStrip"><span class="shot-empty">—</span></div>
+          <div class="session-btns">
+            <button id="sessionReportBtn" class="btn small primary"><span class="hi-txt">सेशन रिपोर्ट (सभी फ़ोटो)</span><span class="en-txt">Session report (all photos)</span></button>
+            <button id="sessionCsvBtn" class="btn small ghost">CSV</button>
+            <button id="sessionNextBtn" class="btn small ghost"><span class="hi-txt">अगली फ़ोटो</span><span class="en-txt">Next photo</span></button>
+            <button id="sessionEndBtn" class="btn small danger"><span class="hi-txt">सेशन खत्म / नया store</span><span class="en-txt">End session / new store</span></button>
+          </div>
         </section>
 
         <section class="card">
@@ -694,6 +766,7 @@ button:focus:not(:focus-visible){outline:none}
         <button id="pmDownload" class="btn small primary"><svg class="icon sm"><use href="#i-download"/></svg> <span data-i18n="download">डाउनलोड</span></button>
         <button id="pmShare" class="btn small ghost"><svg class="icon sm"><use href="#i-share"/></svg> <span data-i18n="share">शेयर</span></button>
         <button id="pmWa" class="btn small ghost"> WhatsApp</button>
+        <button id="pmNext" class="btn small primary"><span class="hi-txt">अगली फ़ोटो →</span><span class="en-txt">Next photo →</span></button>
         <button id="pmDelete" class="btn small danger"><svg class="icon sm"><use href="#i-trash"/></svg> <span data-i18n="delete">हटाएँ</span></button>
       </div>
     </div>
@@ -780,6 +853,7 @@ button:focus:not(:focus-visible){outline:none}
       <div class="mb-head"><h2><span class="hi-txt">लाइन ड्राइंग / मार्किंग</span><span class="en-txt">Line drawing / Marking</span></h2><button class="icon-btn" data-close="markModal"><svg class="icon"><use href="#i-close"/></svg></button></div>
       <div class="mb-body">
         <p class="muted"><span class="hi-txt">नीचे से टूल चुनें और फ़ोटो पर ड्रैग करके marking करें। “पॉइंट + नोट” से नंबर वाला पॉइंट और लिखा नोट जोड़ें।</span><span class="en-txt">Pick a tool below and drag on the photo to mark. “Point + note” adds a numbered point with a written note.</span></p>
+        <div class="field mark-area-field"><label><span class="hi-txt">इस फ़ोटो का नाम / एरिया (optional)</span><span class="en-txt">This photo's name / area (optional)</span></label><input id="markArea" type="text" placeholder="Front fascia, Entry gate, Window-2"></div>
         <div class="mark-tools" id="markTools">
           <button class="mark-tool on" data-tool="pen"><span class="hi-txt">पेन</span><span class="en-txt">Pen</span></button>
           <button class="mark-tool" data-tool="line"><span class="hi-txt">लाइन</span><span class="en-txt">Line</span></button>
@@ -832,7 +906,7 @@ const T={
   step2t:'दिशा चुनें',step2s:'फ़ोन में sensor हो तो ऑटो, वरना 8 दिशाओं में से एक टैप करें — लैपटॉप पर यही सबसे सही तरीका है।',
   step3t:'फ़ोटो लें और सेव करें',step3s:'हर फ़ोटो पर दिशा, डिग्री, तारीख, GPS और साइट डिटेल्स छपती हैं। डाउनलोड / शेयर / रिपोर्ट।',
   chooseCam:'पहले कैमरा चुनें (बाद में भी बदल सकते हैं):',auto:'Auto',front:'सामने',back:'पीछे',
-  startCam:'कैमरा शुरू करें',uploadInstead:'बिना कैमरा, मौजूदा फ़ोटो अपलोड करें',whyTrust:'ये ऐप भरोसेमंद क्यों है?',
+  startCam:'कैमरा शुरू करें',pauseCam:'पॉज़',uploadInstead:'बिना कैमरा, मौजूदा फ़ोटो अपलोड करें',whyTrust:'ये ऐप भरोसेमंद क्यों है?',
   trust1:'आपकी फ़ोटो और डेटा सिर्फ आपके डिवाइस में रहता है — कोई सर्वर, कोई लॉगिन, कोई अपलोड नहीं।',
   trust2:'कैमरा, GPS और कम्पास browser के वास्तविक sensors से आते हैं — कोई नकली डेटा नहीं।',
   trust3:'लैपटॉप में कम्पास sensor नहीं होता, इसलिए दिशा आप खुद चुनते हैं और फ़ोटो पर स्पष्ट लिखा जाता है “मैनुअल”।',
@@ -894,7 +968,7 @@ const T={
   step2t:'Choose direction',step2s:'Use the phone sensor if available, otherwise tap one of 8 directions — best on laptops.',
   step3t:'Capture and save',step3s:'Every photo is stamped with direction, degrees, date, GPS and site details. Download / share / report.',
   chooseCam:'Choose a camera first (you can change it later):',auto:'Auto',front:'Front',back:'Rear',
-  startCam:'Start camera',uploadInstead:'No camera? Upload an existing photo',whyTrust:'Why is this trustworthy?',
+  startCam:'Start camera',pauseCam:'Pause',uploadInstead:'No camera? Upload an existing photo',whyTrust:'Why is this trustworthy?',
   trust1:'Your photos and data stay only on your device — no server, no login, no upload.',
   trust2:'Camera, GPS and compass come from real browser sensors — no fake data.',
   trust3:'Laptops have no compass sensor, so you choose the direction and the photo clearly says “Manual”.',
@@ -1105,13 +1179,14 @@ function slug(s){return String(s||'x').replace(/[^a-zA-Z0-9\u0900-\u097F]+/g,'_'
 const LS='vastu_camera_v3';
 const defaultSettings={lang:'hi',quality:'hd',mirror:true,grid:false,sensorFlip:false,trim:0,camPref:'auto',
   project:'',plot:'',client:'',remark:'',
-  recce:{enabled:true,category:'retail',site:'',w:'',h:'',unit:'ft',material:'',autoDl:true,logo:true},appMode:'vastu'};
+  recce:{enabled:true,category:'retail',site:'',w:'',h:'',unit:'ft',material:'',autoDl:true,logo:true,powerSave:true,measure:''},appMode:'vastu'};
 let S={
  settings:Object.assign({},defaultSettings),
  stream:null,devices:[],deviceIndex:0,activeDeviceId:null,activeFacing:null,camLabel:'',
  baseDeg:0,mode:'manual',sensorRaw:null,sensorTimer:null,sensorRequested:false,
  gps:{status:'off',lat:null,lon:null,acc:null},watchId:null,
- photos:[],currentPhotoId:null,started:false,appMode:'vastu',storageOK:null,storageWarned:false
+ photos:[],currentPhotoId:null,started:false,appMode:'vastu',storageOK:null,storageWarned:false,
+ session:null,camPaused:false,pauseReason:''
 };
 let autoPanel=false;
 let markState={photoId:null,pending:null,shapes:[],img:null,canvas:null,ctx:null,cw:0,ch:0,
@@ -1123,7 +1198,8 @@ lang=S.settings.lang||'hi';
 S.appMode=(S.settings.appMode==='recce')?'recce':'vastu';
 S.settings.recce.autoDl=(S.settings.recce.autoDl!==false);
 S.settings.recce.logo=(S.settings.recce.logo!==false);
-S.settings.recce=Object.assign({enabled:true,category:'retail',site:'',w:'',h:'',unit:'ft',material:'',autoDl:true,logo:true},S.settings.recce||{});
+S.settings.recce.powerSave=(S.settings.recce.powerSave!==false);
+S.settings.recce=Object.assign({enabled:true,category:'retail',site:'',w:'',h:'',unit:'ft',material:'',autoDl:true,logo:true,powerSave:true,measure:''},S.settings.recce||{});
 function saveSettings(){try{localStorage.setItem(LS,JSON.stringify(S.settings));}catch(e){}}
 function heading(){return (((S.baseDeg+(S.settings.trim||0))%360)+360)%360;}
 const $=id=>document.getElementById(id);
@@ -1243,6 +1319,7 @@ function updateGpsUI(){
 function updateCamUI(){
  const chip=$('camChip');
  if(S.stream){chip.textContent=(S.camLabel||t('camReady'));chip.className='chip ok';}
+ else if(S.camPaused){chip.textContent=L('कैमरा पॉज़','Camera paused');chip.className='chip';}
  else{chip.textContent=(S.started?t('cameraProblem'):'—');chip.className='chip';}
 }
 function updateSensorUI(){
@@ -1304,10 +1381,13 @@ function recceNameParts(rec){
  const d=new Date((rec&&rec.createdAt)||new Date().toISOString());
  const iso=d.toISOString();
  const stamp=iso.slice(0,10)+'-'+iso.slice(11,19).replace(/:/g,'');
- return [site,size,mat,stamp];
+ const parts=[site,size,mat];
+ if(rec&&rec.area)parts.push(slug(rec.area));
+ parts.push(stamp);
+ return parts;
 }
 function recceFileName(rec){return recceNameParts(rec).join('_')+'.jpg';}
-function recceNamePreview(){return recceNameParts(null).slice(0,3).join('_')+'_timestamp.jpg';}
+function recceNamePreview(){const q=recceNameParts(null);return q.slice(0,3).join('_')+'_timestamp.jpg';}
 function syncRecceUI(){
  const r=S.settings.recce;if(!r)return;
  const cat=$('recceCat'),site=$('recceSite'),w=$('recceW'),h=$('recceH'),u=$('recceUnit'),mat=$('recceMat');
@@ -1322,6 +1402,9 @@ function syncRecceUI(){
  if(mini)mini.innerHTML='<b>'+esc(r.site||L('साइट का नाम','Site name'))+'</b><span>'+esc(recceSizeText()+' | '+(r.material||'—'))+'</span>';
  const ad=$('recceAutoDl');if(ad)ad.classList.toggle('on',r.autoDl!==false);
  const lg=$('recceLogo');if(lg)lg.classList.toggle('on',r.logo!==false);
+ const ps=$('reccePowerSave');if(ps)ps.classList.toggle('on',r.powerSave!==false);
+ const me=$('recceMeasure');if(me)me.value=r.measure||'';
+ updateSessionUI();
 }
 function readRecce(){
  const r=S.settings.recce;
@@ -1329,19 +1412,21 @@ function readRecce(){
  r.site=$('recceSite').value.trim();
  r.w=$('recceW').value.trim();r.h=$('recceH').value.trim();
  r.unit=$('recceUnit').value||'ft';r.material=$('recceMat').value.trim();
+ const me=$('recceMeasure');if(me)r.measure=me.value.trim();
  saveSettings();syncRecceUI();
 }
 function recceMeta(extra){
  readRecce();
+ ensureSession();
  const r=S.settings.recce;
  return Object.assign({
-  app:'recce',branded:false,
+  app:'recce',branded:false,area:'',sessionId:S.session?S.session.id:null,
   date:fmtDate(new Date().toISOString()),gps:'',lat:null,lon:null,acc:null,
   heading:0,mode:'manual',zoneHi:'',zoneEn:'',
   project:'',plot:'',client:'',remark:'',
   camera:S.camLabel||guessLabel(),width:0,height:0,mirrored:false,source:'camera',
   recce:{enabled:true,category:catLabel(r.category),site:(r.site||'—'),size:recceSizeText(),
-         sizeCompact:recceSizeCompact(),material:(r.material||'—'),shapes:[],markers:[]}
+         sizeCompact:recceSizeCompact(),material:(r.material||'—'),measure:(r.measure||''),shapes:[],markers:[]}
  },extra||{});
 }
 function activePhotos(){return S.photos.filter(p=>(p.app||'vastu')===S.appMode);}
@@ -1352,13 +1437,156 @@ function setModeUI(){
  document.querySelectorAll('#modeChoice .mode-card').forEach(b=>b.classList.toggle('on',b.dataset.mode===S.appMode));
  const nm=$('tbModeName');if(nm)nm.textContent=S.appMode==='recce'?L('ब्रांडिंग रेक्की','Branding Recce'):L('वास्तु कैमरा','Vastu Camera');
  const gb=$('gReportBtn');if(gb)gb.textContent=S.appMode==='recce'?L('रेक्की रिपोर्ट (HTML)','Recce report (HTML)'):t('report');
- syncRecceUI();renderRecent();updateCounts();updateSysBar();
+ syncRecceUI();renderRecent();updateCounts();updateSysBar();updateSessionUI();
 }
 function switchMode(){
- cleanupMarkTemp();
+ cleanupMarkTemp();releaseMarkState();
+ stopStream();clearTimeout(idleTimer);S.camPaused=false;
+ $('pauseOverlay').classList.add('hidden');$('pauseBtn').classList.remove('paused');
+ moveRecceForm('welcome');
  closePanel();document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden'));
  $('welcome').classList.remove('hidden');$('topBar').classList.add('hidden');$('main').classList.add('hidden');
  S.started=false;try{window.scrollTo(0,0);}catch(e){}
+}
+
+/* ---------- v9: long Branding Recce sessions (power + memory safe) ---------- */
+const SESSION_LS='vastu_recce_session_v1';
+function loadSession(){try{const o=JSON.parse(localStorage.getItem(SESSION_LS)||'null');return (o&&o.id)?o:null;}catch(e){return null;}}
+function saveSession(){try{if(S.session)localStorage.setItem(SESSION_LS,JSON.stringify(S.session));else localStorage.removeItem(SESSION_LS);}catch(e){}}
+function sessionPhotos(){return S.session?S.photos.filter(p=>p.app==='recce'&&p.sessionId===S.session.id):[];}
+function ensureSession(){
+ readRecce();
+ const site=S.settings.recce.site||'';
+ if(S.session&&site&&S.session.site&&S.session.site!==site)S.session=null;
+ if(!S.session){
+  S.session={id:'s'+Date.now().toString(36),site:site,startedAt:new Date().toISOString()};
+  saveSession();
+ }
+ return S.session;
+}
+function endSession(){S.session=null;saveSession();updateSessionUI();}
+function updateSessionUI(){
+ const n=sessionPhotos().length;
+ const c=$('sessionCount');if(c)c.textContent=n+' '+L('फ़ोटो','photos');
+ const chip=$('sessionChip');if(chip)chip.textContent=L('सेशन','Session')+' '+n;
+ const strip=$('shotStrip');
+ if(strip){
+  strip.innerHTML='';
+  const list=sessionPhotos().slice(0,8);
+  if(!list.length){const e=document.createElement('span');e.className='shot-empty';e.textContent=L('अभी कोई फ़ोटो नहीं','No photos yet');strip.appendChild(e);}
+  else list.forEach(p=>{
+   const im=document.createElement('img');imgAttrs(im);im.src=p.thumb||'';im.alt=p.area||'';im.title=recceFileName(p);
+   im.onclick=()=>openPhoto(p.id,false).catch(()=>{});strip.appendChild(im);
+  });
+ }
+ const rb=$('sessionReportBtn');if(rb)rb.classList.toggle('disabled',n===0);
+}
+function moveRecceForm(where){
+ const card=$('recceFormCard'),slot=$(where==='panel'?'recceFormSlotPanel':'recceFormSlotWelcome');
+ if(card&&slot&&card.parentElement!==slot)slot.appendChild(card);
+ const opts=card&&card.querySelector('.recce-opts');
+ if(opts)opts.open=(where==='panel');
+}
+function powerSaveOn(){return S.appMode==='recce'&&S.settings.recce.powerSave!==false;}
+let idleTimer=null;
+function resetIdle(){
+ clearTimeout(idleTimer);
+ if(!powerSaveOn()||!S.started||S.camPaused||!S.stream||anyModalOpen())return;
+ idleTimer=setTimeout(()=>{if(S.stream&&!anyModalOpen())pauseCamera('idle');},60000);
+}
+function pauseCamera(reason){
+ if(!S.stream||S.camPaused)return;
+ stopStream();S.camPaused=true;S.pauseReason=reason||'manual';
+ const ov=$('pauseOverlay');if(ov)ov.classList.remove('hidden');
+ const msg=$('pauseReason');
+ if(msg)msg.innerHTML=reason==='marking'
+  ? '<span class="hi-txt">मार्किंग करते समय कैमरा बंद रहेगा — डिवाइस गर्म नहीं होगा, बैटरी बचेगी। फ़ोटो सेव होते ही कैमरा अपने आप चालू हो जाएगा।</span><span class="en-txt">The camera stays off while you mark — less heat, more battery. It resumes automatically after saving.</span>'
+  : reason==='idle'
+  ? '<span class="hi-txt">1 मिनट तक कोई फ़ोटो नहीं ली — कैमरा अपने आप पॉज़ हो गया।</span><span class="en-txt">No photo taken for 1 minute — the camera paused itself.</span>'
+  : reason==='hidden'
+  ? '<span class="hi-txt">टैब बैकग्राउंड में गया — कैमरा पॉज़ कर दिया गया।</span><span class="en-txt">The tab went to the background — camera paused.</span>'
+  : '<span class="hi-txt">बैटरी और हीट बचाने के लिए कैमरा बंद कर दिया गया है।</span><span class="en-txt">Camera turned off to save battery and heat.</span>';
+ $('shutterBtn').classList.add('disabled');
+ const pb=$('pauseBtn');if(pb)pb.classList.add('paused');
+ clearTimeout(idleTimer);updateCamUI();
+}
+async function resumeCamera(){
+ if(!S.camPaused)return;
+ S.camPaused=false;
+ const ov=$('pauseOverlay');if(ov)ov.classList.add('hidden');
+ const pb=$('pauseBtn');if(pb)pb.classList.remove('paused');
+ try{await startCamera({});}catch(e){}
+ resetIdle();
+}
+function trimPhotoMemory(keepId){
+ S.photos.forEach(p=>{
+  if(p.id===keepId)return;
+  if(p._url){try{URL.revokeObjectURL(p._url);}catch(e){}delete p._url;}
+  if(p.blob)delete p.blob;
+ });
+}
+function releaseMarkState(){
+ markState.pending=null;markState.img=null;markState.draft=null;markState.shapes=[];
+}
+async function blobToDataURL(blob){
+ return new Promise(res=>{try{const fr=new FileReader();fr.onload=()=>res(fr.result||'');fr.onerror=()=>res('');fr.readAsDataURL(blob);}catch(e){res('');}});
+}
+async function buildSessionReport(){
+ const list=sessionPhotos().slice().reverse();
+ if(!list.length){toast(L('इस सेशन में अभी कोई फ़ोटो नहीं है।','No photos in this session yet.'),true);return null;}
+ let items='';
+ for(let i=0;i<list.length;i++){
+  const p=list[i],r=p.recce||{};
+  if(i%8===0)toast(L('रिपोर्ट बन रही है... ','Building report... ')+(i+1)+'/'+list.length);
+  const b=await getBlob(p);
+  const src=b?await blobToDataURL(b):(p.thumb||'');
+  const fn=recceFileName(p),sh=r.shapes||[];
+  items+='<section class="ph"><h2>#'+(i+1)+' · '+esc(p.area||r.site||'—')+'</h2>'+
+   (src?'<img id="sp'+i+'" loading="lazy" src="'+esc(src)+'" alt="'+esc(fn)+'">':'')+
+   (src?'<div class="dlrow"><button class="dlbtn" onclick="dlShot('+i+',\''+esc(fn)+'\')">'+esc(L('इस फ़ोटो को डाउनलोड करें','Download this photo'))+'</button><code>'+esc(fn)+'</code></div>':'')+
+   '<table>'+
+   '<tr><td>'+esc(L('साइट','Site'))+'</td><td>'+esc(r.site||'—')+'</td></tr>'+
+   '<tr><td>'+esc(L('कैटेगरी','Category'))+'</td><td>'+esc(r.category||'—')+'</td></tr>'+
+   '<tr><td>'+esc(L('साइज़','Size'))+'</td><td>'+esc(r.size||'—')+'</td></tr>'+
+   '<tr><td>'+esc(L('मटेरियल','Material'))+'</td><td>'+esc(r.material||'—')+'</td></tr>'+
+   '<tr><td>'+esc(L('एरिया / शॉट','Area / shot'))+'</td><td>'+esc(p.area||'—')+'</td></tr>'+
+   '<tr><td>'+esc(L('माप / नोट','Measurements'))+'</td><td>'+esc(r.measure||'—')+'</td></tr>'+
+   '<tr><td>'+esc(L('मार्किंग','Markings'))+'</td><td>'+sh.filter(q=>q.type!=='point').length+' '+esc(L('लाइनें','lines'))+' / '+(r.markers||[]).length+' '+esc(L('मार्कर','markers'))+'</td></tr>'+
+   '<tr><td>'+esc(t('date'))+'</td><td>'+esc(fmtDate(p.createdAt))+'</td></tr>'+
+   '</table></section>';
+ }
+ const html='<!doctype html><html lang="'+lang+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Branding Recce Session Report</title>'+
+ '<style>body{font-family:system-ui,"Noto Sans Devanagari",sans-serif;color:#101214;max-width:900px;margin:0 auto;padding:28px;line-height:1.55}h1{margin:0 0 4px}.rep-logo{width:230px;height:auto;display:block;margin:0 0 10px}p.sub{color:#616b73;margin:0 0 18px}.sum{background:#f2f4f5;border:1px solid #e2e6e9;border-radius:12px;padding:14px 18px;margin-bottom:24px;font-size:13px}.ph{page-break-inside:avoid;border-top:2px solid #c0392b;padding-top:16px;margin-top:24px}.ph h2{font-size:16px;margin:0 0 10px}.ph img{width:100%;border-radius:10px;border:1px solid #e2e6e9;display:block}.ph table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12.5px}.ph td{border-bottom:1px solid #e6eaed;padding:6px 8px}.ph td:first-child{color:#616b73;width:32%;font-weight:700}.dlrow{margin-top:8px;font-size:11.5px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}.dlbtn{background:#fff5f3;border:1px solid #f3c9c1;color:#a5281c;border-radius:8px;padding:6px 10px;font-weight:800;font-size:11.5px;cursor:pointer}.dlrow code{color:#616b73;word-break:break-all}.foot{margin-top:30px;font-size:11px;color:#616b73;background:#f2f4f5;border:1px solid #e2e6e9;border-radius:10px;padding:12px}@media print{body{padding:0}.dlrow{display:none}}</style></head><body>'+
+ '<img class="rep-logo" src="'+BRAND_DATA+'" alt="ArtVision"><h1>Branding Recce — '+esc(L('पूरे store की रिपोर्ट','Full store session report'))+'</h1>'+
+ '<p class="sub">'+esc(t('generated'))+': '+esc(fmtDate(new Date().toISOString()))+' · '+esc((S.session&&S.session.site)||'—')+'</p>'+
+ '<div class="sum"><b>'+esc(t('summary'))+':</b> '+esc(t('totalPhotos'))+' = '+list.length+' · '+esc(L('साइज़','Size'))+' = '+esc(recceSizeText())+' · '+esc(L('मटेरियल','Material'))+' = '+esc(S.settings.recce.material||'—')+'<br>'+esc(L('माप / नोट','Measurements'))+': '+esc(S.settings.recce.measure||'—')+'</div>'+
+ items+
+ '<div class="foot">'+esc(L('एक ही HTML फ़ाइल में पूरे store की सभी marked फ़ोटो और डिटेल्स — ऑफ़लाइन भी खुलती है। हर फ़ोटो के नीचे download button है। · ArtVision','All marked photos and details of the whole store in one offline HTML file. Each photo has its own download button. · ArtVision'))+'</div>'+
+ '<script>function dlShot(i,fn){var im=document.getElementById("sp"+i);if(!im)return;var a=document.createElement("a");a.href=im.src;a.download=fn;document.body.appendChild(a);a.click();a.remove();}<\/script>'+
+ '</body></html>';
+ return html;
+}
+async function downloadSessionReport(){
+ const h=await buildSessionReport();if(!h)return;
+ const fn='recce_'+slug((S.session&&S.session.site)||'site')+'_'+new Date().toISOString().slice(0,10)+'_session.html';
+ downloadBlob(new Blob([h],{type:'text/html;charset=utf-8'}),fn);
+ toast(L('सेशन रिपोर्ट तैयार — सभी फ़ोटो एक ही फ़ाइल में','Session report ready — all photos in one file'));
+}
+function downloadSessionCsv(){
+ const list=sessionPhotos().slice().reverse();
+ if(!list.length){toast(t('noPhotos'));return;}
+ const head=['id','date','site','category','size','material','area','lines','markers','notes','filename','session_id','width','height'];
+ const lines=[head.join(',')];
+ list.forEach(p=>{
+  const r=p.recce||{},sh=r.shapes||[];
+  lines.push([p.id,p.createdAt,r.site,r.category,r.size,r.material,p.area||'',
+   sh.filter(q=>q.type!=='point').length,(r.markers||[]).length,
+   (r.markers||[]).map(m=>m.note||'').filter(Boolean).join(' | '),
+   recceFileName(p),(S.session&&S.session.id)||'',p.width,p.height].map(csvCell).join(','));
+ });
+ const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
+ downloadBlob(blob,'recce_'+slug((S.session&&S.session.site)||'site')+'_'+new Date().toISOString().slice(0,10)+'_session.csv');
+ toast(t('csvReady'));
 }
 
 /* --- vector drawing: pen / line / arrow / box / numbered point --- */
@@ -1515,9 +1743,13 @@ function freshMarkState(extra){
 function cleanupMarkTemp(){
  if(markState.tmpUrl){try{URL.revokeObjectURL(markState.tmpUrl);}catch(e){}markState.tmpUrl=null;}
 }
-function closeMarkModal(){cleanupMarkTemp();closeModal('markModal');}
+function closeMarkModal(){
+ cleanupMarkTemp();closeModal('markModal');releaseMarkState();
+ if(powerSaveOn()&&!anyModalOpen())setTimeout(()=>resumeCamera(),250);
+}
 async function openMarkEditorForCanvas(canvas,meta){
  cleanupMarkTemp();
+ const af=$('markArea');if(af)af.value='';
  markState=freshMarkState({pending:{canvas:canvas,meta:meta}});
  const blob=await canvasToBlob(canvas,'image/jpeg',.9);
  if(blob&&window.URL&&URL.createObjectURL){
@@ -1534,6 +1766,7 @@ async function openMarkEditor(){
  if(!shapes.length&&rec.recce&&rec.recce.markers){
   shapes=rec.recce.markers.map(m=>({type:'point',x:m.x,y:m.y,note:m.note||'',color:'#e53935',width:5}));
  }
+ const af=$('markArea');if(af)af.value=rec.area||'';
  markState=freshMarkState({photoId:rec.id,shapes:shapes.map(s=>Object.assign({},s)),
   baseCount:rec.branded?shapes.length:0,reedit:!!rec.branded,branded:!!rec.branded});
  await showMarkImage(await photoURL(rec));
@@ -1585,26 +1818,33 @@ async function saveMarkers(){
  const markers=shapes.filter(s=>s.type==='point').map(s=>({x:s.x,y:s.y,note:s.note||''}));
  const autoDl=S.settings.recce.autoDl!==false;
  if(st.pending){
+  const af=$('markArea');
   const m=Object.assign({},meta,{
    id:'r'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
    createdAt:new Date().toISOString(),blob:blob,thumb:makeThumb(c),
    width:c.width,height:c.height,app:'recce',branded:true,
+   area:af?(af.value||'').trim():'',sessionId:meta.sessionId||(S.session?S.session.id:null),
    zoneHi:'',zoneEn:'',heading:0,mode:'manual',gps:'',lat:null,lon:null,
    recce:Object.assign({},meta.recce,{shapes:shapes,markers:markers})
   });
   S.photos.unshift(m);await dbPut(m);
-  renderRecent();updateCounts();
+  trimPhotoMemory(m.id);releaseMarkState();
+  renderRecent();updateCounts();updateSessionUI();
   closeModal('markModal');
   openPhoto(m.id,true).catch(()=>{});
+  if(powerSaveOn())setTimeout(()=>resumeCamera(),350);
   if(autoDl){downloadBlob(blob,recceFileName(m));toast(L('फ़ोटो सेव + डाउनलोड: ','Photo saved + downloaded: ')+recceFileName(m));}
   else toast(t('photoSaved'));
   return;
  }
  if(rec._url){try{URL.revokeObjectURL(rec._url);}catch(e){}delete rec._url;}
+ const af2=$('markArea');if(af2)rec.area=(af2.value||'').trim();
  rec.blob=blob;rec.width=nw;rec.height=nh;rec.thumb=makeThumb(c);rec.branded=true;rec.app='recce';
  rec.recce=Object.assign({},rec.recce||{}, {enabled:true,shapes:shapes,markers:markers});
- await dbPut(rec);renderRecent();renderGallery();
+ await dbPut(rec);trimPhotoMemory(rec.id);releaseMarkState();
+ renderRecent();renderGallery();updateSessionUI();
  closeModal('markModal');
+ if(powerSaveOn())setTimeout(()=>resumeCamera(),350);
  if(S.currentPhotoId===rec.id){
   const im=$('pmImg');rec._url=URL.createObjectURL(blob);im.src=rec._url;
   $('pmMeta').innerHTML=metaRows(rec);openModal('photoModal');
@@ -1937,6 +2177,7 @@ function capture(){
   if(!rr.site||!rr.w||!rr.h||!rr.material)
    toast(L('साइट, साइज़ और मटेरियल भरें — फ़ाइल नाम उसी से बनेगा।','Fill site, size and material — they build the filename.'),true);
   const meta=recceMeta({source:'camera',mirrored:mirror});
+  if(powerSaveOn())pauseCamera('marking');
   openMarkEditorForCanvas(c,meta).catch(()=>{});
   return;
  }
@@ -1964,7 +2205,10 @@ async function handleUpload(file){
  $('topBar').classList.remove('hidden');$('main').classList.remove('hidden');$('welcome').classList.add('hidden');S.started=true;
  $('cameraError').classList.add('hidden');$('videoPlaceholder').classList.add('hidden');
  if(S.appMode==='recce'){
+  moveRecceForm('panel');
+  if(!S.started){S.started=true;ensureSession();updateSessionUI();}
   const meta=recceMeta({source:'upload',mirrored:false,camera:L('अपलोड की गई फ़ोटो','Uploaded photo')});
+  if(powerSaveOn())pauseCamera('marking');
   openMarkEditorForCanvas(c,meta).catch(()=>{});
   return;
  }
@@ -2024,7 +2268,7 @@ function renderGallery(){
   const info=document.createElement('div');info.className='g-info';
   if(rec.app==='recce'){
    const r=rec.recce||{};
-   info.innerHTML='<b>'+esc(r.site||'—')+'</b><small>'+esc(r.size||'—')+' · '+esc(r.material||'—')+'</small><small>'+esc(fmtDate(rec.createdAt))+'</small>';
+   info.innerHTML='<b>'+esc(rec.area||r.site||'—')+'</b><small>'+esc(r.size||'—')+' · '+esc(r.material||'—')+'</small><small>'+esc(fmtDate(rec.createdAt))+'</small>';
   }else info.innerHTML='<b>'+esc(rec.zoneHi||'')+' · '+Math.round(rec.heading)+'°</b><small>'+esc(fmtDate(rec.createdAt))+'</small>';
   c.appendChild(im);c.appendChild(del);c.appendChild(info);frag.appendChild(c);
  });
@@ -2049,6 +2293,8 @@ function metaRows(rec){
    [L('साइज़','Size'),esc(r.size||'—')],
    [L('मटेरियल','Material'),esc(r.material||'—')],
    [L('लाइन / मार्कर','Lines / markers'),esc(sh.filter(q=>q.type!=='point').length+' / '+(r.markers||[]).length)],
+   [L('एरिया / शॉट','Area / shot'),esc(rec.area||'—')],
+   [L('माप / नोट','Measurements'),esc((rec.recce&&rec.recce.measure)||'—')],
    [L('फ़ाइल नाम','File name'),esc(recceFileName(rec))],
    [t('cameraLabel'),esc(rec.camera||'')],
    [t('source'),esc(rec.source==='upload'?L('अपलोड','Upload'):L('कैमरा','Camera'))],
@@ -2160,14 +2406,14 @@ function csvCell(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"';}
 function downloadCsv(){
  const d=new Date().toISOString().slice(0,10);
  if(S.appMode==='recce'){
-  const head=['id','date','site','category','size','material','lines','markers','notes','filename','source','width','height'];
+  const head=['id','date','site','category','size','material','area','lines','markers','notes','filename','session_id','source','width','height'];
   const lines=[head.join(',')];
   activePhotos().slice().reverse().forEach(p=>{
    const r=p.recce||{},sh=r.shapes||[];
-   lines.push([p.id,p.createdAt,r.site,r.category,r.size,r.material,
+   lines.push([p.id,p.createdAt,r.site,r.category,r.size,r.material,p.area||'',
     sh.filter(q=>q.type!=='point').length,(r.markers||[]).length,
     (r.markers||[]).map(m=>m.note||'').filter(Boolean).join(' | '),
-    recceFileName(p),p.source,p.width,p.height].map(csvCell).join(','));
+    recceFileName(p),p.sessionId||'',p.source,p.width,p.height].map(csvCell).join(','));
   });
   const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
   downloadBlob(blob,'recce_photos_'+d+'.csv');toast(t('csvReady'));return;
@@ -2190,9 +2436,14 @@ function autoOpenPanel(){autoPanel=true;openPanel();}
 function closePanel(){autoPanel=false;['sidePanel','reccePanel'].forEach(id=>$(id).classList.remove('open'));$('backdrop').classList.add('hidden');}
 function bootApp(){
  setModeUI();
+ moveRecceForm(S.appMode==='recce'?'panel':'welcome');
  $('welcome').classList.add('hidden');$('topBar').classList.remove('hidden');$('main').classList.remove('hidden');
- S.started=true;applyLang();buildDirGrid();updateDirectionUI();updateGpsUI();updateCamUI();renderRecent();updateCounts();
+ S.started=true;
+ if(S.appMode==='recce'){ensureSession();updateSessionUI();}
+ else{S.camPaused=false;$('pauseOverlay').classList.add('hidden');$('pauseBtn').classList.remove('paused');$('sessionChip').textContent='';}
+ applyLang();buildDirGrid();updateDirectionUI();updateGpsUI();updateCamUI();renderRecent();updateCounts();
  if(window.innerWidth<1024)setTimeout(autoOpenPanel,450);
+ resetIdle();
 }
 function bind(){
  // welcome — choose which of the two cameras to start
@@ -2243,9 +2494,39 @@ function bind(){
  $('recceOpenGalleryBtn').onclick=()=>{renderGallery();openModal('galleryModal');};
  $('helpBtn').onclick=()=>openModal('helpModal');
 
- // camera 2: branding recce fields
- ['recceCat','recceSite','recceW','recceH','recceUnit','recceMat'].forEach(id=>{
+ // camera 2: branding recce fields (filled ONCE on the welcome screen)
+ ['recceCat','recceSite','recceW','recceH','recceUnit','recceMat','recceMeasure'].forEach(id=>{
   $(id).addEventListener('input',readRecce);$(id).addEventListener('change',readRecce);
+ });
+ $('reccePowerSave').onclick=()=>{
+  S.settings.recce.powerSave=!(S.settings.recce.powerSave!==false);saveSettings();syncRecceUI();
+  toast(S.settings.recce.powerSave?L('पावर-सेव चालू — marking में कैमरा पॉज़','Power-save on — camera pauses while marking'):L('पावर-सेव बंद','Power-save off'));
+  if(!S.settings.recce.powerSave&&S.camPaused)resumeCamera();else resetIdle();
+ };
+ $('pauseBtn').onclick=()=>{S.camPaused?resumeCamera():pauseCamera('manual');};
+ $('resumeCamBtn').onclick=()=>{resumeCamera();};
+ $('pmNext').onclick=()=>{
+  closeModal('photoModal');S.currentPhotoId=null;
+  if(S.camPaused)resumeCamera();else resetIdle();
+  toast(L('अगली फ़ोटो के लिए कैमरा तैयार है','Camera ready for the next photo'));
+ };
+ $('sessionNextBtn').onclick=()=>{
+  document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden'));
+  closePanel();if(S.camPaused)resumeCamera();else resetIdle();
+  toast(L('अगली फ़ोटो लें — डिटेल्स वही रहेंगे','Take the next photo — details stay the same'));
+ };
+ $('sessionReportBtn').onclick=()=>{downloadSessionReport().catch(()=>{});};
+ $('sessionCsvBtn').onclick=downloadSessionCsv;
+ $('sessionEndBtn').onclick=async()=>{
+  const n=sessionPhotos().length;
+  if(n&&confirm(L('इस store की '+n+' फ़ोटो की रिपोर्ट डाउनलोड करें और सेशन खत्म करें?','Download a report of '+n+' photos and end this session?')))
+   await downloadSessionReport();
+  endSession();switchMode();
+  toast(L('सेशन खत्म — नए store के लिए डिटेल्स भरें।','Session ended — enter details for the new store.'));
+ };
+ document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){if(S.stream&&powerSaveOn())pauseCamera('hidden');}
+  else if(S.camPaused&&S.started&&!anyModalOpen())resumeCamera();
  });
  $('recceAutoDl').onclick=()=>{
   S.settings.recce.autoDl=!(S.settings.recce.autoDl!==false);saveSettings();syncRecceUI();
@@ -2389,6 +2670,7 @@ async function init(){
  $('degRange').value=S.settings.trim||0;
  $('fProject').value=S.settings.project||'';$('fPlot').value=S.settings.plot||'';
  $('fClient').value=S.settings.client||'';$('fRemark').value=S.settings.remark||'';
+ S.session=loadSession();
  applyLang();buildDirGrid();populateRecceCats();syncRecceUI();updateDirectionUI();updateGpsUI();updateCounts();
  preloadBrand();
  bind();
@@ -2407,6 +2689,7 @@ async function init(){
   renderRecent();updateCounts();
   if(dirty.length)await Promise.all(dirty.map(rec=>dbPut(rec)));
  }
+ trimPhotoMemory(null);updateSessionUI();
  if(S.storageOK===false&&!S.storageWarned){
   S.storageWarned=true;
   setTimeout(()=>toast(L('स्टोरेज बंद / प्राइवेट मोड — फ़ोटो सिर्फ इस सेशन में रहेंगी, डाउनलोड कर लें।','Storage off / private mode — photos stay in this session only; download them.'),true),1400);
